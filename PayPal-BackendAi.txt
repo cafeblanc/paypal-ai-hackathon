@@ -1,0 +1,11 @@
+BackendX-ai
+API Key
+1rZ5_vJj-AUtU6N1KxbAQ7mX7UNzDXSrmx_gBsbyED0
+
+PayPal 등록
+mrwellbeing44@gmail.com
+lk#7126^Lst!@
+
+Platform Partner App - 4810459281065013139
+ClientID=AdBqUe-MMTB_lrQkx8Dh1AWURwZ3Z-1wpkD0sPd9-QA_BFZljBshWLrbt1IgCbmQSdjcZtXt9QcC9jb9
+SecretKey=EPjuy_FhCA81LvnpV18_AgHiBH9KIeHB36neWtYcDBPgRvsfBOyN_a_2OnjP07tRVSn7vVilcFAW7VSZ
