@@ -1,5 +1,4 @@
-
-import React, { useEffect, useRef } from "react";
+﻿import React, { useEffect, useRef } from "react";
 import { loadPayPalScript } from "../services/paypalService";
 
 interface PayPalCheckoutButtonProps {
@@ -39,4 +38,3 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({ amou
   return <div ref={paypalRef} className="w-full mt-2"></div>;
 };
 export default PayPalCheckoutButton;
-

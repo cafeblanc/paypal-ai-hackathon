@@ -1,8 +1,6 @@
-import React from 'react';
-import LiveStreamView from './components/LiveStreamView';
+import React from "react";
+import LiveStreamView from "./components/LiveStreamView";
 
-function App() {
+export default function App() {
   return <LiveStreamView />;
 }
-
-export default App;

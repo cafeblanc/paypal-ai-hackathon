@@ -9,7 +9,7 @@ export interface Product {
 
 export interface ChatMessage {
   id: string;
-  sender: 'user' | 'ai';
+  sender: "user" | "ai";
   text: string;
   timestamp: string;
   suggestedProduct?: Product;
