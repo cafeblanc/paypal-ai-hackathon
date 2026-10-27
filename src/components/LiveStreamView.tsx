@@ -1461,10 +1461,14 @@ export const LiveStreamView: React.FC = () => {
       {/* Main Snap Scroll Container for Mobile / Grid for Desktop */}
       <div className="flex-1 flex flex-col md:grid md:grid-cols-12 gap-3 p-2 sm:p-4 w-full max-w-full box-border items-stretch md:overflow-hidden snap-y md:snap-none snap-mandatory overflow-y-auto" style={{ height: "calc(100vh - 52px)" }}>
         
-        {/* Section 1: Video & Live Commerce Player (빈 공간 제거 및 동영상 flex-1 꽉 채움) */}
-        <div className="md:col-span-7 relative h-[calc(100vh-68px)] md:h-full bg-slate-900/40 border border-slate-700/80 rounded-2xl p-2.5 sm:p-3 shadow-xl flex flex-col justify-between w-full max-w-full box-border snap-start shrink-0">
-          {/* 비디오 영역이 남은 상하 공간을 100% 꽉 채우도록 flex-1 min-h-0 적용 */}
-          <div className="relative w-full flex-1 min-h-0 bg-slate-900 rounded-xl overflow-hidden border border-slate-700 flex items-center justify-center shadow-lg">
+        {/* Section 1: Video & Live Commerce Player (모든 상품 동영상 크기 100% 동일 고정) */}
+        <div className="md:col-span-7 relative h-[calc(100vh-68px)] md:h-full bg-slate-900/40 border border-slate-700/80 rounded-2xl p-2.5 sm:p-3 shadow-xl flex flex-col justify-between w-full max-w-full box-border snap-start shrink-0 overflow-hidden">
+          
+          {/* 비디오 프레임: 어떤 상품을 선택하든 가로·세로 크기가 1px도 변하지 않도록 절대 높이 및 강제 Cover 적용 */}
+          <div 
+            className="relative w-full bg-black rounded-xl overflow-hidden border border-slate-700 shadow-lg shrink-0"
+            style={{ height: isCheckingOut || latestOrder ? "calc(100% - 210px)" : "calc(100% - 96px)" }}
+          >
             {currentProd && (
               <video
                 ref={videoRef}
@@ -1473,7 +1477,14 @@ export const LiveStreamView: React.FC = () => {
                 loop
                 muted={isAudioMuted}
                 playsInline
-                className="absolute inset-0 w-full h-full object-cover object-center bg-black"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: "center 35%",
+                  display: "block"
+                }}
+                className=" inset-0 w-full h-full object-cover bg-black"
                 onError={(e) => {
                   const target = e.currentTarget;
                   if (target.src !== currentProd.fallbackVideoUrl) {
@@ -1517,39 +1528,40 @@ export const LiveStreamView: React.FC = () => {
             </div>
           </div>
 
-          {/* 하단 결제창 영역: 불필요한 flex-1 여백을 없애고 shrink-0 mt-2.5로 동영상 바로 아래에 밀착 */}
+          {/* 하단 상품 카드 영역: 높이(86px)를 고정하여 상품 설명 길이에 상관없이 위쪽 동영상 크기가 절대 변하지 않도록 고정 */}
           <div className="mt-2.5 shrink-0 w-full max-w-full box-border">
             {currentProd && !isCheckingOut && !latestOrder ? (
-              <div className="bg-slate-900/95 backdrop-blur-md p-3 rounded-xl border border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 shadow-xl animate-fadeIn w-full box-border">
+              <div className="bg-slate-900/95 backdrop-blur-md px-3 py-2.5 rounded-xl border border-slate-700 flex items-center justify-between gap-2.5 shadow-xl animate-fadeIn w-full h-[86px] box-border overflow-hidden">
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                  <div className="w-10 h-10 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-xl shadow-inner shrink-0">
+                  <div className="w-11 h-11 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-xl shadow-inner shrink-0">
                     {currentProd.icon}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <p className="text-[10px] text-blue-400 font-semibold tracking-wide">{t.aiLiveFeatured}</p>
+                    <div className="flex items-center gap-1.5 truncate">
+                      <p className="text-[10px] text-blue-400 font-semibold tracking-wide shrink-0">{t.aiLiveFeatured}</p>
                       {currentProd.stock <= 5 && currentProd.stock > 0 && (
-                        <span className="text-[9px] text-red-400 font-bold bg-red-950/80 px-1.5 py-0.5 rounded border border-red-500/50 animate-pulse">
+                        <span className="text-[9px] text-red-400 font-bold bg-red-950/80 px-1.5 py-0.5 rounded border border-red-500/50 animate-pulse truncate">
                           {t.lowStockWarning} ({currentProd.stock}{t.unit})
                         </span>
                       )}
                     </div>
                     <p className="text-xs font-bold text-white truncate">{currentProd.name[lang] || currentProd.name.ko}</p>
-                    <p className="text-[11px] text-slate-400 truncate">{currentProd.description[lang] || currentProd.description.ko}</p>
-                    <p className="text-[11px] text-amber-300 font-semibold mt-0.5">KRW {currentProd.price.toLocaleString()} (~${Math.round(currentProd.price / 1350)} USD)</p>
+                    <p className="text-[11px] text-amber-300 font-semibold truncate">
+                      KRW {currentProd.price.toLocaleString()} (~${Math.round(currentProd.price / 1350)} USD) · <span className="text-slate-400 font-normal">{currentProd.description[lang] || currentProd.description.ko}</span>
+                    </p>
                   </div>
                 </div>
                 {currentProd.stock > 0 ? (
                   <button 
                     onClick={() => setIsCheckingOut(true)}
-                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-lg text-xs font-semibold transition shadow-lg cursor-pointer shrink-0 border border-blue-400/30 text-center"
+                    className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-lg text-xs font-semibold transition shadow-lg cursor-pointer shrink-0 border border-blue-400/30 text-center whitespace-nowrap"
                   >
                     {t.payWithPayPal}
                   </button>
                 ) : (
                   <button 
                     disabled
-                    className="w-full sm:w-auto bg-slate-800 text-slate-500 px-4 py-2.5 rounded-lg text-xs font-bold cursor-not-allowed border border-slate-700 text-center"
+                    className="bg-slate-800 text-slate-500 px-4 py-2.5 rounded-lg text-xs font-bold cursor-not-allowed border border-slate-700 text-center whitespace-nowrap shrink-0"
                   >
                     {t.soldOut}
                   </button>
