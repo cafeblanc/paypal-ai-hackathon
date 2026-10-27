@@ -62,265 +62,265 @@ const TRANSLATIONS: Record<Language, any> = {
       { label: "전통차 선물 세트 🍵", type: "tea" },
       { label: "즉시 페이팔 결제 💳", type: "checkout" }
     ],
-    inputPlaceholder: "위 버튼을 누르거나 메시지를 입력하세요...",
+    inputPlaceholder: "메시지를 입력하세요...",
     send: "전송",
     openCheckout: "페이팔 SDK 결제 열기",
     honeyRec: "실제 꿀 촬영 영상(honey_demo.mp4)으로 상품 대치가 완료되었습니다!",
     teaRec: "실제 전통차 촬영 영상(tea_demo.mp4)으로 상품 대치가 완료되었습니다!",
-    adminPortalBtn: "🔒 관리자 로그인 (/admin)",
-    adminTitle: "보안 관리자 대시보드 (매출·재고·배송·FAQ 관리)",
-    adminSubtitle: "매출, 실시간 재고, 배송, 운송장 및 소비자 맞춤 답변(FAQ) 사전 편집 시스템",
-    passwordPlaceholder: "관리자 비밀번호 입력 (기본: admin1234)",
-    loginBtn: "관리자 로그인",
-    loginError: "비밀번호가 올바르지 않습니다. (기본: admin1234)",
+    adminPortalBtn: "🔒 관리자",
+    adminTitle: "보안 관리자 대시보드",
+    adminSubtitle: "매출, 실시간 재고, 배송 관리",
+    passwordPlaceholder: "비밀번호 (admin1234)",
+    loginBtn: "로그인",
+    loginError: "비밀번호가 올바르지 않습니다.",
     logoutBtn: "로그아웃",
-    backToStore: "← 라이브 스토어로 돌아가기",
-    tabSales: "📊 매출 및 주문",
-    tabInventory: "📦 실시간 재고 관리",
-    tabShipping: "🚚 배송 관리",
-    tabQA: "💬 AI 맞춤 답변 및 FAQ 사전 편집",
-    tabVideoEditor: "🎬 동영상 편집 스튜디오",
-    totalRevenue: "총 누적 매출",
-    totalOrders: "총 주문 건수",
-    activeStock: "활성 재고 합계",
-    orderHistory: "주문 및 배송 관리 내역",
-    noOrders: "아직 발생한 주문이 없습니다.",
+    backToStore: "← 스토어로",
+    tabSales: "📊 매출",
+    tabInventory: "📦 재고",
+    tabShipping: "🚚 배송",
+    tabQA: "💬 FAQ",
+    tabVideoEditor: "🎬 동영상 편집",
+    totalRevenue: "총 매출",
+    totalOrders: "총 주문",
+    activeStock: "활성 재고",
+    orderHistory: "주문 내역",
+    noOrders: "주문 내역이 없습니다.",
     productNameCol: "상품명",
     priceCol: "가격",
-    stockCol: "잔여 재고",
-    shippingCol: "배송 상태",
-    trackingCol: "운송장 번호",
-    videoAssetCol: "매핑된 동영상 파일",
+    stockCol: "재고",
+    shippingCol: "배송",
+    trackingCol: "운송장",
+    videoAssetCol: "동영상",
     actionsCol: "관리",
-    trackingViewTitle: "📦 실시간 주문 및 배송 추적",
+    trackingViewTitle: "📦 주문 및 배송 추적",
     orderIdLabel: "주문 번호",
-    shippingStatusLabel: "현재 배송 상태",
-    soundOn: "🔊 소리 켜기",
-    soundOff: "🔇 음소거 중",
-    lowStockWarning: "⚠️ [긴급] 남은 재고 마감 임박!",
+    shippingStatusLabel: "배송 상태",
+    soundOn: "🔊 소리",
+    soundOff: "🔇 음소거",
+    lowStockWarning: "⚠️ [긴급] 재고 임박!",
     stockLeft: "남은 재고: ",
     unit: "개"
   },
   en: {
     marketName: "Yangpyeong Open Festival",
-    title: "PayPal AI Agentic Commerce Live",
-    sandbox: "Sandbox Mode",
-    liveStream: "LIVE STREAM",
-    aiLiveFeatured: "AI LIVE FEATURED",
+    title: "PayPal AI Live Commerce",
+    sandbox: "Sandbox",
+    liveStream: "LIVE",
+    aiLiveFeatured: "AI FEATURED",
     payWithPayPal: "Pay with PayPal",
     soldOut: "Sold Out",
-    secureCheckout: "PayPal Secure Checkout",
-    totalAmount: "Total Amount",
-    cancelBack: "Cancel / Back",
-    paymentCompleted: "Payment completed! Real-time fulfillment initiated.",
+    secureCheckout: "Secure Checkout",
+    totalAmount: "Total",
+    cancelBack: "Back",
+    paymentCompleted: "Payment completed!",
     chatTitle: "AI Shopping Agent & Live Chat",
     online: "Online",
-    initialGreeting: "Welcome to PayPal AI Agentic Commerce! Watch live and shop instantly with real-time stock.",
+    initialGreeting: "Welcome to PayPal AI Agentic Commerce! Watch live and shop instantly.",
     quickPrompts: [
-      { label: "Recommend best honey 🍯", type: "honey" },
+      { label: "Recommend honey 🍯", type: "honey" },
       { label: "Gift tea set 🍵", type: "tea" },
-      { label: "Instant PayPal checkout 💳", type: "checkout" }
+      { label: "Instant checkout 💳", type: "checkout" }
     ],
-    inputPlaceholder: "Tap a button above or type...",
+    inputPlaceholder: "Type a message...",
     send: "Send",
-    openCheckout: "Open PayPal SDK Checkout",
-    honeyRec: "Successfully switched to actual Honey product demo video (honey_demo.mp4)!",
-    teaRec: "Successfully switched to actual Tea product demo video (tea_demo.mp4)!",
-    adminPortalBtn: "🔒 Admin Login (/admin)",
-    adminTitle: "Secure Admin Dashboard (Sales, Inventory, Shipping & FAQ)",
-    adminSubtitle: "Manage revenue, live stock, shipping, and custom Q&A / FAQ registrations for AI Agent.",
-    passwordPlaceholder: "Enter admin password (Default: admin1234)",
-    loginBtn: "Admin Login",
-    loginError: "Incorrect password. (Default: admin1234)",
+    openCheckout: "Open PayPal Checkout",
+    honeyRec: "Switched to actual Honey video demo!",
+    teaRec: "Switched to actual Tea video demo!",
+    adminPortalBtn: "🔒 Admin",
+    adminTitle: "Admin Dashboard",
+    adminSubtitle: "Manage revenue, stock & shipping",
+    passwordPlaceholder: "Password (admin1234)",
+    loginBtn: "Login",
+    loginError: "Incorrect password.",
     logoutBtn: "Logout",
-    backToStore: "← Back to Live Store",
-    tabSales: "📊 Sales & Orders",
-    tabInventory: "📦 Real-Time Inventory",
+    backToStore: "← Back",
+    tabSales: "📊 Sales",
+    tabInventory: "📦 Inventory",
     tabShipping: "🚚 Shipping",
-    tabQA: "💬 AI Custom Q&A & FAQ Editor",
-    tabVideoEditor: "🎬 Video Editor Studio",
-    totalRevenue: "Total Revenue",
-    totalOrders: "Total Orders",
-    activeStock: "Total Active Stock",
-    orderHistory: "Paid Orders & Shipping Manager",
+    tabQA: "💬 FAQ",
+    tabVideoEditor: "🎬 Video Editor",
+    totalRevenue: "Revenue",
+    totalOrders: "Orders",
+    activeStock: "Stock",
+    orderHistory: "Order History",
     noOrders: "No orders yet.",
-    productNameCol: "Product Name",
+    productNameCol: "Product",
     priceCol: "Price",
-    stockCol: "Stock Qty",
-    shippingCol: "Shipping Status",
-    trackingCol: "Tracking No.",
-    videoAssetCol: "Mapped Video File",
+    stockCol: "Stock",
+    shippingCol: "Shipping",
+    trackingCol: "Tracking",
+    videoAssetCol: "Video",
     actionsCol: "Action",
-    trackingViewTitle: "📦 Real-Time Order & Tracking",
+    trackingViewTitle: "📦 Order & Tracking",
     orderIdLabel: "Order ID",
-    shippingStatusLabel: "Shipping Status",
+    shippingStatusLabel: "Status",
     soundOn: "🔊 Sound On",
     soundOff: "🔇 Muted",
-    lowStockWarning: "⚠️ [Urgent] Low Stock Alert!",
-    stockLeft: "Stock Left: ",
+    lowStockWarning: "⚠️ Low Stock!",
+    stockLeft: "Stock: ",
     unit: "pcs"
   },
   ja: {
     marketName: "楊平オープンフェスティバル",
-    title: "PayPal AI エージェンティックコマース ライブ",
-    sandbox: "サンドボックスモード",
-    liveStream: "ライブ配信",
-    aiLiveFeatured: "AI ライブおすすめ商品",
+    title: "PayPal AI ライブコマース",
+    sandbox: "サンドボックス",
+    liveStream: "ライブ",
+    aiLiveFeatured: "AI おすすめ",
     payWithPayPal: "PayPalで支払う",
-    soldOut: "売り切れ (Sold Out)",
-    secureCheckout: "PayPal セキュア決済",
-    totalAmount: "合計金額",
-    cancelBack: "キャンセル / 戻る",
-    paymentCompleted: "決済完了！リアルタイム配送が開始されました。",
+    soldOut: "売り切れ",
+    secureCheckout: "セキュア決済",
+    totalAmount: "合計",
+    cancelBack: "戻る",
+    paymentCompleted: "決済完了！",
     chatTitle: "AI ショッピングエージェント & チャット",
     online: "オンライン",
-    initialGreeting: "PayPal AI エージェンティックコマースへようこそ！ライブ映像とリアルタイム在庫でお買い物。",
+    initialGreeting: "PayPal AI エージェンティックコマースへようこそ！",
     quickPrompts: [
-      { label: "プレミアムハチミツ 🍯", type: "honey" },
-      { label: "伝統茶ギフトセット 🍵", type: "tea" },
-      { label: "今すぐPayPal決済 💳", type: "checkout" }
+      { label: "ハチミツ推薦 🍯", type: "honey" },
+      { label: "伝統茶セット 🍵", type: "tea" },
+      { label: "今すぐ決済 💳", type: "checkout" }
     ],
-    inputPlaceholder: "上のボタンをタップするか入力してください...",
+    inputPlaceholder: "メッセージを入力...",
     send: "送信",
-    openCheckout: "PayPal SDK 決済を開く",
-    honeyRec: "実際のハチミツ撮影動画に切り替えました！",
-    teaRec: "実際の伝統茶撮影動画に切り替えました！",
-    adminPortalBtn: "🔒 管理者ログイン (/admin)",
-    adminTitle: "セキュア管理者ダッシュボード",
-    adminSubtitle: "売上、在庫、配送、AIカスタムFAQ登録管理",
-    passwordPlaceholder: "パスワード (デフォルト: admin1234)",
+    openCheckout: "PayPal 決済を開く",
+    honeyRec: "ハチミツ動画に切り替えました！",
+    teaRec: "伝統茶動画に切り替えました！",
+    adminPortalBtn: "🔒 管理者",
+    adminTitle: "管理者ダッシュボード",
+    adminSubtitle: "売上・在庫管理",
+    passwordPlaceholder: "パスワード",
     loginBtn: "ログイン",
-    loginError: "パスワードが間違っています。",
+    loginError: "パスワードが違います。",
     logoutBtn: "ログアウト",
-    backToStore: "← ストアに戻る",
-    tabSales: "📊 売上管理",
-    tabInventory: "📦 リアルタイム在庫管理",
-    tabShipping: "🚚 配送管理",
-    tabQA: "💬 AIカスタムQ&A・FAQ編集",
-    tabVideoEditor: "🎬 動画編集スタジオ",
+    backToStore: "← 戻る",
+    tabSales: "📊 売上",
+    tabInventory: "📦 在庫",
+    tabShipping: "🚚 配送",
+    tabQA: "💬 FAQ",
+    tabVideoEditor: "🎬 動画",
     totalRevenue: "総売上",
     totalOrders: "注文数",
     activeStock: "在庫合計",
-    orderHistory: "注文・配送管理",
-    noOrders: "注文はありません。",
+    orderHistory: "注文履歴",
+    noOrders: "注文なし",
     productNameCol: "商品名",
     priceCol: "価格",
-    stockCol: "在庫数",
-    shippingCol: "配送状態",
-    trackingCol: "追跡番号",
-    videoAssetCol: "動画ファイル",
+    stockCol: "在庫",
+    shippingCol: "配送",
+    trackingCol: "追跡",
+    videoAssetCol: "動画",
     actionsCol: "操作",
-    trackingViewTitle: "📦 リアルタイム注文・配送追跡",
+    trackingViewTitle: "📦 注文・配送追跡",
     orderIdLabel: "注文ID",
-    shippingStatusLabel: "配送状態",
+    shippingStatusLabel: "状態",
     soundOn: "🔊 音声ON",
     soundOff: "🔇 ミュート",
-    lowStockWarning: "⚠️ [緊急] 残りわずか！",
+    lowStockWarning: "⚠️ 残りわずか！",
     stockLeft: "残り在庫: ",
     unit: "個"
   },
   zh: {
     marketName: "杨平开放节",
-    title: "PayPal AI 智能代理电商直播",
-    sandbox: "沙盒模式",
-    liveStream: "实时直播",
-    aiLiveFeatured: "AI 实时推荐商品",
-    payWithPayPal: "使用 PayPal 支付",
-    soldOut: "已售罄 (Sold Out)",
-    secureCheckout: "PayPal 安全结算",
-    totalAmount: "总金额",
-    cancelBack: "取消 / 返回",
-    paymentCompleted: "支付成功！实时物流配送已启动。",
+    title: "PayPal AI 直播电商",
+    sandbox: "沙盒",
+    liveStream: "直播",
+    aiLiveFeatured: "AI 推荐",
+    payWithPayPal: "PayPal 支付",
+    soldOut: "已售罄",
+    secureCheckout: "安全结账",
+    totalAmount: "总额",
+    cancelBack: "返回",
+    paymentCompleted: "支付成功！",
     chatTitle: "AI 购物助手 & 实时聊天",
     online: "在线",
-    initialGreeting: "欢迎来到 PayPal AI 智能代理电商！观看直播并实时查看库存选购商品。",
+    initialGreeting: "欢迎来到 PayPal AI 智能代理电商！",
     quickPrompts: [
-      { label: "推荐优质蜂蜜 🍯", type: "honey" },
+      { label: "推荐蜂蜜 🍯", type: "honey" },
       { label: "传统茶礼盒 🍵", type: "tea" },
-      { label: "立即 PayPal 结账 💳", type: "checkout" }
+      { label: "立即结账 💳", type: "checkout" }
     ],
-    inputPlaceholder: "点击上方按钮或输入消息...",
+    inputPlaceholder: "输入消息...",
     send: "发送",
-    openCheckout: "打开 PayPal SDK 结账",
-    honeyRec: "已成功切换至实际拍摄的蜂蜜商品视频！",
-    teaRec: "已成功切换至实际拍摄的传统茶商品视频！",
-    adminPortalBtn: "🔒 管理员登录 (/admin)",
-    adminTitle: "安全管理后台",
-    adminSubtitle: "销售、库存、物流与AI自定义问答FAQ编辑管理",
-    passwordPlaceholder: "输入密码 (默认: admin1234)",
+    openCheckout: "打开结账",
+    honeyRec: "已切换至蜂蜜视频！",
+    teaRec: "已切换至茶视频！",
+    adminPortalBtn: "🔒 管理员",
+    adminTitle: "管理后台",
+    adminSubtitle: "销售与库存管理",
+    passwordPlaceholder: "密码",
     loginBtn: "登录",
-    loginError: "密码错误。",
+    loginError: "密码错误",
     logoutBtn: "登出",
-    backToStore: "← 返回商店",
-    tabSales: "📊 销售管理",
-    tabInventory: "📦 实时库存管理",
-    tabShipping: "🚚 物流管理",
-    tabQA: "💬 AI自定义问答与FAQ编辑",
-    tabVideoEditor: "🎬 视频编辑工作室",
-    totalRevenue: "总收入",
-    totalOrders: "总订单数",
-    activeStock: "总库存",
-    orderHistory: "订单与物流管理",
-    noOrders: "暂无订单。",
-    productNameCol: "商品名称",
+    backToStore: "← 返回",
+    tabSales: "📊 销售",
+    tabInventory: "📦 库存",
+    tabShipping: "🚚 物流",
+    tabQA: "💬 FAQ",
+    tabVideoEditor: "🎬 视频",
+    totalRevenue: "收入",
+    totalOrders: "订单",
+    activeStock: "库存",
+    orderHistory: "历史",
+    noOrders: "暂无订单",
+    productNameCol: "商品",
     priceCol: "价格",
     stockCol: "库存",
-    shippingCol: "配送状态",
-    trackingCol: "运单号",
-    videoAssetCol: "视频文件",
+    shippingCol: "配送",
+    trackingCol: "单号",
+    videoAssetCol: "视频",
     actionsCol: "操作",
-    trackingViewTitle: "📦 实时订单与物流追踪",
+    trackingViewTitle: "📦 订单追踪",
     orderIdLabel: "订单号",
-    shippingStatusLabel: "配送状态",
-    soundOn: "🔊 开启声音",
+    shippingStatusLabel: "状态",
+    soundOn: "🔊 声音",
     soundOff: "🔇 静音",
-    lowStockWarning: "⚠️ [紧急] 库存告急！",
+    lowStockWarning: "⚠️ 库存告急！",
     stockLeft: "剩余库存: ",
     unit: "个"
   },
   es: {
-    marketName: "Festival Abierto de Yangpyeong",
-    title: "Comercialización Agentica IA de PayPal en Vivo",
-    sandbox: "Modo Sandbox",
-    liveStream: "TRANSMISIÓN EN VIVO",
-    aiLiveFeatured: "DESTACADO EN VIVO POR IA",
-    payWithPayPal: "Pagar con PayPal",
-    soldOut: "Agotado (Sold Out)",
-    secureCheckout: "Pago Seguro de PayPal",
-    totalAmount: "Monto Total",
-    cancelBack: "Cancelar / Volver",
-    paymentCompleted: "¡Pago completado! Envío en tiempo real iniciado.",
-    chatTitle: "Agente de Compras IA y Chat en Vivo",
+    marketName: "Festival de Yangpyeong",
+    title: "PayPal AI Live Commerce",
+    sandbox: "Sandbox",
+    liveStream: "EN VIVO",
+    aiLiveFeatured: "DESTACADO IA",
+    payWithPayPal: "Pagar",
+    soldOut: "Agotado",
+    secureCheckout: "Pago Seguro",
+    totalAmount: "Total",
+    cancelBack: "Volver",
+    paymentCompleted: "¡Pago completado!",
+    chatTitle: "Agente IA & Chat",
     online: "En línea",
-    initialGreeting: "¡Bienvenido al Comercio Agentico IA de PayPal! Mira en vivo con stock en tiempo real.",
+    initialGreeting: "¡Bienvenido!",
     quickPrompts: [
-      { label: "Recomendar mejor miel 🍯", type: "honey" },
-      { label: "Set de té de regalo 🍵", type: "tea" },
-      { label: "Pago instantáneo PayPal 💳", type: "checkout" }
+      { label: "Miel 🍯", type: "honey" },
+      { label: "Té 🍵", type: "tea" },
+      { label: "Checkout 💳", type: "checkout" }
     ],
-    inputPlaceholder: "Toca un botón arriba o escribe...",
+    inputPlaceholder: "Escribe...",
     send: "Enviar",
-    openCheckout: "Abrir Pago SDK de PayPal",
-    honeyRec: "¡Cambiado al video real del producto Miel!",
-    teaRec: "¡Cambiado al video real del producto Té Tradicional!",
-    adminPortalBtn: "🔒 Admin Login (/admin)",
-    adminTitle: "Panel de Administración Seguro",
-    adminSubtitle: "Ventas, inventario, envíos y gestión de FAQ de IA.",
-    passwordPlaceholder: "Contraseña (Default: admin1234)",
-    loginBtn: "Iniciar Sesión",
-    loginError: "Contraseña incorrecta.",
-    logoutBtn: "Cerrar Sesión",
-    backToStore: "← Volver al inicio",
+    openCheckout: "Abrir pago",
+    honeyRec: "¡Miel video!",
+    teaRec: "¡Té video!",
+    adminPortalBtn: "🔒 Admin",
+    adminTitle: "Admin",
+    adminSubtitle: "Gestión",
+    passwordPlaceholder: "Password",
+    loginBtn: "Login",
+    loginError: "Error",
+    logoutBtn: "Logout",
+    backToStore: "← Volver",
     tabSales: "📊 Ventas",
-    tabInventory: "📦 Inventario en Vivo",
+    tabInventory: "📦 Stock",
     tabShipping: "🚚 Envíos",
-    tabQA: "💬 Editor de FAQ y Q&A de IA",
-    tabVideoEditor: "🎬 Estudio de Video",
-    totalRevenue: "Ingresos Totales",
-    totalOrders: "Pedidos Totales",
-    activeStock: "Stock Activo",
-    orderHistory: "Gestión de Pedidos",
-    noOrders: "No hay pedidos.",
+    tabQA: "💬 FAQ",
+    tabVideoEditor: "🎬 Video",
+    totalRevenue: "Ingresos",
+    totalOrders: "Pedidos",
+    activeStock: "Stock",
+    orderHistory: "Historial",
+    noOrders: "Sin pedidos",
     productNameCol: "Producto",
     priceCol: "Precio",
     stockCol: "Stock",
@@ -328,72 +328,72 @@ const TRANSLATIONS: Record<Language, any> = {
     trackingCol: "Tracking",
     videoAssetCol: "Video",
     actionsCol: "Acción",
-    trackingViewTitle: "📦 Seguimiento de Pedidos en Vivo",
-    orderIdLabel: "ID de Orden",
-    shippingStatusLabel: "Estado de Envío",
-    soundOn: "🔊 Sonido Activo",
-    soundOff: "🔇 Silenciado",
-    lowStockWarning: "⚠️ [Urgente] ¡Stock Bajo!",
-    stockLeft: "Stock Restante: ",
+    trackingViewTitle: "📦 Seguimiento",
+    orderIdLabel: "ID",
+    shippingStatusLabel: "Estado",
+    soundOn: "🔊 Sonido",
+    soundOff: "🔇 Silencio",
+    lowStockWarning: "⚠️ ¡Stock Bajo!",
+    stockLeft: "Stock: ",
     unit: "pcs"
   },
   fr: {
-    marketName: "Festival Ouvert de Yangpyeong",
-    title: "Commerce Agentique IA PayPal en Direct",
-    sandbox: "Mode Sandbox",
+    marketName: "Festival de Yangpyeong",
+    title: "PayPal AI Live Commerce",
+    sandbox: "Sandbox",
     liveStream: "EN DIRECT",
-    aiLiveFeatured: "PRODUIT PHARE IA",
-    payWithPayPal: "Payer avec PayPal",
-    soldOut: "Épuisé (Sold Out)",
-    secureCheckout: "Paiement Sécurisé PayPal",
-    totalAmount: "Montant Total",
-    cancelBack: "Annuler / Retour",
-    paymentCompleted: "Paiement réussi ! Expédition en temps réel lancée.",
-    chatTitle: "Agent Shopping IA & Chat en Direct",
+    aiLiveFeatured: "PHARE IA",
+    payWithPayPal: "Payer",
+    soldOut: "Épuisé",
+    secureCheckout: "Paiement",
+    totalAmount: "Total",
+    cancelBack: "Retour",
+    paymentCompleted: "Paiement réussi !",
+    chatTitle: "Agent IA & Chat",
     online: "En ligne",
-    initialGreeting: "Bienvenue sur le Commerce Agentique IA PayPal ! Regardez en direct avec stock en temps réel.",
+    initialGreeting: "Bienvenue !",
     quickPrompts: [
-      { label: "Recommander du miel 🍯", type: "honey" },
-      { label: "Coffret thé traditionnel 🍵", type: "tea" },
-      { label: "Paiement instantané PayPal 💳", type: "checkout" }
+      { label: "Miel 🍯", type: "honey" },
+      { label: "Thé 🍵", type: "tea" },
+      { label: "Paiement 💳", type: "checkout" }
     ],
-    inputPlaceholder: "Touchez un bouton ou tapez...",
+    inputPlaceholder: "Tapez...",
     send: "Envoyer",
-    openCheckout: "Ouvrir le paiement PayPal SDK",
-    honeyRec: "Passage réussi à la vidéo réelle du Miel !",
-    teaRec: "Passage réussi à la vidéo réelle du Thé Traditionnel !",
-    adminPortalBtn: "🔒 Admin Login (/admin)",
-    adminTitle: "Tableau de Bord Admin Sécurisé",
-    adminSubtitle: "Ventes, stocks, expéditions et gestion des FAQ de l'IA.",
-    passwordPlaceholder: "Mot de passe (Défaut : admin1234)",
+    openCheckout: "Ouvrir",
+    honeyRec: "Vidéo Miel !",
+    teaRec: "Vidéo Thé !",
+    adminPortalBtn: "🔒 Admin",
+    adminTitle: "Admin",
+    adminSubtitle: "Gestion",
+    passwordPlaceholder: "Mot de passe",
     loginBtn: "Connexion",
-    loginError: "Mot de passe incorrect.",
+    loginError: "Erreur",
     logoutBtn: "Déconnexion",
-    backToStore: "← Retour à la Boutique",
+    backToStore: "← Retour",
     tabSales: "📊 Ventes",
-    tabInventory: "📦 Stocks en Direct",
+    tabInventory: "📦 Stock",
     tabShipping: "🚚 Expéditions",
-    tabQA: "💬 Éditeur FAQ & Q&A IA",
-    tabVideoEditor: "🎬 Studio Vidéo",
-    totalRevenue: "Revenu Total",
+    tabQA: "💬 FAQ",
+    tabVideoEditor: "🎬 Vidéo",
+    totalRevenue: "Revenu",
     totalOrders: "Commandes",
-    activeStock: "Stock Total",
-    orderHistory: "Suivi des Commandes",
-    noOrders: "Aucune commande.",
+    activeStock: "Stock",
+    orderHistory: "Historique",
+    noOrders: "Aucune",
     productNameCol: "Produit",
     priceCol: "Prix",
     stockCol: "Stock",
     shippingCol: "Expédition",
-    trackingCol: "Suivi No.",
+    trackingCol: "Suivi",
     videoAssetCol: "Vidéo",
     actionsCol: "Action",
-    trackingViewTitle: "📦 Suivi de Commande en Direct",
-    orderIdLabel: "ID de Commande",
-    shippingStatusLabel: "Statut d'expédition",
-    soundOn: "🔊 Son Activé",
+    trackingViewTitle: "📦 Suivi",
+    orderIdLabel: "ID",
+    shippingStatusLabel: "Statut",
+    soundOn: "🔊 Son",
     soundOff: "🔇 Muet",
-    lowStockWarning: "⚠️ [Urgent] Stock Limité !",
-    stockLeft: "Stock Restant : ",
+    lowStockWarning: "⚠️ Stock Limité !",
+    stockLeft: "Stock : ",
     unit: "pcs"
   }
 };
@@ -734,9 +734,9 @@ export const LiveStreamView: React.FC = () => {
 
   if (isAdminRoute) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col w-full overflow-x-hidden">
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col w-full max-w-full overflow-x-hidden">
         <header className="border-b border-slate-700 px-4 py-3 flex justify-between items-center bg-slate-900/90 backdrop-blur shadow-md w-full">
-          <h1 className="text-base font-bold flex items-center gap-2 truncate">
+          <h1 className="text-sm font-bold flex items-center gap-2 truncate">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
             <span className="truncate">{t.adminTitle}</span>
           </h1>
@@ -1099,47 +1099,56 @@ export const LiveStreamView: React.FC = () => {
     );
   }
 
-  // Main Live Commerce Store View (Mobile Fully Responsive Layout)
+  // Main Live Commerce Store View (Mobile Full-Width Snap Scroll UI/UX)
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col relative w-full overflow-x-hidden box-border">
-      <header className="border-b border-slate-700 px-3 md:px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-3 bg-slate-900/90 backdrop-blur shadow-md w-full box-border">
-        <h1 className="text-sm md:text-lg font-bold flex items-center gap-2 w-full md:w-auto justify-center md:justify-start">
-          <span className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-red-500 animate-pulse shrink-0"></span>
-          <span className="truncate">{t.title}</span>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col w-full max-w-full overflow-x-hidden box-border">
+      {/* Header */}
+      <header className="border-b border-slate-700 px-3 py-2 flex flex-col sm:flex-row justify-between items-center gap-2 bg-slate-900/90 backdrop-blur shadow-md w-full max-w-full box-border shrink-0">
+        <h1 className="text-xs sm:text-sm font-bold flex items-center gap-1.5 w-full sm:w-auto justify-between sm:justify-start">
+          <div className="flex items-center gap-1.5 truncate">
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0"></span>
+            <span className="truncate">{t.title}</span>
+          </div>
+          <span className="text-[10px] bg-blue-600/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-full font-medium shrink-0 sm:hidden">
+            {t.sandbox}
+          </span>
         </h1>
         
-        <div className="flex flex-wrap items-center justify-center gap-2 w-full md:w-auto">
+        <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
           <button
             onClick={() => {
               window.location.hash = "#/admin";
               setIsAdminRoute(true);
             }}
-            className="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow shrink-0"
+            className="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/40 px-2.5 py-1 rounded-md text-[11px] font-semibold transition cursor-pointer flex items-center gap-1 shadow shrink-0"
           >
             <span>{t.adminPortalBtn}</span>
           </button>
 
-          <div className="flex bg-slate-950 border border-slate-700 rounded-lg p-0.5 text-xs overflow-x-auto max-w-full shrink-0">
+          <div className="flex bg-slate-950 border border-slate-700 rounded-md p-0.5 text-xs overflow-x-auto shrink-0">
             {(["ko", "en", "ja", "zh", "es", "fr"] as Language[]).map((l) => (
               <button
                 key={l}
                 onClick={() => setLang(l)}
-                className={`px-2 py-1 rounded-md transition cursor-pointer font-medium uppercase text-[11px] shrink-0 ${lang === l ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"}`}
+                className={`px-2 py-0.5 rounded transition cursor-pointer font-medium uppercase text-[10px] shrink-0 ${lang === l ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"}`}
               >
                 {l === "ko" ? "🇰🇷" : l === "en" ? "EN" : l === "ja" ? "🇯🇵" : l === "zh" ? "中文" : l === "es" ? "ES" : "FR"}
               </button>
             ))}
           </div>
 
-          <span className="text-xs bg-blue-600/20 text-blue-400 border border-blue-500/40 px-2.5 py-1 rounded-full font-medium shrink-0">
+          <span className="text-[11px] bg-blue-600/20 text-blue-400 border border-blue-500/40 px-2.5 py-1 rounded-full font-medium shrink-0 hidden sm:inline-block">
             {t.sandbox}
           </span>
         </div>
       </header>
 
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-4 p-3 md:p-5 max-w-7xl mx-auto w-full items-stretch box-border overflow-hidden">
-        <div className="md:col-span-7 relative h-auto md:h-[660px] bg-slate-900/40 border-2 border-slate-700 rounded-xl p-3 md:p-4 shadow-2xl flex flex-col w-full">
-          <div className="relative w-full h-[360px] md:h-[520px] bg-slate-900 rounded-xl overflow-hidden border-2 border-slate-700 flex items-center justify-center shadow-2xl shrink-0">
+      {/* Main Snap Scroll Container for Mobile / Grid for Desktop */}
+      <div className="flex-1 flex flex-col md:grid md:grid-cols-12 gap-3 p-2 sm:p-4 w-full max-w-full box-border items-stretch md:overflow-hidden snap-y md:snap-none snap-mandatory overflow-y-auto" style={{ height: 'calc(100vh - 55px)' }}>
+        
+        {/* Section 1: Video & Live Commerce Player (Snap Page 1) */}
+        <div className="md:col-span-7 relative min-h-[580px] md:h-full bg-slate-900/40 border border-slate-700/80 rounded-2xl p-3 shadow-xl flex flex-col w-full max-w-full box-border snap-start shrink-0">
+          <div className="relative w-full h-[380px] md:h-[460px] bg-slate-900 rounded-xl overflow-hidden border border-slate-700 flex items-center justify-center shadow-lg shrink-0">
             <video
               ref={videoRef}
               key={activeProduct.id}
@@ -1165,72 +1174,72 @@ export const LiveStreamView: React.FC = () => {
             
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none"></div>
 
-            {/* Top-Left: Live Badge on top, Subtitle Market Name Stacked Below */}
-            <div className="absolute top-3 left-3 z-20 flex flex-col items-start gap-1.5">
-              <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 md:px-2.5 md:py-1 rounded-md animate-pulse uppercase tracking-wider shadow">
+            {/* Top-Left Badges */}
+            <div className="absolute top-3 left-3 z-20 flex flex-col items-start gap-1">
+              <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md animate-pulse uppercase tracking-wider shadow">
                 ● {t.liveStream}
               </span>
-              <span className="bg-black/70 backdrop-blur-md text-slate-200 text-[11px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-md border border-slate-600 font-medium shadow">
+              <span className="bg-black/70 backdrop-blur-md text-slate-200 text-[11px] px-2 py-0.5 rounded-md border border-slate-600 font-medium shadow">
                 {t.marketName}
               </span>
             </div>
 
-            {/* Top-Right: Sound Button on Top, Stock Badge Directly Below */}
-            <div className="absolute top-3 right-3 z-20 flex flex-col items-end gap-1.5 md:gap-2">
+            {/* Top-Right Badges */}
+            <div className="absolute top-3 right-3 z-20 flex flex-col items-end gap-1.5">
               <button
                 onClick={() => setIsAudioMuted(!isAudioMuted)}
-                className="bg-black/80 hover:bg-black text-white text-[11px] md:text-xs font-semibold px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg border border-slate-600 backdrop-blur-md shadow-lg transition cursor-pointer flex items-center gap-1"
+                className="bg-black/80 hover:bg-black text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-slate-600 backdrop-blur-md shadow-lg transition cursor-pointer flex items-center gap-1"
               >
                 <span>{isAudioMuted ? t.soundOff : t.soundOn}</span>
               </button>
 
-              <span className={`text-[11px] md:text-xs font-bold px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg border backdrop-blur-md shadow-lg ${activeProduct.stock <= 0 ? 'bg-red-600/90 text-white border-red-500' : activeProduct.stock <= 5 ? 'bg-amber-600/90 text-white border-amber-500 animate-pulse' : 'bg-black/80 text-amber-300 border-slate-600'}`}>
+              <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border backdrop-blur-md shadow-lg ${activeProduct.stock <= 0 ? 'bg-red-600/90 text-white border-red-500' : activeProduct.stock <= 5 ? 'bg-amber-600/90 text-white border-amber-500 animate-pulse' : 'bg-black/80 text-amber-300 border-slate-600'}`}>
                 {activeProduct.stock <= 0 ? t.soldOut : `🔥 ${t.stockLeft}${activeProduct.stock}${t.unit}`}
               </span>
             </div>
           </div>
 
-          <div className="mt-3 md:absolute md:bottom-4 md:left-4 md:right-4 z-30 w-full">
+          <div className="mt-3 flex-1 flex flex-col justify-end w-full max-w-full box-border">
             {!isCheckingOut && !latestOrder ? (
-              <div className="bg-slate-900/95 backdrop-blur-md p-3 md:p-4 rounded-xl border-2 border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xl animate-fadeIn w-full box-border">
-                <div className="flex items-center gap-3 w-full sm:w-auto">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-xl md:text-2xl shadow-inner shrink-0">
+              <div className="bg-slate-900/95 backdrop-blur-md p-3 rounded-xl border border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 shadow-xl animate-fadeIn w-full box-border">
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  <div className="w-10 h-10 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-xl shadow-inner shrink-0">
                     {activeProduct.icon}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-[10px] md:text-[11px] text-blue-400 font-semibold tracking-wide">{t.aiLiveFeatured}</p>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <p className="text-[10px] text-blue-400 font-semibold tracking-wide">{t.aiLiveFeatured}</p>
                       {activeProduct.stock <= 5 && activeProduct.stock > 0 && (
-                        <span className="text-[9px] md:text-[10px] text-red-400 font-bold bg-red-950/80 px-1.5 py-0.5 rounded border border-red-500/50 animate-pulse">
+                        <span className="text-[9px] text-red-400 font-bold bg-red-950/80 px-1.5 py-0.5 rounded border border-red-500/50 animate-pulse">
                           {t.lowStockWarning} ({activeProduct.stock}{t.unit})
                         </span>
                       )}
                     </div>
-                    <p className="text-xs md:text-sm font-bold text-white truncate">{activeProduct.name[lang]}</p>
-                    <p className="text-[11px] md:text-xs text-slate-300">KRW {activeProduct.price.toLocaleString()} (~${Math.round(activeProduct.price / 1350)} USD)</p>
+                    <p className="text-xs font-bold text-white truncate">{activeProduct.name[lang]}</p>
+                    <p className="text-[11px] text-slate-300">KRW {activeProduct.price.toLocaleString()} (~${Math.round(activeProduct.price / 1350)} USD)</p>
                   </div>
                 </div>
                 {activeProduct.stock > 0 ? (
                   <button 
                     onClick={() => setIsCheckingOut(true)}
-                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-lg text-xs md:text-sm font-semibold transition shadow-lg cursor-pointer shrink-0 border border-blue-400/30 text-center"
+                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-semibold transition shadow-lg cursor-pointer shrink-0 border border-blue-400/30 text-center"
                   >
                     {t.payWithPayPal}
                   </button>
                 ) : (
                   <button 
                     disabled
-                    className="w-full sm:w-auto bg-slate-800 text-slate-500 px-4 py-2 md:px-5 md:py-2.5 rounded-lg text-xs md:text-sm font-bold cursor-not-allowed border border-slate-700 text-center"
+                    className="w-full sm:w-auto bg-slate-800 text-slate-500 px-4 py-2 rounded-lg text-xs font-bold cursor-not-allowed border border-slate-700 text-center"
                   >
                     {t.soldOut}
                   </button>
                 )}
               </div>
             ) : isCheckingOut ? (
-              <div className="bg-slate-900 border-2 border-blue-500/70 p-3 md:p-4 rounded-xl shadow-2xl animate-fadeIn w-full box-border">
+              <div className="bg-slate-900 border border-blue-500/70 p-3 rounded-xl shadow-xl animate-fadeIn w-full box-border">
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-xs font-bold text-blue-400 flex items-center gap-1.5 truncate">
-                    <span>💳</span> <span className="truncate">{t.secureCheckout}: {activeProduct.icon} {activeProduct.name[lang]} ({t.stockLeft}{activeProduct.stock}{t.unit})</span>
+                  <h3 className="text-xs font-bold text-blue-400 flex items-center gap-1 truncate">
+                    <span>💳</span> <span className="truncate">{t.secureCheckout}: {activeProduct.icon} {activeProduct.name[lang]}</span>
                   </h3>
                   <button 
                     onClick={() => setIsCheckingOut(false)}
@@ -1239,8 +1248,8 @@ export const LiveStreamView: React.FC = () => {
                     {t.cancelBack}
                   </button>
                 </div>
-                <p className="text-xs text-slate-300 mb-3">
-                  {t.totalAmount}: KRW {activeProduct.price.toLocaleString()} (~${Math.round(activeProduct.price / 1350)} USD) - Sandbox
+                <p className="text-xs text-slate-300 mb-2">
+                  {t.totalAmount}: KRW {activeProduct.price.toLocaleString()} (~${Math.round(activeProduct.price / 1350)} USD)
                 </p>
                 <PayPalCheckoutButton 
                   amount={Math.round(activeProduct.price / 1350)} 
@@ -1249,9 +1258,9 @@ export const LiveStreamView: React.FC = () => {
                 />
               </div>
             ) : latestOrder ? (
-              <div className="bg-slate-900 border-2 border-emerald-500/70 p-3 md:p-4 rounded-xl shadow-2xl animate-fadeIn flex flex-col gap-3 w-full box-border">
-                <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-                  <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 truncate">
+              <div className="bg-slate-900 border border-emerald-500/70 p-3 rounded-xl shadow-xl animate-fadeIn flex flex-col gap-2.5 w-full box-border">
+                <div className="flex justify-between items-center border-b border-slate-800 pb-1.5">
+                  <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-1 truncate">
                     <span>✅</span> <span className="truncate">{t.trackingViewTitle} (3초 후 자동 닫힘)</span>
                   </h3>
                   <button 
@@ -1263,11 +1272,11 @@ export const LiveStreamView: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+                  <div className="bg-slate-950 p-2 rounded-lg border border-slate-800">
                     <p className="text-[10px] text-slate-400">{t.orderIdLabel}</p>
                     <p className="font-mono font-bold text-blue-400 truncate">{latestOrder.orderId}</p>
                   </div>
-                  <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+                  <div className="bg-slate-950 p-2 rounded-lg border border-slate-800">
                     <p className="text-[10px] text-slate-400">{t.shippingStatusLabel}</p>
                     <p className="font-bold text-amber-400 flex items-center gap-1 truncate">
                       <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping shrink-0"></span>
@@ -1276,12 +1285,12 @@ export const LiveStreamView: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center text-xs">
+                <div className="bg-slate-950 p-2 rounded-lg border border-slate-800 flex justify-between items-center text-xs">
                   <div className="min-w-0 flex-1 truncate">
                     <p className="text-[10px] text-slate-400">운송장 번호 (Tracking No.)</p>
                     <p className="font-mono text-emerald-300 font-bold truncate">{latestOrder.trackingNumber}</p>
                   </div>
-                  <span className="text-[10px] bg-blue-600/20 text-blue-400 border border-blue-500/40 px-2 py-1 rounded shrink-0 ml-2">
+                  <span className="text-[10px] bg-blue-600/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded shrink-0 ml-2">
                     CJ대한통운
                   </span>
                 </div>
@@ -1289,31 +1298,32 @@ export const LiveStreamView: React.FC = () => {
             ) : null}
 
             {checkoutStatus && !latestOrder && (
-              <div className="mt-2 p-3 bg-emerald-950/80 border border-emerald-500/50 rounded-lg text-xs text-emerald-300 font-semibold text-center shadow">
+              <div className="mt-2 p-2.5 bg-emerald-950/80 border border-emerald-500/50 rounded-lg text-xs text-emerald-300 font-semibold text-center shadow">
                 {checkoutStatus}
               </div>
             )}
           </div>
         </div>
 
-        <div className="md:col-span-5 bg-slate-900/80 border-2 border-slate-700 rounded-xl flex flex-col h-[520px] md:h-[660px] shadow-2xl w-full">
-          <div className="p-3.5 border-b border-slate-700 font-semibold text-sm flex justify-between items-center bg-slate-900/90 shrink-0">
+        {/* Section 2: AI Shopping Agent & Live Chat (Snap Page 2) */}
+        <div className="md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-2xl flex flex-col min-h-[520px] md:h-full shadow-xl w-full max-w-full box-border snap-start shrink-0">
+          <div className="p-3 border-b border-slate-700 font-semibold text-xs sm:text-sm flex justify-between items-center bg-slate-900/90 shrink-0">
             <span className="truncate">{t.chatTitle}</span>
             <span className="text-[11px] text-emerald-400 flex items-center gap-1.5 shrink-0">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> {t.online}
             </span>
           </div>
           
-          <div className="flex-1 p-3 md:p-4 overflow-y-auto flex flex-col gap-3 w-full box-border">
+          <div className="flex-1 p-3 overflow-y-auto flex flex-col gap-2.5 w-full max-w-full box-border">
             {messages.map(msg => (
               <div key={msg.id} className={msg.sender === "user" ? "flex flex-col items-end w-full" : "flex flex-col items-start w-full"}>
-                <div className={msg.sender === "user" ? "max-w-[85%] p-3 rounded-xl text-xs md:text-sm bg-blue-600 text-white shadow break-words" : "max-w-[85%] p-3 rounded-xl text-xs md:text-sm bg-slate-800 text-slate-200 border border-slate-700 shadow break-words"}>
+                <div className={msg.sender === "user" ? "max-w-[85%] p-2.5 rounded-xl text-xs sm:text-sm bg-blue-600 text-white shadow break-words" : "max-w-[85%] p-2.5 rounded-xl text-xs sm:text-sm bg-slate-800 text-slate-200 border border-slate-700 shadow break-words"}>
                   {typeof msg.text === "string" ? msg.text : msg.text[lang]}
                 </div>
                 {msg.suggestedProduct && (
-                  <div className="mt-2 w-full max-w-full bg-slate-900 border border-slate-700 p-3 rounded-xl flex flex-col gap-2 shadow-md box-border">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-lg md:text-xl shrink-0">
+                  <div className="mt-2 w-full max-w-full bg-slate-900 border border-slate-700 p-2.5 rounded-xl flex flex-col gap-2 shadow-md box-border">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-lg shrink-0">
                         {msg.suggestedProduct.icon}
                       </div>
                       <div className="text-xs min-w-0 flex-1">
@@ -1330,44 +1340,44 @@ export const LiveStreamView: React.FC = () => {
                           setActiveProduct(msg.suggestedProduct!);
                           setIsCheckingOut(true);
                         }}
-                        className="w-full bg-[#0070BA] hover:bg-[#003087] text-white py-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer shadow border border-blue-400/30"
+                        className="w-full bg-[#0070BA] hover:bg-[#003087] text-white py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer shadow border border-blue-400/30"
                       >
                         <span>{t.openCheckout}</span>
                       </button>
                     ) : (
-                      <button disabled className="w-full bg-slate-800 text-slate-500 py-2 rounded-lg text-xs font-bold cursor-not-allowed">
+                      <button disabled className="w-full bg-slate-800 text-slate-500 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed">
                         {t.soldOut}
                       </button>
                     )}
                   </div>
                 )}
-                <span className="text-[10px] text-slate-500 mt-1">{msg.timestamp}</span>
+                <span className="text-[9px] text-slate-500 mt-0.5">{msg.timestamp}</span>
               </div>
             ))}
           </div>
 
-          <div className="px-3 pt-2 pb-1.5 flex gap-1.5 flex-wrap border-t border-slate-700 bg-slate-900/50 shrink-0 w-full box-border">
+          <div className="px-2.5 pt-1.5 pb-1.5 flex gap-1.5 flex-wrap border-t border-slate-700 bg-slate-900/50 shrink-0 w-full max-w-full box-border">
             {t.quickPrompts.map((p: any, idx: number) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => handleProductSwitch(p.type, p.label)}
-                className="text-[11px] bg-slate-800 hover:bg-slate-700 text-blue-300 border border-slate-600 px-2.5 py-1 rounded-full transition cursor-pointer shadow-sm truncate max-w-full"
+                className="text-[10px] bg-slate-800 hover:bg-slate-700 text-blue-300 border border-slate-600 px-2 py-0.5 rounded-full transition cursor-pointer shadow-sm truncate max-w-full"
               >
                 {p.label}
               </button>
             ))}
           </div>
 
-          <form onSubmit={handleSendMessage} className="p-3 border-t border-slate-700 flex gap-2 bg-slate-900/80 shrink-0 w-full box-border">
+          <form onSubmit={handleSendMessage} className="p-2.5 border-t border-slate-700 flex gap-2 bg-slate-900/80 shrink-0 w-full max-w-full box-border">
             <input
               type="text"
               value={inputText}
               onChange={e => setInputText(e.target.value)}
               placeholder={t.inputPlaceholder}
-              className="flex-1 min-w-0 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs md:text-sm focus:outline-none focus:border-blue-500 text-slate-100"
+              className="flex-1 min-w-0 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs sm:text-sm focus:outline-none focus:border-blue-500 text-slate-100"
             />
-            <button type="submit" className="bg-blue-600 hover:bg-blue-500 px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold transition cursor-pointer shadow border border-blue-400/30 shrink-0">
+            <button type="submit" className="bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition cursor-pointer shadow border border-blue-400/30 shrink-0">
               {t.send}
             </button>
           </form>
