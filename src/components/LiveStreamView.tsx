@@ -1,19 +1,9 @@
-﻿import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
+import { productService, ProductEntity, Language } from "../services/productService";
 
-export type Language = "ko" | "en" | "ja" | "zh" | "es" | "fr";
-
-export interface Product {
-  id: string;
-  name: Record<Language, string>;
-  price: number;
-  currency: string;
-  stock: number;
-  icon: string;
-  videoUrl: string;
-  fallbackVideoUrl: string;
-  description: Record<Language, string>;
-}
+export type { Language };
+export type Product = ProductEntity;
 
 export interface ChatMessage {
   id: string;
@@ -56,46 +46,38 @@ const TRANSLATIONS: Record<Language, any> = {
     paymentCompleted: "결제 완료! 실시간 배송이 시작됩니다.",
     chatTitle: "AI 쇼핑 에이전트 & 실시간 채팅",
     online: "온라인",
-    initialGreeting: "페이팔 AI 에이전틱 커머스에 오신 것을 환영합니다! 라이브 영상을 시청하며 실시간 재고와 함께 간편하게 쇼핑하세요.",
-    quickPrompts: [
-      { label: "프리미엄 꿀 추천해줘 🍯", type: "honey" },
-      { label: "전통차 선물 세트 🍵", type: "tea" },
-      { label: "즉시 페이팔 결제 💳", type: "checkout" }
-    ],
+    initialGreeting: "페이팔 AI 에이전틱 커머스에 오신 것을 환영합니다! 아래 상품 버튼을 누르면 해당 상품의 동영상과 상세 설명을 즉시 확인하실 수 있습니다.",
     inputPlaceholder: "메시지를 입력하세요...",
     send: "전송",
     openCheckout: "페이팔 SDK 결제 열기",
-    honeyRec: "실제 꿀 촬영 영상(honey_demo.mp4)으로 상품 대치가 완료되었습니다!",
-    teaRec: "실제 전통차 촬영 영상(tea_demo.mp4)으로 상품 대치가 완료되었습니다!",
     adminPortalBtn: "🔒 관리자",
-    adminTitle: "보안 관리자 대시보드",
-    adminSubtitle: "매출, 실시간 재고, 배송 관리",
+    adminTitle: "보안 관리자 대시보드 (상품·동영상·재고·FAQ)",
+    adminSubtitle: "PostgreSQL / 로컬 DB 연동 상품 등록, 동영상 매핑 및 실시간 재고 관리",
     passwordPlaceholder: "비밀번호 (admin1234)",
     loginBtn: "로그인",
     loginError: "비밀번호가 올바르지 않습니다.",
     logoutBtn: "로그아웃",
-    backToStore: "← 스토어로",
-    tabSales: "📊 매출",
-    tabInventory: "📦 재고",
-    tabShipping: "🚚 배송",
+    backToStore: "← 라이브 동영상 화면으로",
+    tabInventory: "📦 등록된 상품 및 동영상/재고 목록",
+    tabShipping: "🚚 배송 관리",
     tabQA: "💬 FAQ",
-    tabVideoEditor: "🎬 동영상 편집",
+    tabVideoEditor: "🎬 동영상 편집 스튜디오",
     totalRevenue: "총 매출",
     totalOrders: "총 주문",
     activeStock: "활성 재고",
     orderHistory: "주문 내역",
     noOrders: "주문 내역이 없습니다.",
-    productNameCol: "상품명",
+    productNameCol: "상품명 / 상세설명",
     priceCol: "가격",
     stockCol: "재고",
     shippingCol: "배송",
     trackingCol: "운송장",
-    videoAssetCol: "동영상",
+    videoAssetCol: "매핑된 동영상",
     actionsCol: "관리",
     trackingViewTitle: "📦 주문 및 배송 추적",
     orderIdLabel: "주문 번호",
     shippingStatusLabel: "배송 상태",
-    soundOn: "🔊 소리",
+    soundOn: "🔊 소리 켜기",
     soundOff: "🔇 음소거",
     lowStockWarning: "⚠️ [긴급] 재고 임박!",
     stockLeft: "남은 재고: ",
@@ -115,27 +97,19 @@ const TRANSLATIONS: Record<Language, any> = {
     paymentCompleted: "Payment completed!",
     chatTitle: "AI Shopping Agent & Live Chat",
     online: "Online",
-    initialGreeting: "Welcome to PayPal AI Agentic Commerce! Watch live and shop instantly.",
-    quickPrompts: [
-      { label: "Recommend honey 🍯", type: "honey" },
-      { label: "Gift tea set 🍵", type: "tea" },
-      { label: "Instant checkout 💳", type: "checkout" }
-    ],
+    initialGreeting: "Welcome to PayPal AI Agentic Commerce! Tap a product button below to switch video and view details.",
     inputPlaceholder: "Type a message...",
     send: "Send",
     openCheckout: "Open PayPal Checkout",
-    honeyRec: "Switched to actual Honey video demo!",
-    teaRec: "Switched to actual Tea video demo!",
     adminPortalBtn: "🔒 Admin",
     adminTitle: "Admin Dashboard",
-    adminSubtitle: "Manage revenue, stock & shipping",
+    adminSubtitle: "Manage products, video mapping, stock & shipping",
     passwordPlaceholder: "Password (admin1234)",
     loginBtn: "Login",
     loginError: "Incorrect password.",
     logoutBtn: "Logout",
-    backToStore: "← Back",
-    tabSales: "📊 Sales",
-    tabInventory: "📦 Inventory",
+    backToStore: "← Back to Live Video",
+    tabInventory: "📦 Product & Video Inventory",
     tabShipping: "🚚 Shipping",
     tabQA: "💬 FAQ",
     tabVideoEditor: "🎬 Video Editor",
@@ -144,7 +118,7 @@ const TRANSLATIONS: Record<Language, any> = {
     activeStock: "Stock",
     orderHistory: "Order History",
     noOrders: "No orders yet.",
-    productNameCol: "Product",
+    productNameCol: "Product / Description",
     priceCol: "Price",
     stockCol: "Stock",
     shippingCol: "Shipping",
@@ -174,30 +148,22 @@ const TRANSLATIONS: Record<Language, any> = {
     paymentCompleted: "決済完了！",
     chatTitle: "AI ショッピングエージェント & チャット",
     online: "オンライン",
-    initialGreeting: "PayPal AI エージェンティックコマースへようこそ！",
-    quickPrompts: [
-      { label: "ハチミツ推薦 🍯", type: "honey" },
-      { label: "伝統茶セット 🍵", type: "tea" },
-      { label: "今すぐ決済 💳", type: "checkout" }
-    ],
+    initialGreeting: "PayPal AI エージェンティックコマースへようこそ！下の商品ボタンで動画を切り替えられます。",
     inputPlaceholder: "メッセージを入力...",
     send: "送信",
     openCheckout: "PayPal 決済を開く",
-    honeyRec: "ハチミツ動画に切り替えました！",
-    teaRec: "伝統茶動画に切り替えました！",
     adminPortalBtn: "🔒 管理者",
     adminTitle: "管理者ダッシュボード",
-    adminSubtitle: "売上・在庫管理",
+    adminSubtitle: "商品登録・動画・在庫管理",
     passwordPlaceholder: "パスワード",
     loginBtn: "ログイン",
     loginError: "パスワードが違います。",
     logoutBtn: "ログアウト",
-    backToStore: "← 戻る",
-    tabSales: "📊 売上",
-    tabInventory: "📦 在庫",
+    backToStore: "← ストアに戻る",
+    tabInventory: "📦 在庫・動画管理",
     tabShipping: "🚚 配送",
     tabQA: "💬 FAQ",
-    tabVideoEditor: "🎬 動画",
+    tabVideoEditor: "🎬 動画編集",
     totalRevenue: "総売上",
     totalOrders: "注文数",
     activeStock: "在庫合計",
@@ -233,30 +199,22 @@ const TRANSLATIONS: Record<Language, any> = {
     paymentCompleted: "支付成功！",
     chatTitle: "AI 购物助手 & 实时聊天",
     online: "在线",
-    initialGreeting: "欢迎来到 PayPal AI 智能代理电商！",
-    quickPrompts: [
-      { label: "推荐蜂蜜 🍯", type: "honey" },
-      { label: "传统茶礼盒 🍵", type: "tea" },
-      { label: "立即结账 💳", type: "checkout" }
-    ],
+    initialGreeting: "欢迎来到 PayPal AI 智能代理电商！点击下方商品按钮切换视频。",
     inputPlaceholder: "输入消息...",
     send: "发送",
     openCheckout: "打开结账",
-    honeyRec: "已切换至蜂蜜视频！",
-    teaRec: "已切换至茶视频！",
     adminPortalBtn: "🔒 管理员",
     adminTitle: "管理后台",
-    adminSubtitle: "销售与库存管理",
+    adminSubtitle: "商品注册与库存管理",
     passwordPlaceholder: "密码",
     loginBtn: "登录",
     loginError: "密码错误",
     logoutBtn: "登出",
-    backToStore: "← 返回",
-    tabSales: "📊 销售",
-    tabInventory: "📦 库存",
+    backToStore: "← 返回直播",
+    tabInventory: "📦 库存管理",
     tabShipping: "🚚 物流",
     tabQA: "💬 FAQ",
-    tabVideoEditor: "🎬 视频",
+    tabVideoEditor: "🎬 视频编辑",
     totalRevenue: "收入",
     totalOrders: "订单",
     activeStock: "库存",
@@ -292,17 +250,10 @@ const TRANSLATIONS: Record<Language, any> = {
     paymentCompleted: "¡Pago completado!",
     chatTitle: "Agente IA & Chat",
     online: "En línea",
-    initialGreeting: "¡Bienvenido!",
-    quickPrompts: [
-      { label: "Miel 🍯", type: "honey" },
-      { label: "Té 🍵", type: "tea" },
-      { label: "Checkout 💳", type: "checkout" }
-    ],
+    initialGreeting: "¡Bienvenido! Toca un producto abajo para ver su video.",
     inputPlaceholder: "Escribe...",
     send: "Enviar",
     openCheckout: "Abrir pago",
-    honeyRec: "¡Miel video!",
-    teaRec: "¡Té video!",
     adminPortalBtn: "🔒 Admin",
     adminTitle: "Admin",
     adminSubtitle: "Gestión",
@@ -311,7 +262,6 @@ const TRANSLATIONS: Record<Language, any> = {
     loginError: "Error",
     logoutBtn: "Logout",
     backToStore: "← Volver",
-    tabSales: "📊 Ventas",
     tabInventory: "📦 Stock",
     tabShipping: "🚚 Envíos",
     tabQA: "💬 FAQ",
@@ -351,17 +301,10 @@ const TRANSLATIONS: Record<Language, any> = {
     paymentCompleted: "Paiement réussi !",
     chatTitle: "Agent IA & Chat",
     online: "En ligne",
-    initialGreeting: "Bienvenue !",
-    quickPrompts: [
-      { label: "Miel 🍯", type: "honey" },
-      { label: "Thé 🍵", type: "tea" },
-      { label: "Paiement 💳", type: "checkout" }
-    ],
+    initialGreeting: "Bienvenue ! Touchez un produit ci-dessous pour voir la vidéo.",
     inputPlaceholder: "Tapez...",
     send: "Envoyer",
     openCheckout: "Ouvrir",
-    honeyRec: "Vidéo Miel !",
-    teaRec: "Vidéo Thé !",
     adminPortalBtn: "🔒 Admin",
     adminTitle: "Admin",
     adminSubtitle: "Gestion",
@@ -370,7 +313,6 @@ const TRANSLATIONS: Record<Language, any> = {
     loginError: "Erreur",
     logoutBtn: "Déconnexion",
     backToStore: "← Retour",
-    tabSales: "📊 Ventes",
     tabInventory: "📦 Stock",
     tabShipping: "🚚 Expéditions",
     tabQA: "💬 FAQ",
@@ -398,59 +340,6 @@ const TRANSLATIONS: Record<Language, any> = {
   }
 };
 
-const INITIAL_PRODUCTS: Product[] = [
-  {
-    id: "prod-001",
-    name: {
-      ko: "프리미엄 유기농 꿀 (100% 천연)",
-      en: "Premium Organic Honey (100% Natural)",
-      ja: "プレミアム有機ハチミツ (100%天然)",
-      zh: "优质有机蜂蜜 (100%天然)",
-      es: "Miel Orgánica Premium (100% Natural)",
-      fr: "Miel Bio Premium (100% Naturel)"
-    },
-    price: 35000,
-    currency: "KRW",
-    stock: 4,
-    icon: "🍯",
-    videoUrl: "/videos/honey_demo.mp4",
-    fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-    description: {
-      ko: "실제 유기농 꿀을 들고 촬영한 실전 라이브 시연 영상 매핑 상품",
-      en: "Live demonstration video product filmed with actual organic honey",
-      ja: "実際の有機ハチミツを持って撮影したライブ実演動画マッピング製品",
-      zh: "手持实际有机蜂蜜拍摄的直播演示视频商品",
-      es: "Producto con video de demostración real con miel orgánica",
-      fr: "Produit de démonstration filmé avec du vrai miel bio"
-    }
-  },
-  {
-    id: "prod-002",
-    name: {
-      ko: "핸드메이드 전통차 선물 세트",
-      en: "Handmade Traditional Herbal Tea Set",
-      ja: "ハンドメイド伝統茶ギフトセット",
-      zh: "手工传统茶礼盒",
-      es: "Set de Té Herbal Tradicional Hecho a Mano",
-      fr: "Coffret de Thé Traditionnel Fait Main"
-    },
-    price: 48000,
-    currency: "KRW",
-    stock: 15,
-    icon: "🍵",
-    videoUrl: "/videos/tea_demo.mp4",
-    fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-    description: {
-      ko: "실제 전통차 세트를 들고 촬영한 실전 라이브 시연 영상 매핑 상품",
-      en: "Live demonstration video product filmed with actual traditional tea set",
-      ja: "実際の伝統茶セットを持って撮影したライブ実演動画マッピング製品",
-      zh: "手持实际传统茶具拍摄的直播演示视频商品",
-      es: "Producto con video de demostración real con set de té",
-      fr: "Produit de démonstration filmé avec du vrai thé"
-    }
-  }
-];
-
 const INITIAL_QA_LIST: CustomQARecord[] = [
   {
     id: "qa-1",
@@ -470,16 +359,26 @@ export const LiveStreamView: React.FC = () => {
   const [lang, setLang] = useState<Language>("ko");
   const t = TRANSLATIONS[lang];
 
-  const [isAdminRoute, setIsAdminRoute] = useState<boolean>(
-    window.location.hash.includes("admin") || window.location.pathname.includes("admin")
-  );
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(false);
+  // 새로고침(F5) 시 무조건 동영상 메인 화면으로 시작하도록 초기화
+  const [isAdminRoute, setIsAdminRoute] = useState<boolean>(false);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
+    return sessionStorage.getItem("paypal_admin_auth") === "true";
+  });
   const [adminPassword, setAdminPassword] = useState<string>("");
   const [loginError, setLoginError] = useState<boolean>(false);
 
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [activeProduct, setActiveProduct] = useState<Product | null>(null);
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [qaList, setQaList] = useState<CustomQARecord[]>(INITIAL_QA_LIST);
+
+  // 신규 상품 및 동영상 매핑 등록 폼 상태
+  const [newProdName, setNewProdName] = useState<string>("");
+  const [newProdPrice, setNewProdPrice] = useState<string>("35000");
+  const [newProdStock, setNewProdStock] = useState<string>("10");
+  const [newProdIcon, setNewProdIcon] = useState<string>("🎁");
+  const [newProdVideo, setNewProdVideo] = useState<string>("/videos/honey_demo.mp4");
+  const [newProdDesc, setNewProdDesc] = useState<string>("");
 
   const [newKeyword, setNewKeyword] = useState<string>("");
   const [newQuestion, setNewQuestion] = useState<string>("");
@@ -499,24 +398,36 @@ export const LiveStreamView: React.FC = () => {
       id: "1",
       sender: "ai",
       text: {
-        ko: "페이팔 AI 에이전틱 커머스에 오신 것을 환영합니다! 라이브 영상을 시청하며 실시간 재고와 함께 간편하게 쇼핑하세요.",
-        en: "Welcome to PayPal AI Agentic Commerce! Watch live and shop instantly with real-time stock.",
-        ja: "PayPal AI エージェンティックコマースへようこそ！ライブ映像とリアルタイム在庫でお買い物。",
-        zh: "欢迎来到 PayPal AI 智能代理电商！观看直播并实时查看库存选购商品。",
-        es: "¡Bienvenido al Comercio Agentico IA de PayPal! Mira en vivo con stock en tiempo real.",
-        fr: "Bienvenue sur le Commerce Agentique IA PayPal ! Regardez en direct avec stock en temps réel."
+        ko: TRANSLATIONS.ko.initialGreeting,
+        en: TRANSLATIONS.en.initialGreeting,
+        ja: TRANSLATIONS.ja.initialGreeting,
+        zh: TRANSLATIONS.zh.initialGreeting,
+        es: TRANSLATIONS.es.initialGreeting,
+        fr: TRANSLATIONS.fr.initialGreeting
       },
       timestamp: "Just now"
     }
   ]);
   const [inputText, setInputText] = useState("");
-  const [activeProduct, setActiveProduct] = useState<Product>(products[0]);
   const [checkoutStatus, setCheckoutStatus] = useState<string | null>(null);
   const [latestOrder, setLatestOrder] = useState<OrderRecord | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // 자동 3초 뒤 결제 완료(추적) 창 닫기 및 기본 화면 복귀 타이머
+  // 초기 마운트 시 URL 해시(#/admin)가 남아있더라도 강제로 제거하여 동영상 화면부터 표시
+  useEffect(() => {
+    if (window.location.hash.includes("admin")) {
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+    productService.getProducts().then((list) => {
+      setProducts(list);
+      if (list.length > 0) {
+        setActiveProduct(list[0]);
+      }
+    });
+  }, []);
+
+  // 결제 완료 창 3초 후 자동 닫힘 타이머
   useEffect(() => {
     if (latestOrder) {
       const timer = setTimeout(() => {
@@ -527,63 +438,41 @@ export const LiveStreamView: React.FC = () => {
   }, [latestOrder]);
 
   useEffect(() => {
-    const handleHashChange = () => {
-      setIsAdminRoute(window.location.hash.includes("admin") || window.location.pathname.includes("admin"));
-    };
-    window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
-  }, []);
-
-  useEffect(() => {
-    if (videoRef.current) {
+    if (videoRef.current && activeProduct) {
       videoRef.current.muted = isAudioMuted;
+      videoRef.current.load();
       videoRef.current.play().catch(err => {
         console.warn("Video autoplay prevented:", err);
       });
     }
   }, [activeProduct, isAudioMuted]);
 
-  useEffect(() => {
-    const current = products.find(p => p.id === activeProduct.id);
-    if (current) {
-      setActiveProduct(current);
-    }
-  }, [products]);
-
-  const handleProductSwitch = (type: "honey" | "tea" | "checkout", customText?: string) => {
-    let product = activeProduct;
-    let aiTextRecord = t.honeyRec;
-
-    if (type === "honey") {
-      product = products[0];
-      aiTextRecord = t.honeyRec;
-    } else if (type === "tea") {
-      product = products[1];
-      aiTextRecord = t.teaRec;
-    } else if (type === "checkout") {
-      if (activeProduct.stock <= 0) {
-        alert("해당 상품은 품절되었습니다.");
-        return;
-      }
-      setIsCheckingOut(true);
-      return;
-    }
-
+  const handleSelectProductFromChat = (product: Product) => {
     setActiveProduct(product);
     setIsCheckingOut(false);
 
-    const userText = customText || (type === "honey" ? "프리미엄 꿀 추천해줘 🍯" : "전통차 선물 세트 🍵");
+    const prodTitle = product.name[lang] || product.name.ko;
+    const prodDesc = product.description[lang] || product.description.ko;
+
     const userMsg: ChatMessage = {
       id: Date.now().toString() + "-u",
       sender: "user",
-      text: { ko: userText, en: userText, ja: userText, zh: userText, es: userText, fr: userText },
+      text: {
+        ko: `${product.icon} ${prodTitle} 보여줘`,
+        en: `Show me ${product.icon} ${prodTitle}`,
+        ja: `${product.icon} ${prodTitle} を見せて`,
+        zh: `展示 ${product.icon} ${prodTitle}`,
+        es: `Mostrar ${product.icon} ${prodTitle}`,
+        fr: `Montrer ${product.icon} ${prodTitle}`
+      },
       timestamp: new Date().toLocaleTimeString()
     };
 
+    const aiReply = `🎬 [${prodTitle}] 전용 영상(${product.videoUrl})으로 전환되었습니다!\n📋 상품 상세설명: ${prodDesc}`;
     const aiMsg: ChatMessage = {
-      id: Date.now().toString() + "-ai",
+      id: (Date.now() + 1).toString() + "-ai",
       sender: "ai",
-      text: { ko: aiTextRecord, en: aiTextRecord, ja: aiTextRecord, zh: aiTextRecord, es: aiTextRecord, fr: aiTextRecord },
+      text: { ko: aiReply, en: aiReply, ja: aiReply, zh: aiReply, es: aiReply, fr: aiReply },
       timestamp: new Date().toLocaleTimeString(),
       suggestedProduct: product
     };
@@ -596,9 +485,13 @@ export const LiveStreamView: React.FC = () => {
     if (!inputText.trim()) return;
     
     const query = inputText.toLowerCase();
-    let productType: "honey" | "tea" | "checkout" = "honey";
-
-    let matchedQA = qaList.find(qa => query.includes(qa.keyword.toLowerCase()));
+    const matchedQA = qaList.find(qa => query.includes(qa.keyword.toLowerCase()));
+    const matchedProd = products.find(p =>
+      query.includes((p.name.ko || "").toLowerCase()) ||
+      query.includes((p.name.en || "").toLowerCase()) ||
+      (query.includes("꿀") && p.id === "prod-001") ||
+      (query.includes("차") && p.id === "prod-002")
+    );
 
     const userMsg: ChatMessage = {
       id: Date.now().toString() + "-u",
@@ -607,30 +500,25 @@ export const LiveStreamView: React.FC = () => {
       timestamp: new Date().toLocaleTimeString()
     };
 
-    let aiReplyText = "문의하신 내용에 대해 AI 에이전트가 확인 중입니다.";
-    let suggestedProd = undefined;
+    let aiReplyText = "";
+    let suggestedProd: Product | undefined = undefined;
 
     if (matchedQA) {
       aiReplyText = matchedQA.answer;
-    } else if (query.includes("tea") || query.includes("gift") || query.includes("차") || query.includes("선물") || query.includes("té") || query.includes("茶") || query.includes("お茶") || query.includes("전통차")) {
-      productType = "tea";
-      setActiveProduct(products[1]);
-      aiReplyText = t.teaRec;
-      suggestedProd = products[1];
+    } else if (matchedProd) {
+      setActiveProduct(matchedProd);
+      const desc = matchedProd.description[lang] || matchedProd.description.ko;
+      aiReplyText = `🎬 [${matchedProd.name[lang] || matchedProd.name.ko}] 영상(${matchedProd.videoUrl})으로 전환되었습니다!\n📋 상세설명: ${desc}`;
+      suggestedProd = matchedProd;
     } else if (query.includes("pay") || query.includes("결제") || query.includes("checkout")) {
-      if (activeProduct.stock <= 0) {
+      if (!activeProduct || activeProduct.stock <= 0) {
         aiReplyText = "죄송합니다. 현재 선택하신 상품은 품절되었습니다.";
       } else {
         setIsCheckingOut(true);
         aiReplyText = "페이팔 안전 결제창을 열어드렸습니다. 아래에서 결제를 진행해 주세요.";
       }
-    } else if (query.includes("honey") || query.includes("꿀") || query.includes("허니") || query.includes("miel")) {
-      productType = "honey";
-      setActiveProduct(products[0]);
-      aiReplyText = t.honeyRec;
-      suggestedProd = products[0];
     } else {
-      aiReplyText = `[AI 에이전트 답변] "${inputText}"에 대해 판매자에게 전달되었습니다. 남은 재고 수량(${activeProduct.stock}개)을 참고해 주세요!`;
+      aiReplyText = `[AI 에이전트 답변] "${inputText}" 문의가 접수되었습니다. 아래 상품 버튼을 누르시면 상세설명과 전용 동영상을 보실 수 있습니다.`;
     }
 
     const aiMsg: ChatMessage = {
@@ -645,12 +533,12 @@ export const LiveStreamView: React.FC = () => {
     setInputText("");
   };
 
-  const handlePaymentSuccess = (orderId: string, product: Product) => {
+  const handlePaymentSuccess = async (orderId: string, product: Product) => {
     setCheckoutStatus(t.paymentCompleted);
     
     const newOrder: OrderRecord = {
       orderId,
-      productName: product.name[lang],
+      productName: product.name[lang] || product.name.ko,
       amount: product.price,
       currency: product.currency,
       timestamp: new Date().toLocaleString(),
@@ -661,7 +549,10 @@ export const LiveStreamView: React.FC = () => {
     setOrders(prev => [newOrder, ...prev]);
     setLatestOrder(newOrder);
 
-    setProducts(prev => prev.map(p => p.id === product.id ? { ...p, stock: Math.max(0, p.stock - 1) } : p));
+    const updated = await productService.updateStock(product.id, product.stock - 1);
+    setProducts(updated);
+    const updatedActive = updated.find(p => p.id === product.id);
+    if (updatedActive) setActiveProduct(updatedActive);
     setIsCheckingOut(false);
   };
 
@@ -669,10 +560,49 @@ export const LiveStreamView: React.FC = () => {
     e.preventDefault();
     if (adminPassword === "admin1234") {
       setIsAdminLoggedIn(true);
+      sessionStorage.setItem("paypal_admin_auth", "true");
       setLoginError(false);
     } else {
       setLoginError(true);
     }
+  };
+
+  const handleRegisterNewProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newProdName.trim()) {
+      alert("상품명을 입력해 주세요.");
+      return;
+    }
+    const descText = newProdDesc.trim() || `${newProdName.trim()} 실전 촬영 라이브 시연 영상 매핑 상품`;
+    const updated = await productService.addProduct({
+      name: {
+        ko: newProdName.trim(),
+        en: newProdName.trim(),
+        ja: newProdName.trim(),
+        zh: newProdName.trim(),
+        es: newProdName.trim(),
+        fr: newProdName.trim()
+      },
+      price: Number(newProdPrice) || 35000,
+      currency: "KRW",
+      stock: Number(newProdStock) || 10,
+      icon: newProdIcon.trim() || "🎁",
+      videoUrl: newProdVideo.trim() || "/videos/honey_demo.mp4",
+      fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+      description: {
+        ko: descText,
+        en: descText,
+        ja: descText,
+        zh: descText,
+        es: descText,
+        fr: descText
+      }
+    });
+    setProducts(updated);
+    setActiveProduct(updated[0]);
+    setNewProdName("");
+    setNewProdDesc("");
+    alert(`✅ [${newProdName}] 상품과 동영상(${newProdVideo})이 DB에 등록되었으며, 채팅창 상품 버튼에 즉시 반영되었습니다!`);
   };
 
   const updateShippingStatus = (orderId: string, newStatus: "상품 준비중" | "배송중" | "배송완료") => {
@@ -682,16 +612,38 @@ export const LiveStreamView: React.FC = () => {
     }
   };
 
-  const changeProductVideoMapping = (productId: string) => {
+  const changeProductVideoMapping = async (productId: string) => {
     const newVideo = prompt("해당 상품에 매핑할 실제 동영상 파일 경로를 입력하세요 (예: /videos/honey_demo.mp4 또는 /videos/tea_demo.mp4):", "/videos/honey_demo.mp4");
     if (newVideo) {
-      setProducts(prev => prev.map(p => p.id === productId ? { ...p, videoUrl: newVideo } : p));
-      alert(`상품 동영상 매핑이 성공적으로 변경되었습니다: ${newVideo}`);
+      const updated = await productService.updateVideoMapping(productId, newVideo.trim());
+      setProducts(updated);
+      if (activeProduct && activeProduct.id === productId) {
+        const found = updated.find(p => p.id === productId);
+        if (found) setActiveProduct(found);
+      }
+      alert(`상품 동영상 매핑이 변경되었습니다: ${newVideo}`);
     }
   };
 
-  const updateProductStock = (productId: string, newStock: number) => {
-    setProducts(prev => prev.map(p => p.id === productId ? { ...p, stock: Math.max(0, newStock) } : p));
+  const updateProductStock = async (productId: string, newStock: number) => {
+    const updated = await productService.updateStock(productId, newStock);
+    setProducts(updated);
+    if (activeProduct && activeProduct.id === productId) {
+      const found = updated.find(p => p.id === productId);
+      if (found) setActiveProduct(found);
+    }
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    if (products.length <= 1) {
+      alert("최소 1개의 상품은 유지되어야 합니다.");
+      return;
+    }
+    const updated = await productService.deleteProduct(productId);
+    setProducts(updated);
+    if (activeProduct && activeProduct.id === productId && updated.length > 0) {
+      setActiveProduct(updated[0]);
+    }
   };
 
   const handleAddCustomQA = (e: React.FormEvent) => {
@@ -710,7 +662,7 @@ export const LiveStreamView: React.FC = () => {
     setNewKeyword("");
     setNewQuestion("");
     setNewAnswer("");
-    alert("새로운 소비자 맞춤 답변(FAQ)이 사전 등록 및 챗봇에 연동되었습니다!");
+    alert("새로운 소비자 맞춤 답변(FAQ)이 등록되었습니다!");
   };
 
   const updateCustomQAAnswer = (id: string, newAns: string) => {
@@ -732,6 +684,8 @@ export const LiveStreamView: React.FC = () => {
     }, 1500);
   };
 
+  const currentProd = activeProduct || products[0];
+
   if (isAdminRoute) {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col w-full max-w-full overflow-x-hidden">
@@ -742,10 +696,9 @@ export const LiveStreamView: React.FC = () => {
           </h1>
           <button
             onClick={() => {
-              window.location.hash = "";
               setIsAdminRoute(false);
             }}
-            className="bg-slate-800 hover:bg-slate-700 text-blue-400 border border-blue-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer shadow shrink-0"
+            className="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shadow shrink-0"
           >
             {t.backToStore}
           </button>
@@ -757,12 +710,12 @@ export const LiveStreamView: React.FC = () => {
               <div className="text-center">
                 <span className="text-4xl">🔐</span>
                 <h2 className="text-lg font-bold text-white mt-2">Admin Portal Authentication</h2>
-                <p className="text-xs text-slate-400 mt-1">매출, 재고, 배송 및 AI FAQ 편집을 위한 보안 로그인</p>
+                <p className="text-xs text-slate-400 mt-1">상품 등록, 동영상 매핑, 재고 및 AI FAQ 관리를 위한 보안 로그인</p>
               </div>
 
               <form onSubmit={handleAdminLogin} className="flex flex-col gap-4">
                 <div>
-                  <label className="text-xs text-slate-300 font-semibold mb-1 block">Password</label>
+                  <label className="text-xs text-slate-300 font-semibold mb-1 block">Password (기본: admin1234)</label>
                   <input
                     type="password"
                     value={adminPassword}
@@ -790,12 +743,106 @@ export const LiveStreamView: React.FC = () => {
                   <h2 className="text-base font-bold text-amber-400">{t.adminTitle}</h2>
                   <p className="text-xs text-slate-400 mt-0.5">{t.adminSubtitle}</p>
                 </div>
-                <button
-                  onClick={() => setIsAdminLoggedIn(false)}
-                  className="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0"
-                >
-                  {t.logoutBtn}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIsAdminRoute(false)}
+                    className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0"
+                  >
+                    {t.backToStore}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsAdminLoggedIn(false);
+                      sessionStorage.removeItem("paypal_admin_auth");
+                    }}
+                    className="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0"
+                  >
+                    {t.logoutBtn}
+                  </button>
+                </div>
+              </div>
+
+              {/* [최상단 배치] SECTION 0: 신규 상품 등록 및 동영상 짝 매핑 폼 */}
+              <div className="bg-slate-900 border-2 border-amber-500 p-5 rounded-2xl flex flex-col gap-4 shadow-2xl w-full">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-3 gap-2">
+                  <h3 className="text-base font-bold text-amber-400 flex items-center gap-2">
+                    <span>➕</span> 1. 신규 상품 등록 및 전용 동영상 매핑 (PostgreSQL / Local DB)
+                  </h3>
+                  <span className="text-[11px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded font-semibold">
+                    채팅창 상품 버튼 & 비디오 즉시 연동
+                  </span>
+                </div>
+                <p className="text-xs text-slate-300">
+                  상품 정보(상품명, 가격, 재고, 상세설명)와 미리 촬영한 동영상 파일 경로를 짝지어 등록하면, 라이브 채팅창 하단에 상품 버튼으로 즉시 생성됩니다.
+                </p>
+
+                <form onSubmit={handleRegisterNewProduct} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                  <div className="md:col-span-3">
+                    <label className="text-xs text-slate-300 font-semibold mb-1 block">상품명 *</label>
+                    <input
+                      type="text"
+                      value={newProdName}
+                      onChange={e => setNewProdName(e.target.value)}
+                      placeholder="예: 양평 유기농 산딸기 세트"
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-xs text-slate-300 font-semibold mb-1 block">가격 (KRW) *</label>
+                    <input
+                      type="number"
+                      value={newProdPrice}
+                      onChange={e => setNewProdPrice(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-xs text-slate-300 font-semibold mb-1 block">초기 재고 *</label>
+                    <input
+                      type="number"
+                      value={newProdStock}
+                      onChange={e => setNewProdStock(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                  <div className="md:col-span-1">
+                    <label className="text-xs text-slate-300 font-semibold mb-1 block">아이콘</label>
+                    <input
+                      type="text"
+                      value={newProdIcon}
+                      onChange={e => setNewProdIcon(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-2 text-xs text-center text-white focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                  <div className="md:col-span-4">
+                    <label className="text-xs text-slate-300 font-semibold mb-1 block">매핑할 촬영 동영상 경로 *</label>
+                    <input
+                      type="text"
+                      value={newProdVideo}
+                      onChange={e => setNewProdVideo(e.target.value)}
+                      placeholder="/videos/honey_demo.mp4"
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-amber-300 font-mono focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                  <div className="md:col-span-9">
+                    <label className="text-xs text-slate-300 font-semibold mb-1 block">상품 상세설명 (채팅창 및 상품 카드에 표시됨)</label>
+                    <input
+                      type="text"
+                      value={newProdDesc}
+                      onChange={e => setNewProdDesc(e.target.value)}
+                      placeholder="예: 당일 수확한 100% 친환경 양평 산딸기를 산지 직송으로 보내드립니다."
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                  <div className="md:col-span-3">
+                    <button
+                      type="submit"
+                      className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2.5 rounded-lg text-xs font-bold transition shadow-lg cursor-pointer border border-amber-400/40"
+                    >
+                      💾 상품 + 동영상 DB 등록하기
+                    </button>
+                  </div>
+                </form>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
@@ -818,13 +865,72 @@ export const LiveStreamView: React.FC = () => {
                 </div>
               </div>
 
-              {/* SECTION 1: AI Custom Q&A / FAQ Editor & Manager */}
+              {/* SECTION 1: 등록된 상품 및 동영상/재고 목록 */}
+              <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-4 w-full overflow-hidden">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <span>📦</span> {t.tabInventory} ({products.length}개 등록됨)
+                </h3>
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full text-left text-xs min-w-[600px]">
+                    <thead>
+                      <tr className="border-b border-slate-800 text-slate-400">
+                        <th className="pb-3 font-semibold">{t.productNameCol}</th>
+                        <th className="pb-3 font-semibold">{t.priceCol}</th>
+                        <th className="pb-3 font-semibold">{t.stockCol}</th>
+                        <th className="pb-3 font-semibold">{t.videoAssetCol}</th>
+                        <th className="pb-3 font-semibold text-right">{t.actionsCol}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60">
+                      {products.map(prod => (
+                        <tr key={prod.id} className="hover:bg-slate-800/40">
+                          <td className="py-3.5 pr-3">
+                            <div className="font-bold text-white flex items-center gap-2">
+                              <span className="text-base">{prod.icon}</span> {prod.name[lang] || prod.name.ko}
+                            </div>
+                            <p className="text-[11px] text-slate-400 mt-0.5">{prod.description[lang] || prod.description.ko}</p>
+                          </td>
+                          <td className="py-3.5 text-slate-300 whitespace-nowrap">KRW {prod.price.toLocaleString()}</td>
+                          <td className="py-3.5">
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="number"
+                                value={prod.stock}
+                                onChange={(e) => updateProductStock(prod.id, Number(e.target.value))}
+                                className="w-16 bg-slate-950 border border-slate-700 text-amber-400 font-bold rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500"
+                              />
+                              <span className="text-slate-400">개</span>
+                            </div>
+                          </td>
+                          <td className="py-3.5 text-slate-400">
+                            <code className="bg-slate-950 px-2.5 py-1 rounded text-amber-300 border border-slate-800 font-mono text-[11px]">{prod.videoUrl}</code>
+                          </td>
+                          <td className="py-3.5 text-right whitespace-nowrap space-x-1.5">
+                            <button
+                              onClick={() => changeProductVideoMapping(prod.id)}
+                              className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/40 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer"
+                            >
+                              ⚙️ 동영상 변경
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProduct(prod.id)}
+                              className="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/40 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer"
+                            >
+                              삭제
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* SECTION 2: AI Custom Q&A / FAQ Editor & Manager */}
               <div className="bg-slate-900 border-2 border-blue-500/40 p-4 rounded-xl flex flex-col gap-4 shadow-xl w-full overflow-hidden">
                 <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2">
                   <span>💬</span> {t.tabQA}
                 </h3>
-                <p className="text-xs text-slate-400">소비자가 라이브 채팅에서 질문할 때 즉시 매칭되는 AI 에이전트의 맞춤 답변을 실시간으로 편집하고 관리합니다.</p>
-
                 <div className="overflow-x-auto w-full">
                   <table className="w-full text-left text-xs min-w-[500px]">
                     <thead>
@@ -904,63 +1010,6 @@ export const LiveStreamView: React.FC = () => {
                 </form>
               </div>
 
-              {/* SECTION 2: Real-Time Inventory & Video Mapping Editor */}
-              <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-4 w-full overflow-hidden">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <span>📦</span> {t.tabInventory}
-                </h3>
-                <div className="overflow-x-auto w-full">
-                  <table className="w-full text-left text-xs min-w-[500px]">
-                    <thead>
-                      <tr className="border-b border-slate-800 text-slate-400">
-                        <th className="pb-3 font-semibold">{t.productNameCol}</th>
-                        <th className="pb-3 font-semibold">{t.priceCol}</th>
-                        <th className="pb-3 font-semibold">{t.stockCol}</th>
-                        <th className="pb-3 font-semibold">{t.videoAssetCol}</th>
-                        <th className="pb-3 font-semibold text-right">{t.actionsCol}</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/60">
-                      {products.map(prod => (
-                        <tr key={prod.id} className="hover:bg-slate-800/40">
-                          <td className="py-3.5 font-medium text-white flex items-center gap-2">
-                            <span className="text-base">{prod.icon}</span> {prod.name[lang]}
-                          </td>
-                          <td className="py-3.5 text-slate-300">KRW {prod.price.toLocaleString()}</td>
-                          <td className="py-3.5">
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="number"
-                                value={prod.stock}
-                                onChange={(e) => updateProductStock(prod.id, Number(e.target.value))}
-                                className="w-16 bg-slate-950 border border-slate-700 text-amber-400 font-bold rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500"
-                              />
-                              <span className="text-slate-400">개</span>
-                              {prod.stock <= 5 && prod.stock > 0 && (
-                                <span className="text-[10px] bg-red-600/20 text-red-400 border border-red-500/40 px-2 py-0.5 rounded animate-pulse">
-                                  임박
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="py-3.5 text-slate-400">
-                            <code className="bg-slate-950 px-2.5 py-1 rounded text-amber-300 border border-slate-800 font-mono text-[11px]">{prod.videoUrl}</code>
-                          </td>
-                          <td className="py-3.5 text-right">
-                            <button
-                              onClick={() => changeProductVideoMapping(prod.id)}
-                              className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0"
-                            >
-                              ⚙️ 동영상 변경
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
               {/* SECTION 3: Shipping & Order Management */}
               <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-4 w-full overflow-hidden">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
@@ -1030,8 +1079,9 @@ export const LiveStreamView: React.FC = () => {
                         onChange={(e) => setSelectedVideoAsset(e.target.value)}
                         className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-amber-500"
                       >
-                        <option value="/videos/honey_demo.mp4">🍯 honey_demo.mp4 (프리미엄 꿀 시연 영상)</option>
-                        <option value="/videos/tea_demo.mp4">🍵 tea_demo.mp4 (전통차 세트 시연 영상)</option>
+                        {products.map(p => (
+                          <option key={p.id} value={p.videoUrl}>{p.icon} {p.videoUrl} ({p.name.ko})</option>
+                        ))}
                       </select>
                     </div>
 
@@ -1117,7 +1167,6 @@ export const LiveStreamView: React.FC = () => {
         <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
           <button
             onClick={() => {
-              window.location.hash = "#/admin";
               setIsAdminRoute(true);
             }}
             className="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/40 px-2.5 py-1 rounded-md text-[11px] font-semibold transition cursor-pointer flex items-center gap-1 shadow shrink-0"
@@ -1144,33 +1193,33 @@ export const LiveStreamView: React.FC = () => {
       </header>
 
       {/* Main Snap Scroll Container for Mobile / Grid for Desktop */}
-      <div className="flex-1 flex flex-col md:grid md:grid-cols-12 gap-3 p-2 sm:p-4 w-full max-w-full box-border items-stretch md:overflow-hidden snap-y md:snap-none snap-mandatory overflow-y-auto" style={{ height: 'calc(100vh - 55px)' }}>
+      <div className="flex-1 flex flex-col md:grid md:grid-cols-12 gap-3 p-2 sm:p-4 w-full max-w-full box-border items-stretch md:overflow-hidden snap-y md:snap-none snap-mandatory overflow-y-auto" style={{ height: "calc(100vh - 55px)" }}>
         
         {/* Section 1: Video & Live Commerce Player (Snap Page 1) */}
         <div className="md:col-span-7 relative min-h-[580px] md:h-full bg-slate-900/40 border border-slate-700/80 rounded-2xl p-3 shadow-xl flex flex-col w-full max-w-full box-border snap-start shrink-0">
           <div className="relative w-full h-[380px] md:h-[460px] bg-slate-900 rounded-xl overflow-hidden border border-slate-700 flex items-center justify-center shadow-lg shrink-0">
-            <video
-              ref={videoRef}
-              key={activeProduct.id}
-              autoPlay
-              loop
-              muted={isAudioMuted}
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover object-[center_35%] bg-black"
-              onError={(e) => {
-                console.warn("Local video load failed, switching to fallback stream.");
-                const target = e.currentTarget;
-                if (target.src !== activeProduct.fallbackVideoUrl) {
-                  target.src = activeProduct.fallbackVideoUrl;
-                  target.load();
-                  target.play().catch(err => console.error("Fallback play error:", err));
-                }
-              }}
-            >
-              <source src={activeProduct.videoUrl} type="video/mp4" />
-              <source src={activeProduct.fallbackVideoUrl} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+            {currentProd && (
+              <video
+                ref={videoRef}
+                key={currentProd.id + "-" + currentProd.videoUrl}
+                autoPlay
+                loop
+                muted={isAudioMuted}
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover object-[center_35%] bg-black"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (target.src !== currentProd.fallbackVideoUrl) {
+                    target.src = currentProd.fallbackVideoUrl;
+                    target.load();
+                    target.play().catch(err => console.error("Fallback play error:", err));
+                  }
+                }}
+              >
+                <source src={currentProd.videoUrl} type="video/mp4" />
+                <source src={currentProd.fallbackVideoUrl} type="video/mp4" />
+              </video>
+            )}
             
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none"></div>
 
@@ -1193,33 +1242,36 @@ export const LiveStreamView: React.FC = () => {
                 <span>{isAudioMuted ? t.soundOff : t.soundOn}</span>
               </button>
 
-              <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border backdrop-blur-md shadow-lg ${activeProduct.stock <= 0 ? 'bg-red-600/90 text-white border-red-500' : activeProduct.stock <= 5 ? 'bg-amber-600/90 text-white border-amber-500 animate-pulse' : 'bg-black/80 text-amber-300 border-slate-600'}`}>
-                {activeProduct.stock <= 0 ? t.soldOut : `🔥 ${t.stockLeft}${activeProduct.stock}${t.unit}`}
-              </span>
+              {currentProd && (
+                <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border backdrop-blur-md shadow-lg ${currentProd.stock <= 0 ? "bg-red-600/90 text-white border-red-500" : currentProd.stock <= 5 ? "bg-amber-600/90 text-white border-amber-500 animate-pulse" : "bg-black/80 text-amber-300 border-slate-600"}`}>
+                  {currentProd.stock <= 0 ? t.soldOut : `🔥 ${t.stockLeft}${currentProd.stock}${t.unit}`}
+                </span>
+              )}
             </div>
           </div>
 
           <div className="mt-3 flex-1 flex flex-col justify-end w-full max-w-full box-border">
-            {!isCheckingOut && !latestOrder ? (
+            {currentProd && !isCheckingOut && !latestOrder ? (
               <div className="bg-slate-900/95 backdrop-blur-md p-3 rounded-xl border border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 shadow-xl animate-fadeIn w-full box-border">
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
                   <div className="w-10 h-10 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-xl shadow-inner shrink-0">
-                    {activeProduct.icon}
+                    {currentProd.icon}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <p className="text-[10px] text-blue-400 font-semibold tracking-wide">{t.aiLiveFeatured}</p>
-                      {activeProduct.stock <= 5 && activeProduct.stock > 0 && (
+                      {currentProd.stock <= 5 && currentProd.stock > 0 && (
                         <span className="text-[9px] text-red-400 font-bold bg-red-950/80 px-1.5 py-0.5 rounded border border-red-500/50 animate-pulse">
-                          {t.lowStockWarning} ({activeProduct.stock}{t.unit})
+                          {t.lowStockWarning} ({currentProd.stock}{t.unit})
                         </span>
                       )}
                     </div>
-                    <p className="text-xs font-bold text-white truncate">{activeProduct.name[lang]}</p>
-                    <p className="text-[11px] text-slate-300">KRW {activeProduct.price.toLocaleString()} (~${Math.round(activeProduct.price / 1350)} USD)</p>
+                    <p className="text-xs font-bold text-white truncate">{currentProd.name[lang] || currentProd.name.ko}</p>
+                    <p className="text-[11px] text-slate-400 truncate">{currentProd.description[lang] || currentProd.description.ko}</p>
+                    <p className="text-[11px] text-amber-300 font-semibold mt-0.5">KRW {currentProd.price.toLocaleString()} (~${Math.round(currentProd.price / 1350)} USD)</p>
                   </div>
                 </div>
-                {activeProduct.stock > 0 ? (
+                {currentProd.stock > 0 ? (
                   <button 
                     onClick={() => setIsCheckingOut(true)}
                     className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-semibold transition shadow-lg cursor-pointer shrink-0 border border-blue-400/30 text-center"
@@ -1235,11 +1287,11 @@ export const LiveStreamView: React.FC = () => {
                   </button>
                 )}
               </div>
-            ) : isCheckingOut ? (
+            ) : currentProd && isCheckingOut ? (
               <div className="bg-slate-900 border border-blue-500/70 p-3 rounded-xl shadow-xl animate-fadeIn w-full box-border">
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="text-xs font-bold text-blue-400 flex items-center gap-1 truncate">
-                    <span>💳</span> <span className="truncate">{t.secureCheckout}: {activeProduct.icon} {activeProduct.name[lang]}</span>
+                    <span>💳</span> <span className="truncate">{t.secureCheckout}: {currentProd.icon} {currentProd.name[lang] || currentProd.name.ko}</span>
                   </h3>
                   <button 
                     onClick={() => setIsCheckingOut(false)}
@@ -1249,12 +1301,12 @@ export const LiveStreamView: React.FC = () => {
                   </button>
                 </div>
                 <p className="text-xs text-slate-300 mb-2">
-                  {t.totalAmount}: KRW {activeProduct.price.toLocaleString()} (~${Math.round(activeProduct.price / 1350)} USD)
+                  {t.totalAmount}: KRW {currentProd.price.toLocaleString()} (~${Math.round(currentProd.price / 1350)} USD)
                 </p>
                 <PayPalCheckoutButton 
-                  amount={Math.round(activeProduct.price / 1350)} 
+                  amount={Math.round(currentProd.price / 1350)} 
                   currency="USD" 
-                  onSuccess={(orderId) => handlePaymentSuccess(orderId, activeProduct)} 
+                  onSuccess={(orderId) => handlePaymentSuccess(orderId, currentProd)} 
                 />
               </div>
             ) : latestOrder ? (
@@ -1284,16 +1336,6 @@ export const LiveStreamView: React.FC = () => {
                     </p>
                   </div>
                 </div>
-
-                <div className="bg-slate-950 p-2 rounded-lg border border-slate-800 flex justify-between items-center text-xs">
-                  <div className="min-w-0 flex-1 truncate">
-                    <p className="text-[10px] text-slate-400">운송장 번호 (Tracking No.)</p>
-                    <p className="font-mono text-emerald-300 font-bold truncate">{latestOrder.trackingNumber}</p>
-                  </div>
-                  <span className="text-[10px] bg-blue-600/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded shrink-0 ml-2">
-                    CJ대한통운
-                  </span>
-                </div>
               </div>
             ) : null}
 
@@ -1317,7 +1359,7 @@ export const LiveStreamView: React.FC = () => {
           <div className="flex-1 p-3 overflow-y-auto flex flex-col gap-2.5 w-full max-w-full box-border">
             {messages.map(msg => (
               <div key={msg.id} className={msg.sender === "user" ? "flex flex-col items-end w-full" : "flex flex-col items-start w-full"}>
-                <div className={msg.sender === "user" ? "max-w-[85%] p-2.5 rounded-xl text-xs sm:text-sm bg-blue-600 text-white shadow break-words" : "max-w-[85%] p-2.5 rounded-xl text-xs sm:text-sm bg-slate-800 text-slate-200 border border-slate-700 shadow break-words"}>
+                <div className={msg.sender === "user" ? "max-w-[85%] p-2.5 rounded-xl text-xs sm:text-sm bg-blue-600 text-white shadow break-words whitespace-pre-line" : "max-w-[85%] p-2.5 rounded-xl text-xs sm:text-sm bg-slate-800 text-slate-200 border border-slate-700 shadow break-words whitespace-pre-line"}>
                   {typeof msg.text === "string" ? msg.text : msg.text[lang]}
                 </div>
                 {msg.suggestedProduct && (
@@ -1328,10 +1370,11 @@ export const LiveStreamView: React.FC = () => {
                       </div>
                       <div className="text-xs min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <p className="font-bold text-white truncate">{msg.suggestedProduct.name[lang]}</p>
+                          <p className="font-bold text-white truncate">{msg.suggestedProduct.name[lang] || msg.suggestedProduct.name.ko}</p>
                           <span className="text-[10px] text-amber-400 font-bold shrink-0">{t.stockLeft}{msg.suggestedProduct.stock}{t.unit}</span>
                         </div>
-                        <p className="text-slate-400">KRW {msg.suggestedProduct.price.toLocaleString()} (~${Math.round(msg.suggestedProduct.price / 1350)} USD)</p>
+                        <p className="text-[11px] text-slate-300 mt-0.5">{msg.suggestedProduct.description[lang] || msg.suggestedProduct.description.ko}</p>
+                        <p className="text-amber-300 font-semibold mt-0.5">KRW {msg.suggestedProduct.price.toLocaleString()} (~${Math.round(msg.suggestedProduct.price / 1350)} USD)</p>
                       </div>
                     </div>
                     {msg.suggestedProduct.stock > 0 ? (
@@ -1356,15 +1399,18 @@ export const LiveStreamView: React.FC = () => {
             ))}
           </div>
 
-          <div className="px-2.5 pt-1.5 pb-1.5 flex gap-1.5 flex-wrap border-t border-slate-700 bg-slate-900/50 shrink-0 w-full max-w-full box-border">
-            {t.quickPrompts.map((p: any, idx: number) => (
+          {/* 관리자가 등록한 모든 상품이 상세설명 툴팁과 함께 채팅창 버튼으로 동적 표시됨 */}
+          <div className="px-2.5 pt-2 pb-2 flex gap-1.5 flex-wrap border-t border-slate-700 bg-slate-900/60 shrink-0 w-full max-w-full box-border">
+            {products.map((prod) => (
               <button
-                key={idx}
+                key={prod.id}
                 type="button"
-                onClick={() => handleProductSwitch(p.type, p.label)}
-                className="text-[10px] bg-slate-800 hover:bg-slate-700 text-blue-300 border border-slate-600 px-2 py-0.5 rounded-full transition cursor-pointer shadow-sm truncate max-w-full"
+                onClick={() => handleSelectProductFromChat(prod)}
+                title={prod.description[lang] || prod.description.ko}
+                className={`text-[11px] px-2.5 py-1 rounded-full transition cursor-pointer shadow-sm flex items-center gap-1 border ${currentProd && currentProd.id === prod.id ? "bg-amber-600 text-white border-amber-400 font-bold" : "bg-slate-800 hover:bg-slate-700 text-blue-300 border-slate-600"}`}
               >
-                {p.label}
+                <span>{prod.icon}</span>
+                <span className="truncate max-w-[140px]">{prod.name[lang] || prod.name.ko}</span>
               </button>
             ))}
           </div>
