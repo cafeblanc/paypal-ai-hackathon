@@ -149,7 +149,7 @@ const TRANSLATIONS: Record<Language, any> = {
     adminTitle: "Secure Admin Dashboard (Products, Video, Stock & FAQ)",
     adminSubtitle: "PostgreSQL / Local DB Product Registration, Video Mapping & Live Inventory",
     adminAuthTitle: "Admin Portal Authentication",
-    adminAuthSubtitle: "Secure login for product registration, video mapping, stock & AI FAQ management",
+    adminAuthSubtitle: "Secure login for managing products, video mapping, stock & AI FAQ",
     passwordLabel: "Admin Password (Default: admin1234)",
     passwordPlaceholder: "Enter password (admin1234)",
     loginBtn: "Admin Login",
@@ -184,10 +184,10 @@ const TRANSLATIONS: Record<Language, any> = {
     changeVideoBtn: "⚙️ Change Video",
     deleteBtn: "Delete",
     tabQA: "AI Custom Q&A & FAQ Editor",
-    qaDesc: "Edit and manage custom AI responses matched instantly when shoppers ask questions in live chat.",
+    qaDesc: "Manage real-time AI auto-responses for live chat.",
     qaKeywordCol: "Keyword",
     qaQuestionCol: "Customer Question",
-    qaAnswerCol: "AI Agent Reply (Editable)",
+    qaAnswerCol: "AI Reply (Editable)",
     qaKeywordPlace: "e.g., shipping, discount",
     qaQuestionPlace: "e.g., When will it arrive?",
     qaAnswerPlace: "e.g., Shipped on the same day.",
@@ -253,7 +253,7 @@ const TRANSLATIONS: Record<Language, any> = {
     backToStore: "← ライブ動画画面へ",
     sec0Title: "1. 新規商品登録および専用動画マッピング (PostgreSQL / Local DB)",
     sec0Badge: "チャット商品ボタン＆動画即時連動",
-    sec0Desc: "商品情報と事前撮影した動画ファイルパスをペアで登録すると、チャット下部に商品ボタンとして即時生成されます。",
+    sec0Desc: "商品情報と動画ファイルパスをペアで登録すると、チャット下部に商品ボタンとして即時生成されます。",
     prodNameLabel: "商品名 *",
     prodNamePlaceholder: "例: オーガニックラズベリーセット",
     prodPriceLabel: "価格 (KRW) *",
@@ -279,7 +279,7 @@ const TRANSLATIONS: Record<Language, any> = {
     changeVideoBtn: "⚙️ 動画変更",
     deleteBtn: "削除",
     tabQA: "AIカスタムQ&A・FAQ事前編集",
-    qaDesc: "ライブチャットでの質問に即時マッチングされるAI回答をリアルタイムで編集・管理します。",
+    qaDesc: "ライブチャットでの質問にマッチングされるAI回答を管理します。",
     qaKeywordCol: "認識キーワード",
     qaQuestionCol: "質問タイプ",
     qaAnswerCol: "AI回答内容 (編集可能)",
@@ -374,7 +374,7 @@ const TRANSLATIONS: Record<Language, any> = {
     changeVideoBtn: "⚙️ 更换视频",
     deleteBtn: "删除",
     tabQA: "AI 自定义问答与 FAQ 编辑",
-    qaDesc: "实时编辑和管理消费者在直播聊天中提问时自动匹配的 AI 回复。",
+    qaDesc: "实时编辑和管理消费者提问的 AI 回复。",
     qaKeywordCol: "识别关键词",
     qaQuestionCol: "消费者问题类型",
     qaAnswerCol: "AI 助手回复 (可编辑)",
@@ -451,7 +451,7 @@ const TRANSLATIONS: Record<Language, any> = {
     prodIconLabel: "Icono",
     prodVideoLabel: "Ruta del Video *",
     prodDescLabel: "Descripción del Producto (Visible en chat y tarjeta)",
-    prodDescPlaceholder: "ej., Frambuesas 100% ecológicas cosechadas hoy y enviadas directamente.",
+    prodDescPlaceholder: "ej., Frambuesas 100% ecológicas cosechadas hoy.",
     registerBtn: "💾 Guardar Producto + Video en DB",
     totalRevenue: "Ingresos Totales",
     sandboxSub: "Transacciones de prueba Sandbox",
@@ -469,7 +469,7 @@ const TRANSLATIONS: Record<Language, any> = {
     changeVideoBtn: "⚙️ Cambiar Video",
     deleteBtn: "Eliminar",
     tabQA: "Editor de Respuestas IA y FAQ",
-    qaDesc: "Gestiona las respuestas automáticas del agente IA para preguntas frecuentes en el chat.",
+    qaDesc: "Gestiona las respuestas automáticas del agente IA.",
     qaKeywordCol: "Palabra Clave",
     qaQuestionCol: "Pregunta del Cliente",
     qaAnswerCol: "Respuesta IA (Editable)",
@@ -546,7 +546,7 @@ const TRANSLATIONS: Record<Language, any> = {
     prodIconLabel: "Icône",
     prodVideoLabel: "Chemin de la Vidéo *",
     prodDescLabel: "Description du Produit (Affichée dans le chat et la carte)",
-    prodDescPlaceholder: "ex., Framboises 100% bio récoltées du jour et expédiées directement.",
+    prodDescPlaceholder: "ex., Framboises 100% bio récoltées du jour.",
     registerBtn: "💾 Enregistrer Produit + Vidéo en DB",
     totalRevenue: "Revenu Total",
     sandboxSub: "Transactions de test Sandbox",
@@ -564,7 +564,7 @@ const TRANSLATIONS: Record<Language, any> = {
     changeVideoBtn: "⚙️ Changer Vidéo",
     deleteBtn: "Supprimer",
     tabQA: "Éditeur de Réponses IA & FAQ",
-    qaDesc: "Gérez en temps réel les réponses automatiques de l'agent IA aux questions du chat.",
+    qaDesc: "Gérez en temps réel les réponses automatiques de l'agent IA.",
     qaKeywordCol: "Mot-clé",
     qaQuestionCol: "Question Client",
     qaAnswerCol: "Réponse IA (Modifiable)",
@@ -623,7 +623,6 @@ export const LiveStreamView: React.FC = () => {
   const [lang, setLang] = useState<Language>("ko");
   const t = TRANSLATIONS[lang];
 
-  // 새로고침(F5) 시 무조건 동영상 메인 화면으로 시작
   const [isAdminRoute, setIsAdminRoute] = useState<boolean>(false);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
     return sessionStorage.getItem("paypal_admin_auth") === "true";
@@ -636,7 +635,6 @@ export const LiveStreamView: React.FC = () => {
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [qaList, setQaList] = useState<CustomQARecord[]>(INITIAL_QA_LIST);
 
-  // 신규 상품 및 동영상 매핑 등록 폼 상태
   const [newProdName, setNewProdName] = useState<string>("");
   const [newProdPrice, setNewProdPrice] = useState<string>("35000");
   const [newProdStock, setNewProdStock] = useState<string>("10");
@@ -709,6 +707,7 @@ export const LiveStreamView: React.FC = () => {
     }
   }, [activeProduct, isAudioMuted]);
 
+  // [수정 완료] 채팅창에 동영상 경로 언급 없이 순수 상품명과 상세설명만 출력하도록 개선
   const handleSelectProductFromChat = (product: Product) => {
     setActiveProduct(product);
     setIsCheckingOut(false);
@@ -731,12 +730,12 @@ export const LiveStreamView: React.FC = () => {
     };
 
     const aiReply = {
-      ko: `🎬 [${prodTitle}] 전용 영상(${product.videoUrl})으로 전환되었습니다!\n📋 상세설명: ${prodDesc}`,
-      en: `🎬 Switched to [${prodTitle}] video (${product.videoUrl})!\n📋 Details: ${prodDesc}`,
-      ja: `🎬 [${prodTitle}] 専用動画(${product.videoUrl})に切り替えました！\n📋 詳細: ${prodDesc}`,
-      zh: `🎬 已切换至 [${prodTitle}] 视频 (${product.videoUrl})！\n📋 详情: ${prodDesc}`,
-      es: `🎬 ¡Cambiado al video de [${prodTitle}] (${product.videoUrl})!\n📋 Detalles: ${prodDesc}`,
-      fr: `🎬 Passage à la vidéo [${prodTitle}] (${product.videoUrl}) !\n📋 Détails : ${prodDesc}`
+      ko: `✨ 선택하신 상품: [${product.icon} ${prodTitle}]\n📋 상세설명: ${prodDesc}`,
+      en: `✨ Selected Product: [${product.icon} ${prodTitle}]\n📋 Details: ${prodDesc}`,
+      ja: `✨ 選択された商品: [${product.icon} ${prodTitle}]\n📋 詳細: ${prodDesc}`,
+      zh: `✨ 已选择商品: [${product.icon} ${prodTitle}]\n📋 详情: ${prodDesc}`,
+      es: `✨ Producto seleccionado: [${product.icon} ${prodTitle}]\n📋 Detalles: ${prodDesc}`,
+      fr: `✨ Produit sélectionné : [${product.icon} ${prodTitle}]\n📋 Détails : ${prodDesc}`
     };
 
     const aiMsg: ChatMessage = {
@@ -777,8 +776,9 @@ export const LiveStreamView: React.FC = () => {
       aiReplyText = matchedQA.answer;
     } else if (matchedProd) {
       setActiveProduct(matchedProd);
+      const prodTitle = matchedProd.name[lang] || matchedProd.name.ko;
       const desc = matchedProd.description[lang] || matchedProd.description.ko;
-      aiReplyText = `🎬 [${matchedProd.name[lang] || matchedProd.name.ko}] (${matchedProd.videoUrl})\n📋 ${desc}`;
+      aiReplyText = `✨ [${matchedProd.icon} ${prodTitle}]\n📋 ${desc}`;
       suggestedProd = matchedProd;
     } else if (query.includes("pay") || query.includes("결제") || query.includes("checkout")) {
       if (!activeProduct || activeProduct.stock <= 0) {
@@ -843,7 +843,7 @@ export const LiveStreamView: React.FC = () => {
       alert(t.prodNameLabel);
       return;
     }
-    const descText = newProdDesc.trim() || `${newProdName.trim()} Live Demo Video Product`;
+    const descText = newProdDesc.trim() || `${newProdName.trim()} Live Product`;
     const updated = await productService.addProduct({
       name: {
         ko: newProdName.trim(),
@@ -872,7 +872,7 @@ export const LiveStreamView: React.FC = () => {
     setActiveProduct(updated[0]);
     setNewProdName("");
     setNewProdDesc("");
-    alert(`✅ [${newProdName}] -> (${newProdVideo})`);
+    alert(`✅ [${newProdName}] 등록 완료!`);
   };
 
   const updateShippingStatus = (orderId: string, newStatus: "상품 준비중" | "배송중" | "배송완료") => {
@@ -947,7 +947,6 @@ export const LiveStreamView: React.FC = () => {
 
   const currentProd = activeProduct || products[0];
 
-  // 공통 다국어 선택 버튼 바 컴포넌트
   const renderLanguageSelector = () => (
     <div className="flex bg-slate-950 border border-slate-700 rounded-md p-0.5 text-xs overflow-x-auto shrink-0">
       {(["ko", "en", "ja", "zh", "es", "fr"] as Language[]).map((l) => (
@@ -962,11 +961,10 @@ export const LiveStreamView: React.FC = () => {
     </div>
   );
 
-  // 관리자 화면 (선택된 언어로 100% 일괄 표시)
   if (isAdminRoute) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col w-full max-w-full overflow-x-hidden">
-        <header className="border-b border-slate-700 px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-2 bg-slate-900/90 backdrop-blur shadow-md w-full">
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col w-full max-w-full overflow-x-hidden box-border">
+        <header className="border-b border-slate-700 px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-2 bg-slate-900/90 backdrop-blur shadow-md w-full max-w-full box-border">
           <h1 className="text-sm font-bold flex items-center gap-2 truncate">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
             <span className="truncate">{t.adminTitle}</span>
@@ -982,7 +980,7 @@ export const LiveStreamView: React.FC = () => {
           </div>
         </header>
 
-        <div className="flex-1 max-w-6xl mx-auto w-full p-4 flex flex-col gap-6">
+        <div className="flex-1 max-w-6xl mx-auto w-full p-4 flex flex-col gap-6 box-border">
           {!isAdminLoggedIn ? (
             <div className="max-w-md mx-auto mt-12 bg-slate-900 border-2 border-slate-700 p-6 rounded-2xl shadow-2xl flex flex-col gap-5 w-full">
               <div className="text-center">
@@ -1040,7 +1038,7 @@ export const LiveStreamView: React.FC = () => {
                 </div>
               </div>
 
-              {/* SECTION 0: 신규 상품 등록 및 동영상 짝 매핑 폼 (다국어 완벽 적용) */}
+              {/* SECTION 0: 신규 상품 등록 및 동영상 짝 매핑 폼 */}
               <div className="bg-slate-900 border-2 border-amber-500 p-5 rounded-2xl flex flex-col gap-4 shadow-2xl w-full">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-3 gap-2">
                   <h3 className="text-base font-bold text-amber-400 flex items-center gap-2">
@@ -1207,8 +1205,6 @@ export const LiveStreamView: React.FC = () => {
                 <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2">
                   <span>💬</span> {t.tabQA}
                 </h3>
-                <p className="text-xs text-slate-400">{t.qaDesc}</p>
-
                 <div className="overflow-x-auto w-full">
                   <table className="w-full text-left text-xs min-w-[500px]">
                     <thead>
@@ -1280,7 +1276,7 @@ export const LiveStreamView: React.FC = () => {
                   <div className="md:col-span-1">
                     <button
                       type="submit"
-                      className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-xs font-bold transition cursor-pointer shadow border border-blue-400/30"
+                      className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-xs font-bold transition shadow border border-blue-400/30"
                     >
                       {t.addBtn}
                     </button>
@@ -1427,7 +1423,7 @@ export const LiveStreamView: React.FC = () => {
     );
   }
 
-  // Main Live Commerce Store View (동영상 상하 길이를 빈공간 없이 100% 꽉 채움)
+  // Main Live Commerce Store View (모바일 가로 스크롤 완전 제거 + 동영상 크기 100% 동일 고정 + 빈공간 제거)
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col w-full max-w-full overflow-x-hidden box-border">
       {/* Header */}
@@ -1458,13 +1454,13 @@ export const LiveStreamView: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Snap Scroll Container for Mobile / Grid for Desktop */}
-      <div className="flex-1 flex flex-col md:grid md:grid-cols-12 gap-3 p-2 sm:p-4 w-full max-w-full box-border items-stretch md:overflow-hidden snap-y md:snap-none snap-mandatory overflow-y-auto" style={{ height: "calc(100vh - 52px)" }}>
+      {/* Main Snap Scroll Container for Mobile / Grid for Desktop (가로 스크롤 원천 차단 overflow-x-hidden) */}
+      <div className="flex-1 flex flex-col md:grid md:grid-cols-12 gap-3 p-2 sm:p-4 w-full max-w-full overflow-x-hidden box-border items-stretch md:overflow-hidden snap-y md:snap-none snap-mandatory overflow-y-auto" style={{ height: "calc(100vh - 52px)" }}>
         
-        {/* Section 1: Video & Live Commerce Player (모든 상품 동영상 크기 100% 동일 고정) */}
-        <div className="md:col-span-7 relative h-[calc(100vh-68px)] md:h-full bg-slate-900/40 border border-slate-700/80 rounded-2xl p-2.5 sm:p-3 shadow-xl flex flex-col justify-between w-full max-w-full box-border snap-start shrink-0 overflow-hidden">
+        {/* Section 1: Video & Live Commerce Player */}
+        <div className="md:col-span-7 relative h-[calc(100vh-68px)] md:h-full bg-slate-900/40 border border-slate-700/80 rounded-2xl p-2.5 sm:p-3 shadow-xl flex flex-col justify-between w-full max-w-full overflow-x-hidden box-border snap-start shrink-0">
           
-          {/* 비디오 프레임: 어떤 상품을 선택하든 가로·세로 크기가 1px도 변하지 않도록 절대 높이 및 강제 Cover 적용 */}
+          {/* 비디오 프레임: 모든 상품의 동영상 크기가 1px도 변하지 않도록 동일한 가로·세로 비율 및 object-fit: cover 강제 고정 */}
           <div 
             className="relative w-full bg-black rounded-xl overflow-hidden border border-slate-700 shadow-lg shrink-0"
             style={{ height: isCheckingOut || latestOrder ? "calc(100% - 210px)" : "calc(100% - 96px)" }}
@@ -1484,7 +1480,7 @@ export const LiveStreamView: React.FC = () => {
                   objectPosition: "center 35%",
                   display: "block"
                 }}
-                className=" inset-0 w-full h-full object-cover bg-black"
+                className="absolute inset-0 w-full h-full object-cover bg-black"
                 onError={(e) => {
                   const target = e.currentTarget;
                   if (target.src !== currentProd.fallbackVideoUrl) {
@@ -1528,7 +1524,7 @@ export const LiveStreamView: React.FC = () => {
             </div>
           </div>
 
-          {/* 하단 상품 카드 영역: 높이(86px)를 고정하여 상품 설명 길이에 상관없이 위쪽 동영상 크기가 절대 변하지 않도록 고정 */}
+          {/* 하단 상품 카드 영역 */}
           <div className="mt-2.5 shrink-0 w-full max-w-full box-border">
             {currentProd && !isCheckingOut && !latestOrder ? (
               <div className="bg-slate-900/95 backdrop-blur-md px-3 py-2.5 rounded-xl border border-slate-700 flex items-center justify-between gap-2.5 shadow-xl animate-fadeIn w-full h-[86px] box-border overflow-hidden">
@@ -1627,8 +1623,8 @@ export const LiveStreamView: React.FC = () => {
           </div>
         </div>
 
-        {/* Section 2: AI Shopping Agent & Live Chat (Snap Page 2) */}
-        <div className="md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-2xl flex flex-col h-[calc(100vh-68px)] md:h-full shadow-xl w-full max-w-full box-border snap-start shrink-0">
+        {/* Section 2: AI Shopping Agent & Live Chat (채팅창 순수 상품 설명만 출력) */}
+        <div className="md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-2xl flex flex-col h-[calc(100vh-68px)] md:h-full shadow-xl w-full max-w-full overflow-x-hidden box-border snap-start shrink-0">
           <div className="p-3 border-b border-slate-700 font-semibold text-xs sm:text-sm flex justify-between items-center bg-slate-900/90 shrink-0">
             <span className="truncate">{t.chatTitle}</span>
             <span className="text-[11px] text-emerald-400 flex items-center gap-1.5 shrink-0">
@@ -1679,7 +1675,7 @@ export const LiveStreamView: React.FC = () => {
             ))}
           </div>
 
-          {/* 관리자가 등록한 모든 상품이 상세설명과 함께 채팅창 버튼으로 동적 표시됨 */}
+          {/* 관리자가 등록한 상품 버튼 바 */}
           <div className="px-2.5 pt-2 pb-2 flex gap-1.5 flex-wrap border-t border-slate-700 bg-slate-900/60 shrink-0 w-full max-w-full box-border">
             {products.map((prod) => (
               <button
