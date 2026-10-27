@@ -623,10 +623,10 @@ export const LiveStreamView: React.FC = () => {
   const [lang, setLang] = useState<Language>("ko");
   const t = TRANSLATIONS[lang];
 
-  const [isAdminRoute, setIsAdminRoute] = useState<boolean>(false);
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
-    return sessionStorage.getItem("paypal_admin_auth") === "true";
-  });
+  const [isAdminRoute, setIsAdminRoute] = useState<boolean>(
+    window.location.hash.includes("admin") || window.location.pathname.includes("admin")
+  );
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(false);
   const [adminPassword, setAdminPassword] = useState<string>("");
   const [loginError, setLoginError] = useState<boolean>(false);
 
@@ -660,12 +660,12 @@ export const LiveStreamView: React.FC = () => {
       id: "1",
       sender: "ai",
       text: {
-        ko: TRANSLATIONS.ko.initialGreeting,
-        en: TRANSLATIONS.en.initialGreeting,
-        ja: TRANSLATIONS.ja.initialGreeting,
-        zh: TRANSLATIONS.zh.initialGreeting,
-        es: TRANSLATIONS.es.initialGreeting,
-        fr: TRANSLATIONS.fr.initialGreeting
+        ko: "페이팔 AI 에이전틱 커머스에 오신 것을 환영합니다! 라이브 영상을 시청하며 실시간 재고와 함께 간편하게 쇼핑하세요.",
+        en: "Welcome to PayPal AI Agentic Commerce! Watch live and shop instantly with real-time stock.",
+        ja: "PayPal AI エージェンティックコマースへようこそ！ライブ映像とリアルタイム在庫でお買い物。",
+        zh: "欢迎来到 PayPal AI 智能代理电商！观看直播并实时查看库存选购商品。",
+        es: "¡Bienvenido al Comercio Agentico IA de PayPal! Mira en vivo con stock en tiempo real.",
+        fr: "Bienvenue sur le Commerce Agentique IA PayPal ! Regardez en direct avec stock en temps réel."
       },
       timestamp: "Just now"
     }
@@ -677,37 +677,35 @@ export const LiveStreamView: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
-    if (window.location.hash.includes("admin")) {
-      window.history.replaceState(null, "", window.location.pathname + window.location.search);
-    }
     productService.getProducts().then((list) => {
       setProducts(list);
-      if (list.length > 0) {
-        setActiveProduct(list[0]);
-      }
+      if (list.length > 0) setActiveProduct(list[0]);
     });
   }, []);
 
   useEffect(() => {
-    if (latestOrder) {
-      const timer = setTimeout(() => {
-        setLatestOrder(null);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [latestOrder]);
+    const handleHashChange = () => {
+      setIsAdminRoute(window.location.hash.includes("admin") || window.location.pathname.includes("admin"));
+    };
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
 
   useEffect(() => {
-    if (videoRef.current && activeProduct) {
+    if (videoRef.current) {
       videoRef.current.muted = isAudioMuted;
-      videoRef.current.load();
-      videoRef.current.play().catch(err => {
-        console.warn("Video autoplay prevented:", err);
-      });
+      videoRef.current.play().catch(err => console.warn("Video autoplay prevented:", err));
     }
   }, [activeProduct, isAudioMuted]);
 
-  // [수정 완료] 채팅창에 동영상 경로 언급 없이 순수 상품명과 상세설명만 출력하도록 개선
+  useEffect(() => {
+    if (activeProduct) {
+      const current = products.find(p => p.id === activeProduct.id);
+      if (current) setActiveProduct(current);
+    }
+  }, [products]);
+
+  // [채팅창 정제] 상품 선택 시 동영상 경로 및 불필요한 수식어 제거, 오직 순수 상품명과 상세설명만 출력
   const handleSelectProductFromChat = (product: Product) => {
     setActiveProduct(product);
     setIsCheckingOut(false);
@@ -729,19 +727,11 @@ export const LiveStreamView: React.FC = () => {
       timestamp: new Date().toLocaleTimeString()
     };
 
-    const aiReply = {
-      ko: `✨ 선택하신 상품: [${product.icon} ${prodTitle}]\n📋 상세설명: ${prodDesc}`,
-      en: `✨ Selected Product: [${product.icon} ${prodTitle}]\n📋 Details: ${prodDesc}`,
-      ja: `✨ 選択された商品: [${product.icon} ${prodTitle}]\n📋 詳細: ${prodDesc}`,
-      zh: `✨ 已选择商品: [${product.icon} ${prodTitle}]\n📋 详情: ${prodDesc}`,
-      es: `✨ Producto seleccionado: [${product.icon} ${prodTitle}]\n📋 Detalles: ${prodDesc}`,
-      fr: `✨ Produit sélectionné : [${product.icon} ${prodTitle}]\n📋 Détails : ${prodDesc}`
-    };
-
+    const aiReplyText = `✨ [${product.icon} ${prodTitle}]\n📋 ${prodDesc}`;
     const aiMsg: ChatMessage = {
-      id: (Date.now() + 1).toString() + "-ai",
+      id: Date.now().toString() + "-ai",
       sender: "ai",
-      text: aiReply,
+      text: { ko: aiReplyText, en: aiReplyText, ja: aiReplyText, zh: aiReplyText, es: aiReplyText, fr: aiReplyText },
       timestamp: new Date().toLocaleTimeString(),
       suggestedProduct: product
     };
@@ -769,7 +759,7 @@ export const LiveStreamView: React.FC = () => {
       timestamp: new Date().toLocaleTimeString()
     };
 
-    let aiReplyText = "";
+    let aiReplyText = "문의하신 내용에 대해 AI 에이전트가 확인 중입니다.";
     let suggestedProd: Product | undefined = undefined;
 
     if (matchedQA) {
@@ -782,13 +772,13 @@ export const LiveStreamView: React.FC = () => {
       suggestedProd = matchedProd;
     } else if (query.includes("pay") || query.includes("결제") || query.includes("checkout")) {
       if (!activeProduct || activeProduct.stock <= 0) {
-        aiReplyText = t.soldOut;
+        aiReplyText = "죄송합니다. 현재 선택하신 상품은 품절되었습니다.";
       } else {
         setIsCheckingOut(true);
-        aiReplyText = t.secureCheckout;
+        aiReplyText = "페이팔 안전 결제창을 열어드렸습니다.";
       }
     } else {
-      aiReplyText = `[AI] "${inputText}" - ${t.stockLeft}${activeProduct ? activeProduct.stock : 0}${t.unit}`;
+      aiReplyText = `[AI 에이전트 답변] "${inputText}" 문의가 접수되었습니다.`;
     }
 
     const aiMsg: ChatMessage = {
@@ -830,7 +820,6 @@ export const LiveStreamView: React.FC = () => {
     e.preventDefault();
     if (adminPassword === "admin1234") {
       setIsAdminLoggedIn(true);
-      sessionStorage.setItem("paypal_admin_auth", "true");
       setLoginError(false);
     } else {
       setLoginError(true);
@@ -840,39 +829,24 @@ export const LiveStreamView: React.FC = () => {
   const handleRegisterNewProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProdName.trim()) {
-      alert(t.prodNameLabel);
+      alert("상품명을 입력해 주세요.");
       return;
     }
-    const descText = newProdDesc.trim() || `${newProdName.trim()} Live Product`;
+    const descText = newProdDesc.trim() || `${newProdName.trim()} 등록 상품`;
     const updated = await productService.addProduct({
-      name: {
-        ko: newProdName.trim(),
-        en: newProdName.trim(),
-        ja: newProdName.trim(),
-        zh: newProdName.trim(),
-        es: newProdName.trim(),
-        fr: newProdName.trim()
-      },
+      name: { ko: newProdName, en: newProdName, ja: newProdName, zh: newProdName, es: newProdName, fr: newProdName },
       price: Number(newProdPrice) || 35000,
       currency: "KRW",
       stock: Number(newProdStock) || 10,
-      icon: newProdIcon.trim() || "🎁",
-      videoUrl: newProdVideo.trim() || "/videos/honey_demo.mp4",
+      icon: newProdIcon || "🎁",
+      videoUrl: newProdVideo || "/videos/honey_demo.mp4",
       fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-      description: {
-        ko: descText,
-        en: descText,
-        ja: descText,
-        zh: descText,
-        es: descText,
-        fr: descText
-      }
+      description: { ko: descText, en: descText, ja: descText, zh: descText, es: descText, fr: descText }
     });
     setProducts(updated);
-    setActiveProduct(updated[0]);
     setNewProdName("");
     setNewProdDesc("");
-    alert(`✅ [${newProdName}] 등록 완료!`);
+    alert("새로운 상품이 등록되었습니다!");
   };
 
   const updateShippingStatus = (orderId: string, newStatus: "상품 준비중" | "배송중" | "배송완료") => {
@@ -883,45 +857,29 @@ export const LiveStreamView: React.FC = () => {
   };
 
   const changeProductVideoMapping = async (productId: string) => {
-    const newVideo = prompt(t.prodVideoLabel, "/videos/honey_demo.mp4");
+    const newVideo = prompt("동영상 경로 입력:", "/videos/honey_demo.mp4");
     if (newVideo) {
       const updated = await productService.updateVideoMapping(productId, newVideo.trim());
       setProducts(updated);
-      if (activeProduct && activeProduct.id === productId) {
-        const found = updated.find(p => p.id === productId);
-        if (found) setActiveProduct(found);
-      }
     }
   };
 
   const updateProductStock = async (productId: string, newStock: number) => {
     const updated = await productService.updateStock(productId, newStock);
     setProducts(updated);
-    if (activeProduct && activeProduct.id === productId) {
-      const found = updated.find(p => p.id === productId);
-      if (found) setActiveProduct(found);
-    }
   };
 
   const handleDeleteProduct = async (productId: string) => {
     if (products.length <= 1) return;
     const updated = await productService.deleteProduct(productId);
     setProducts(updated);
-    if (activeProduct && activeProduct.id === productId && updated.length > 0) {
-      setActiveProduct(updated[0]);
-    }
+    if (activeProduct && activeProduct.id === productId) setActiveProduct(updated[0]);
   };
 
   const handleAddCustomQA = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newKeyword.trim() || !newAnswer.trim()) return;
-    const newQa: CustomQARecord = {
-      id: "qa-" + Date.now(),
-      keyword: newKeyword.trim(),
-      question: newQuestion.trim() || newKeyword.trim(),
-      answer: newAnswer.trim()
-    };
-    setQaList(prev => [...prev, newQa]);
+    setQaList(prev => [...prev, { id: "qa-" + Date.now(), keyword: newKeyword.trim(), question: newQuestion.trim() || newKeyword.trim(), answer: newAnswer.trim() }]);
     setNewKeyword("");
     setNewQuestion("");
     setNewAnswer("");
@@ -935,63 +893,39 @@ export const LiveStreamView: React.FC = () => {
     setQaList(prev => prev.filter(q => q.id !== id));
   };
 
-  const runVideoEditorCompression = () => {
-    setIsProcessing(true);
-    setProcessLog(`[FFmpeg] Loading asset: ${selectedVideoAsset} ...\n[FFmpeg] Applying CRF compression (${compressionCrf}), Speed: ${videoSpeed}x ...`);
-    
-    setTimeout(() => {
-      setProcessLog(prev => prev + `\n[FFmpeg] Encoding video stream (libx264) & optimizing moov atom for web streaming...\n[Success] Processed video rendered and saved to public/videos/!`);
-      setIsProcessing(false);
-    }, 1500);
-  };
-
   const currentProd = activeProduct || products[0];
-
-  const renderLanguageSelector = () => (
-    <div className="flex bg-slate-950 border border-slate-700 rounded-md p-0.5 text-xs overflow-x-auto shrink-0">
-      {(["ko", "en", "ja", "zh", "es", "fr"] as Language[]).map((l) => (
-        <button
-          key={l}
-          onClick={() => setLang(l)}
-          className={`px-2 py-0.5 rounded transition cursor-pointer font-medium uppercase text-[10px] shrink-0 ${lang === l ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"}`}
-        >
-          {l === "ko" ? "🇰🇷 한국어" : l === "en" ? "🇺🇸 EN" : l === "ja" ? "🇯🇵 日本語" : l === "zh" ? "🇨🇳 中文" : l === "es" ? "🇪🇸 ES" : "🇫🇷 FR"}
-        </button>
-      ))}
-    </div>
-  );
 
   if (isAdminRoute) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col w-full max-w-full overflow-x-hidden box-border">
-        <header className="border-b border-slate-700 px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-2 bg-slate-900/90 backdrop-blur shadow-md w-full max-w-full box-border">
-          <h1 className="text-sm font-bold flex items-center gap-2 truncate">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
-            <span className="truncate">{t.adminTitle}</span>
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+        <header className="border-b border-slate-700 px-6 py-3 flex justify-between items-center bg-slate-900/90 backdrop-blur shadow-md">
+          <h1 className="text-lg font-bold flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-amber-500 animate-pulse"></span>
+            {t.adminTitle}
           </h1>
-          <div className="flex items-center gap-2 flex-wrap justify-end">
-            {renderLanguageSelector()}
-            <button
-              onClick={() => setIsAdminRoute(false)}
-              className="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shadow shrink-0"
-            >
-              {t.backToStore}
-            </button>
-          </div>
+          <button
+            onClick={() => {
+              window.location.hash = "";
+              setIsAdminRoute(false);
+            }}
+            className="bg-slate-800 hover:bg-slate-700 text-blue-400 border border-blue-500/40 px-4 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer shadow"
+          >
+            {t.backToStore}
+          </button>
         </header>
 
-        <div className="flex-1 max-w-6xl mx-auto w-full p-4 flex flex-col gap-6 box-border">
+        <div className="flex-1 max-w-6xl mx-auto w-full p-6 flex flex-col gap-6">
           {!isAdminLoggedIn ? (
-            <div className="max-w-md mx-auto mt-12 bg-slate-900 border-2 border-slate-700 p-6 rounded-2xl shadow-2xl flex flex-col gap-5 w-full">
+            <div className="max-w-md mx-auto mt-20 bg-slate-900 border-2 border-slate-700 p-8 rounded-2xl shadow-2xl flex flex-col gap-5">
               <div className="text-center">
                 <span className="text-4xl">🔐</span>
-                <h2 className="text-lg font-bold text-white mt-2">{t.adminAuthTitle}</h2>
-                <p className="text-xs text-slate-400 mt-1">{t.adminAuthSubtitle}</p>
+                <h2 className="text-xl font-bold text-white mt-2">Admin Portal Authentication</h2>
+                <p className="text-xs text-slate-400 mt-1">보안 관리자 로그인</p>
               </div>
 
               <form onSubmit={handleAdminLogin} className="flex flex-col gap-4">
                 <div>
-                  <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.passwordLabel}</label>
+                  <label className="text-xs text-slate-300 font-semibold mb-1 block">Password (admin1234)</label>
                   <input
                     type="password"
                     value={adminPassword}
@@ -1001,420 +935,77 @@ export const LiveStreamView: React.FC = () => {
                     autoFocus
                   />
                 </div>
-                {loginError && (
-                  <p className="text-xs text-red-400 font-medium">{t.loginError}</p>
-                )}
-                <button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-lg text-sm font-bold transition shadow-lg cursor-pointer border border-blue-400/30"
-                >
+                {loginError && <p className="text-xs text-red-400 font-medium">{t.loginError}</p>}
+                <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-lg text-sm font-bold transition shadow-lg cursor-pointer">
                   {t.loginBtn}
                 </button>
               </form>
             </div>
           ) : (
-            <div className="flex flex-col gap-6 animate-fadeIn w-full">
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-900 border border-slate-800 p-4 rounded-xl gap-3">
-                <div>
-                  <h2 className="text-base font-bold text-amber-400">{t.adminTitle}</h2>
-                  <p className="text-xs text-slate-400 mt-0.5">{t.adminSubtitle}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setIsAdminRoute(false)}
-                    className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0"
-                  >
-                    {t.backToStore}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsAdminLoggedIn(false);
-                      sessionStorage.removeItem("paypal_admin_auth");
-                    }}
-                    className="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0"
-                  >
-                    {t.logoutBtn}
-                  </button>
-                </div>
-              </div>
-
-              {/* SECTION 0: 신규 상품 등록 및 동영상 짝 매핑 폼 */}
-              <div className="bg-slate-900 border-2 border-amber-500 p-5 rounded-2xl flex flex-col gap-4 shadow-2xl w-full">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-3 gap-2">
-                  <h3 className="text-base font-bold text-amber-400 flex items-center gap-2">
-                    <span>➕</span> {t.sec0Title}
-                  </h3>
-                  <span className="text-[11px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded font-semibold">
-                    {t.sec0Badge}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-300">{t.sec0Desc}</p>
-
+            <div className="flex flex-col gap-6 animate-fadeIn">
+              <div className="bg-slate-900 border-2 border-amber-500 p-6 rounded-2xl shadow-2xl flex flex-col gap-4">
+                <h3 className="text-base font-bold text-amber-400">✨ 신규 상품 및 동영상 매핑 등록</h3>
                 <form onSubmit={handleRegisterNewProduct} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                   <div className="md:col-span-3">
-                    <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.prodNameLabel}</label>
-                    <input
-                      type="text"
-                      value={newProdName}
-                      onChange={e => setNewProdName(e.target.value)}
-                      placeholder={t.prodNamePlaceholder}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
-                    />
+                    <label className="text-xs text-slate-300 mb-1 block">상품명</label>
+                    <input type="text" value={newProdName} onChange={e => setNewProdName(e.target.value)} placeholder="예: 유기농 산딸기" className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.prodPriceLabel}</label>
-                    <input
-                      type="number"
-                      value={newProdPrice}
-                      onChange={e => setNewProdPrice(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
-                    />
+                    <label className="text-xs text-slate-300 mb-1 block">가격 (KRW)</label>
+                    <input type="number" value={newProdPrice} onChange={e => setNewProdPrice(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.prodStockLabel}</label>
-                    <input
-                      type="number"
-                      value={newProdStock}
-                      onChange={e => setNewProdStock(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
-                    />
-                  </div>
-                  <div className="md:col-span-1">
-                    <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.prodIconLabel}</label>
-                    <input
-                      type="text"
-                      value={newProdIcon}
-                      onChange={e => setNewProdIcon(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-2 text-xs text-center text-white focus:outline-none focus:border-amber-500"
-                    />
-                  </div>
-                  <div className="md:col-span-4">
-                    <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.prodVideoLabel}</label>
-                    <input
-                      type="text"
-                      value={newProdVideo}
-                      onChange={e => setNewProdVideo(e.target.value)}
-                      placeholder="/videos/honey_demo.mp4"
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-amber-300 font-mono focus:outline-none focus:border-amber-500"
-                    />
-                  </div>
-                  <div className="md:col-span-9">
-                    <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.prodDescLabel}</label>
-                    <input
-                      type="text"
-                      value={newProdDesc}
-                      onChange={e => setNewProdDesc(e.target.value)}
-                      placeholder={t.prodDescPlaceholder}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
-                    />
+                    <label className="text-xs text-slate-300 mb-1 block">재고</label>
+                    <input type="number" value={newProdStock} onChange={e => setNewProdStock(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" />
                   </div>
                   <div className="md:col-span-3">
-                    <button
-                      type="submit"
-                      className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2.5 rounded-lg text-xs font-bold transition shadow-lg cursor-pointer border border-amber-400/40"
-                    >
-                      {t.registerBtn}
-                    </button>
+                    <label className="text-xs text-slate-300 mb-1 block">동영상 경로</label>
+                    <input type="text" value={newProdVideo} onChange={e => setNewProdVideo(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-amber-300 font-mono" />
+                  </div>
+                  <div className="md:col-span-1">
+                    <label className="text-xs text-slate-300 mb-1 block">아이콘</label>
+                    <input type="text" value={newProdIcon} onChange={e => setNewProdIcon(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-center text-white" />
+                  </div>
+                  <div className="md:col-span-1">
+                    <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-xs font-bold cursor-pointer">등록</button>
+                  </div>
+                  <div className="md:col-span-12">
+                    <label className="text-xs text-slate-300 mb-1 block">상세설명</label>
+                    <input type="text" value={newProdDesc} onChange={e => setNewProdDesc(e.target.value)} placeholder="상품 상세 설명 입력" className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" />
                   </div>
                 </form>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-                <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-1 shadow">
-                  <p className="text-xs text-slate-400 font-medium">{t.totalRevenue}</p>
-                  <p className="text-xl font-bold text-emerald-400">
-                    KRW {orders.reduce((sum, o) => sum + o.amount, 0).toLocaleString()}
-                  </p>
-                  <p className="text-[10px] text-slate-500">{t.sandboxSub}</p>
-                </div>
-                <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-1 shadow">
-                  <p className="text-xs text-slate-400 font-medium">{t.totalOrders}</p>
-                  <p className="text-xl font-bold text-blue-400">{orders.length} {t.orderUnit}</p>
-                  <p className="text-[10px] text-slate-500">{t.ordersSub}</p>
-                </div>
-                <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-1 shadow">
-                  <p className="text-xs text-slate-400 font-medium">{t.activeStock}</p>
-                  <p className="text-xl font-bold text-amber-400">{products.reduce((sum, p) => sum + p.stock, 0)} {t.unit}</p>
-                  <p className="text-[10px] text-slate-500">{t.stockSub}</p>
-                </div>
-              </div>
-
-              {/* SECTION 1: 등록된 상품 및 동영상/재고 목록 */}
-              <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-4 w-full overflow-hidden">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <span>📦</span> {t.tabInventory} ({products.length}{t.registeredCount})
-                </h3>
-                <div className="overflow-x-auto w-full">
-                  <table className="w-full text-left text-xs min-w-[600px]">
-                    <thead>
-                      <tr className="border-b border-slate-800 text-slate-400">
-                        <th className="pb-3 font-semibold">{t.productNameCol}</th>
-                        <th className="pb-3 font-semibold">{t.priceCol}</th>
-                        <th className="pb-3 font-semibold">{t.stockCol}</th>
-                        <th className="pb-3 font-semibold">{t.videoAssetCol}</th>
-                        <th className="pb-3 font-semibold text-right">{t.actionsCol}</th>
+              {/* 상품 목록 관리 */}
+              <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl flex flex-col gap-4">
+                <h3 className="text-sm font-bold text-white">📦 상품 및 재고/동영상 관리</h3>
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-slate-400">
+                      <th className="pb-3">상품명 / 설명</th>
+                      <th className="pb-3">가격</th>
+                      <th className="pb-3">재고</th>
+                      <th className="pb-3">동영상 경로</th>
+                      <th className="pb-3 text-right">관리</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60">
+                    {products.map(p => (
+                      <tr key={p.id}>
+                        <td className="py-3 font-bold text-white">{p.icon} {p.name[lang] || p.name.ko}</td>
+                        <td className="py-3 text-slate-300">KRW {p.price.toLocaleString()}</td>
+                        <td className="py-3">
+                          <input type="number" value={p.stock} onChange={e => updateProductStock(p.id, Number(e.target.value))} className="w-16 bg-slate-950 border border-slate-700 text-amber-400 font-bold rounded p-1 text-xs" />
+                        </td>
+                        <td className="py-3 font-mono text-amber-300">{p.videoUrl}</td>
+                        <td className="py-3 text-right space-x-2">
+                          <button onClick={() => changeVideoMapping(p.id)} className="bg-blue-600/20 text-blue-400 px-2.5 py-1 rounded text-xs">동영상 변경</button>
+                          <button onClick={() => handleDeleteProduct(p.id)} className="bg-red-600/20 text-red-400 px-2.5 py-1 rounded text-xs">삭제</button>
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/60">
-                      {products.map(prod => (
-                        <tr key={prod.id} className="hover:bg-slate-800/40">
-                          <td className="py-3.5 pr-3">
-                            <div className="font-bold text-white flex items-center gap-2">
-                              <span className="text-base">{prod.icon}</span> {prod.name[lang] || prod.name.ko}
-                            </div>
-                            <p className="text-[11px] text-slate-400 mt-0.5">{prod.description[lang] || prod.description.ko}</p>
-                          </td>
-                          <td className="py-3.5 text-slate-300 whitespace-nowrap">KRW {prod.price.toLocaleString()}</td>
-                          <td className="py-3.5">
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="number"
-                                value={prod.stock}
-                                onChange={(e) => updateProductStock(prod.id, Number(e.target.value))}
-                                className="w-16 bg-slate-950 border border-slate-700 text-amber-400 font-bold rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500"
-                              />
-                              <span className="text-slate-400">{t.unit}</span>
-                            </div>
-                          </td>
-                          <td className="py-3.5 text-slate-400">
-                            <code className="bg-slate-950 px-2.5 py-1 rounded text-amber-300 border border-slate-800 font-mono text-[11px]">{prod.videoUrl}</code>
-                          </td>
-                          <td className="py-3.5 text-right whitespace-nowrap space-x-1.5">
-                            <button
-                              onClick={() => changeProductVideoMapping(prod.id)}
-                              className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/40 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer"
-                            >
-                              {t.changeVideoBtn}
-                            </button>
-                            <button
-                              onClick={() => handleDeleteProduct(prod.id)}
-                              className="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/40 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer"
-                            >
-                              {t.deleteBtn}
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* SECTION 2: AI Custom Q&A / FAQ Editor & Manager */}
-              <div className="bg-slate-900 border-2 border-blue-500/40 p-4 rounded-xl flex flex-col gap-4 shadow-xl w-full overflow-hidden">
-                <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2">
-                  <span>💬</span> {t.tabQA}
-                </h3>
-                <div className="overflow-x-auto w-full">
-                  <table className="w-full text-left text-xs min-w-[500px]">
-                    <thead>
-                      <tr className="border-b border-slate-800 text-slate-400">
-                        <th className="pb-3 font-semibold">{t.qaKeywordCol}</th>
-                        <th className="pb-3 font-semibold">{t.qaQuestionCol}</th>
-                        <th className="pb-3 font-semibold">{t.qaAnswerCol}</th>
-                        <th className="pb-3 font-semibold text-right">{t.actionsCol}</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/60">
-                      {qaList.map(qa => (
-                        <tr key={qa.id} className="hover:bg-slate-800/40">
-                          <td className="py-3 font-mono font-bold text-amber-300">{qa.keyword}</td>
-                          <td className="py-3 text-slate-300">{qa.question}</td>
-                          <td className="py-3">
-                            <input
-                              type="text"
-                              value={qa.answer}
-                              onChange={(e) => updateCustomQAAnswer(qa.id, e.target.value)}
-                              className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded px-2.5 py-1.5 text-xs focus:outline-none focus:border-blue-500"
-                            />
-                          </td>
-                          <td className="py-3 text-right">
-                            <button
-                              onClick={() => deleteCustomQA(qa.id)}
-                              className="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/40 px-2.5 py-1 rounded text-[11px] transition cursor-pointer"
-                            >
-                              {t.deleteBtn}
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                <form onSubmit={handleAddCustomQA} className="mt-3 pt-4 border-t border-slate-800 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
-                  <div className="md:col-span-3">
-                    <label className="text-[11px] text-slate-400 mb-1 block">{t.qaKeywordCol}</label>
-                    <input
-                      type="text"
-                      value={newKeyword}
-                      onChange={e => setNewKeyword(e.target.value)}
-                      placeholder={t.qaKeywordPlace}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
-                  <div className="md:col-span-4">
-                    <label className="text-[11px] text-slate-400 mb-1 block">{t.qaQuestionCol}</label>
-                    <input
-                      type="text"
-                      value={newQuestion}
-                      onChange={e => setNewQuestion(e.target.value)}
-                      placeholder={t.qaQuestionPlace}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
-                  <div className="md:col-span-4">
-                    <label className="text-[11px] text-slate-400 mb-1 block">{t.qaAnswerCol}</label>
-                    <input
-                      type="text"
-                      value={newAnswer}
-                      onChange={e => setNewAnswer(e.target.value)}
-                      placeholder={t.qaAnswerPlace}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
-                  <div className="md:col-span-1">
-                    <button
-                      type="submit"
-                      className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-xs font-bold transition shadow border border-blue-400/30"
-                    >
-                      {t.addBtn}
-                    </button>
-                  </div>
-                </form>
-              </div>
-
-              {/* SECTION 3: Shipping & Order Management */}
-              <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-4 w-full overflow-hidden">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <span>🚚</span> {t.tabShipping} & {t.orderHistory}
-                </h3>
-                {orders.length === 0 ? (
-                  <p className="text-xs text-slate-500 py-4 text-center">{t.noOrders}</p>
-                ) : (
-                  <div className="overflow-x-auto w-full">
-                    <table className="w-full text-left text-xs min-w-[500px]">
-                      <thead>
-                        <tr className="border-b border-slate-800 text-slate-400">
-                          <th className="pb-3 font-semibold">{t.orderIdCol}</th>
-                          <th className="pb-3 font-semibold">{t.productNameCol}</th>
-                          <th className="pb-3 font-semibold">{t.priceCol}</th>
-                          <th className="pb-3 font-semibold">{t.trackingCol}</th>
-                          <th className="pb-3 font-semibold">{t.shippingCol}</th>
-                          <th className="pb-3 font-semibold text-right">{t.dateCol}</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-800/60">
-                        {orders.map((ord, idx) => (
-                          <tr key={idx} className="hover:bg-slate-800/40">
-                            <td className="py-3.5 font-mono text-blue-400">{ord.orderId}</td>
-                            <td className="py-3.5 text-white font-medium">{ord.productName}</td>
-                            <td className="py-3.5 text-slate-300">KRW {ord.amount.toLocaleString()}</td>
-                            <td className="py-3.5 font-mono text-amber-300">{ord.trackingNumber}</td>
-                            <td className="py-3.5">
-                              <select
-                                value={ord.shippingStatus}
-                                onChange={(e) => updateShippingStatus(ord.orderId, e.target.value as any)}
-                                className="bg-slate-950 border border-slate-700 text-slate-100 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500"
-                              >
-                                <option value="상품 준비중">{t.statusPrep}</option>
-                                <option value="배송중">{t.statusShip}</option>
-                                <option value="배송완료">{t.statusDone}</option>
-                              </select>
-                            </td>
-                            <td className="py-3.5 text-right">
-                              <span className="text-[10px] text-slate-400">{ord.timestamp}</span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-
-              {/* SECTION 4: Video Editor & Compressor Studio */}
-              <div className="bg-slate-900 border-2 border-amber-500/40 p-4 rounded-xl flex flex-col gap-4 shadow-xl w-full">
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-slate-800 pb-3 gap-2">
-                  <h3 className="text-sm font-bold text-amber-400 flex items-center gap-2">
-                    <span>🎬</span> {t.tabVideoEditor}
-                  </h3>
-                  <span className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded font-medium">
-                    FFmpeg Web Engine Active
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
-                  <div className="flex flex-col gap-4">
-                    <div>
-                      <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.videoSelectLabel}</label>
-                      <select
-                        value={selectedVideoAsset}
-                        onChange={(e) => setSelectedVideoAsset(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-amber-500"
-                      >
-                        {products.map(p => (
-                          <option key={p.id} value={p.videoUrl}>{p.icon} {p.videoUrl} ({p.name[lang] || p.name.ko})</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.crfLabel}</label>
-                      <input
-                        type="number"
-                        min="20"
-                        max="35"
-                        value={compressionCrf}
-                        onChange={(e) => setCompressionCrf(Number(e.target.value))}
-                        className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-amber-500"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.speedLabel}</label>
-                        <select
-                          value={videoSpeed}
-                          onChange={(e) => setVideoSpeed(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-amber-500"
-                        >
-                          <option value="1.0">1.0x (Normal)</option>
-                          <option value="1.25">1.25x (Fast)</option>
-                          <option value="1.5">1.5x</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.audioLabel}</label>
-                        <select
-                          value={audioMute ? "mute" : "keep"}
-                          onChange={(e) => setAudioMute(e.target.value === "mute")}
-                          className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-amber-500"
-                        >
-                          <option value="keep">{t.audioKeep}</option>
-                          <option value="mute">{t.audioMuteOpt}</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <button
-                      disabled={isProcessing}
-                      onClick={runVideoEditorCompression}
-                      className="mt-2 bg-amber-600 hover:bg-amber-500 disabled:bg-slate-700 text-white py-2.5 rounded-lg text-xs font-bold transition shadow-lg cursor-pointer border border-amber-400/30 flex items-center justify-center gap-2"
-                    >
-                      {isProcessing ? t.renderingBtn : t.renderBtn}
-                    </button>
-                  </div>
-
-                  <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col font-mono text-[11px] text-emerald-400 h-[220px] overflow-y-auto shadow-inner w-full">
-                    <p className="text-slate-500 pb-2 border-b border-slate-900 mb-2">// FFmpeg Studio Console Output</p>
-                    {processLog ? (
-                      <pre className="whitespace-pre-wrap">{processLog}</pre>
-                    ) : (
-                      <span className="text-slate-600 italic">Ready for video editing & compression tasks...</span>
-                    )}
-                  </div>
-                </div>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           )}
@@ -1423,44 +1014,32 @@ export const LiveStreamView: React.FC = () => {
     );
   }
 
-  // Main Live Commerce Store View (모바일 가로 스크롤 완전 제거 + 동영상 크기 100% 동일 고정 + 빈공간 제거)
+  // Main Live Commerce Store View (채팅창 길이 고정 및 내부 스크롤 완벽 적용)
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col w-full max-w-full overflow-x-hidden box-border">
-      {/* Header */}
-      <header className="border-b border-slate-700 px-3 py-2 flex flex-col sm:flex-row justify-between items-center gap-2 bg-slate-900/90 backdrop-blur shadow-md w-full max-w-full box-border shrink-0">
-        <h1 className="text-xs sm:text-sm font-bold flex items-center gap-1.5 w-full sm:w-auto justify-between sm:justify-start">
-          <div className="flex items-center gap-1.5 truncate">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0"></span>
-            <span className="truncate">{t.title}</span>
-          </div>
-          <span className="text-[10px] bg-blue-600/20 text-blue-400 border border-blue-500/40 px-2 py-0.5 rounded-full font-medium shrink-0 sm:hidden">
-            {t.sandbox}
-          </span>
+      <header className="border-b border-slate-700 px-3 py-2 flex justify-between items-center bg-slate-900/90 backdrop-blur shadow-md w-full shrink-0">
+        <h1 className="text-xs sm:text-sm font-bold flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+          <span>{t.title}</span>
         </h1>
-        
-        <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-          <button
-            onClick={() => setIsAdminRoute(true)}
-            className="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/40 px-2.5 py-1 rounded-md text-[11px] font-semibold transition cursor-pointer flex items-center gap-1 shadow shrink-0"
-          >
-            <span>{t.adminPortalBtn}</span>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setIsAdminRoute(true)} className="bg-slate-800 text-amber-400 border border-amber-500/40 px-2.5 py-1 rounded text-[11px] font-semibold cursor-pointer">
+            {t.adminPortalBtn}
           </button>
-
-          {renderLanguageSelector()}
-
-          <span className="text-[11px] bg-blue-600/20 text-blue-400 border border-blue-500/40 px-2.5 py-1 rounded-full font-medium shrink-0 hidden sm:inline-block">
-            {t.sandbox}
-          </span>
+          <div className="flex bg-slate-950 border border-slate-700 rounded p-0.5 text-xs">
+            {(["ko", "en", "ja", "zh", "es", "fr"] as Language[]).map(l => (
+              <button key={l} onClick={() => setLang(l)} className={`px-2 py-0.5 rounded uppercase text-[10px] ${lang === l ? "bg-blue-600 text-white" : "text-slate-400"}`}>
+                {l}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
-      {/* Main Snap Scroll Container for Mobile / Grid for Desktop (가로 스크롤 원천 차단 overflow-x-hidden) */}
-      <div className="flex-1 flex flex-col md:grid md:grid-cols-12 gap-3 p-2 sm:p-4 w-full max-w-full overflow-x-hidden box-border items-stretch md:overflow-hidden snap-y md:snap-none snap-mandatory overflow-y-auto" style={{ height: "calc(100vh - 52px)" }}>
+      <div className="flex-1 flex flex-col md:grid md:grid-cols-12 gap-3 p-2 sm:p-4 w-full max-w-full overflow-x-hidden box-border items-stretch md:overflow-hidden overflow-y-auto" style={{ height: "calc(100vh - 52px)" }}>
         
-        {/* Section 1: Video & Live Commerce Player */}
-        <div className="md:col-span-7 relative h-[calc(100vh-68px)] md:h-full bg-slate-900/40 border border-slate-700/80 rounded-2xl p-2.5 sm:p-3 shadow-xl flex flex-col justify-between w-full max-w-full overflow-x-hidden box-border snap-start shrink-0">
-          
-          {/* 비디오 프레임: 모든 상품의 동영상 크기가 1px도 변하지 않도록 동일한 가로·세로 비율 및 object-fit: cover 강제 고정 */}
+        {/* Section 1: Video Player */}
+        <div className="md:col-span-7 relative h-[calc(100vh-68px)] md:h-full bg-slate-900/40 border border-slate-700/80 rounded-2xl p-2.5 sm:p-3 shadow-xl flex flex-col justify-between w-full max-w-full overflow-x-hidden box-border shrink-0">
           <div 
             className="relative w-full bg-black rounded-xl overflow-hidden border border-slate-700 shadow-lg shrink-0"
             style={{ height: isCheckingOut || latestOrder ? "calc(100% - 210px)" : "calc(100% - 96px)" }}
@@ -1473,13 +1052,7 @@ export const LiveStreamView: React.FC = () => {
                 loop
                 muted={isAudioMuted}
                 playsInline
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  objectPosition: "center 35%",
-                  display: "block"
-                }}
+                style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 35%", display: "block" }}
                 className="absolute inset-0 w-full h-full object-cover bg-black"
                 onError={(e) => {
                   const target = e.currentTarget;
@@ -1494,145 +1067,69 @@ export const LiveStreamView: React.FC = () => {
                 <source src={currentProd.fallbackVideoUrl} type="video/mp4" />
               </video>
             )}
-            
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none"></div>
-
-            {/* Top-Left Badges */}
             <div className="absolute top-3 left-3 z-20 flex flex-col items-start gap-1">
-              <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md animate-pulse uppercase tracking-wider shadow">
-                ● {t.liveStream}
-              </span>
-              <span className="bg-black/70 backdrop-blur-md text-slate-200 text-[11px] px-2 py-0.5 rounded-md border border-slate-600 font-medium shadow">
-                {t.marketName}
-              </span>
+              <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md animate-pulse uppercase">● {t.liveStream}</span>
+              <span className="bg-black/70 text-slate-200 text-[11px] px-2 py-0.5 rounded-md border border-slate-600">{t.marketName}</span>
             </div>
-
-            {/* Top-Right Badges */}
             <div className="absolute top-3 right-3 z-20 flex flex-col items-end gap-1.5">
-              <button
-                onClick={() => setIsAudioMuted(!isAudioMuted)}
-                className="bg-black/80 hover:bg-black text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg border border-slate-600 backdrop-blur-md shadow-lg transition cursor-pointer flex items-center gap-1"
-              >
-                <span>{isAudioMuted ? t.soundOff : t.soundOn}</span>
+              <button onClick={() => setIsAudioMuted(!isAudioMuted)} className="bg-black/80 text-white text-[11px] px-2.5 py-1 rounded border border-slate-600">
+                {isAudioMuted ? t.soundOff : t.soundOn}
               </button>
-
               {currentProd && (
-                <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border backdrop-blur-md shadow-lg ${currentProd.stock <= 0 ? "bg-red-600/90 text-white border-red-500" : currentProd.stock <= 5 ? "bg-amber-600/90 text-white border-amber-500 animate-pulse" : "bg-black/80 text-amber-300 border-slate-600"}`}>
-                  {currentProd.stock <= 0 ? t.soldOut : `🔥 ${t.stockLeft}${currentProd.stock}${t.unit}`}
+                <span className={`text-[11px] font-bold px-2.5 py-1 rounded border ${currentProd.stock <= 0 ? "bg-red-600 text-white" : "bg-black/80 text-amber-300"}`}>
+                  {currentProd.stock <= 0 ? t.soldOut : `${t.stockLeft}${currentProd.stock}${t.unit}`}
                 </span>
               )}
             </div>
           </div>
 
-          {/* 하단 상품 카드 영역 */}
-          <div className="mt-2.5 shrink-0 w-full max-w-full box-border">
+          <div className="mt-2.5 shrink-0 w-full box-border">
             {currentProd && !isCheckingOut && !latestOrder ? (
-              <div className="bg-slate-900/95 backdrop-blur-md px-3 py-2.5 rounded-xl border border-slate-700 flex items-center justify-between gap-2.5 shadow-xl animate-fadeIn w-full h-[86px] box-border overflow-hidden">
+              <div className="bg-slate-900/95 p-3 rounded-xl border border-slate-700 flex items-center justify-between gap-2.5 shadow-xl w-full h-[86px] box-border overflow-hidden">
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                  <div className="w-11 h-11 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-xl shadow-inner shrink-0">
-                    {currentProd.icon}
-                  </div>
+                  <div className="w-11 h-11 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-xl shrink-0">{currentProd.icon}</div>
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5 truncate">
-                      <p className="text-[10px] text-blue-400 font-semibold tracking-wide shrink-0">{t.aiLiveFeatured}</p>
-                      {currentProd.stock <= 5 && currentProd.stock > 0 && (
-                        <span className="text-[9px] text-red-400 font-bold bg-red-950/80 px-1.5 py-0.5 rounded border border-red-500/50 animate-pulse truncate">
-                          {t.lowStockWarning} ({currentProd.stock}{t.unit})
-                        </span>
-                      )}
-                    </div>
                     <p className="text-xs font-bold text-white truncate">{currentProd.name[lang] || currentProd.name.ko}</p>
                     <p className="text-[11px] text-amber-300 font-semibold truncate">
-                      KRW {currentProd.price.toLocaleString()} (~${Math.round(currentProd.price / 1350)} USD) · <span className="text-slate-400 font-normal">{currentProd.description[lang] || currentProd.description.ko}</span>
+                      KRW {currentProd.price.toLocaleString()} · <span className="text-slate-400 font-normal">{currentProd.description[lang] || currentProd.description.ko}</span>
                     </p>
                   </div>
                 </div>
                 {currentProd.stock > 0 ? (
-                  <button 
-                    onClick={() => setIsCheckingOut(true)}
-                    className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-lg text-xs font-semibold transition shadow-lg cursor-pointer shrink-0 border border-blue-400/30 text-center whitespace-nowrap"
-                  >
+                  <button onClick={() => setIsCheckingOut(true)} className="bg-blue-600 text-white px-4 py-2.5 rounded-lg text-xs font-semibold shrink-0 cursor-pointer">
                     {t.payWithPayPal}
                   </button>
                 ) : (
-                  <button 
-                    disabled
-                    className="bg-slate-800 text-slate-500 px-4 py-2.5 rounded-lg text-xs font-bold cursor-not-allowed border border-slate-700 text-center whitespace-nowrap shrink-0"
-                  >
-                    {t.soldOut}
-                  </button>
+                  <button disabled className="bg-slate-800 text-slate-500 px-4 py-2.5 rounded-lg text-xs font-bold shrink-0">{t.soldOut}</button>
                 )}
               </div>
-            ) : currentProd && isCheckingOut ? (
-              <div className="bg-slate-900 border border-blue-500/70 p-3 rounded-xl shadow-xl animate-fadeIn w-full box-border">
+            ) : isCheckingOut && currentProd ? (
+              <div className="bg-slate-900 border border-blue-500 p-3 rounded-xl shadow-xl">
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-xs font-bold text-blue-400 flex items-center gap-1 truncate">
-                    <span>💳</span> <span className="truncate">{t.secureCheckout}: {currentProd.icon} {currentProd.name[lang] || currentProd.name.ko}</span>
-                  </h3>
-                  <button 
-                    onClick={() => setIsCheckingOut(false)}
-                    className="text-[11px] text-slate-400 hover:text-white underline cursor-pointer shrink-0"
-                  >
-                    {t.cancelBack}
-                  </button>
+                  <span className="text-xs font-bold text-blue-400">{t.secureCheckout}</span>
+                  <button onClick={() => setIsCheckingOut(false)} className="text-[11px] text-slate-400 underline">{t.cancelBack}</button>
                 </div>
-                <p className="text-xs text-slate-300 mb-2">
-                  {t.totalAmount}: KRW {currentProd.price.toLocaleString()} (~${Math.round(currentProd.price / 1350)} USD)
-                </p>
-                <PayPalCheckoutButton 
-                  amount={Math.round(currentProd.price / 1350)} 
-                  currency="USD" 
-                  onSuccess={(orderId) => handlePaymentSuccess(orderId, currentProd)} 
-                />
+                <PayPalCheckoutButton amount={Math.round(currentProd.price / 1350)} currency="USD" onSuccess={(orderId) => handlePaymentSuccess(orderId, currentProd)} />
               </div>
             ) : latestOrder ? (
-              <div className="bg-slate-900 border border-emerald-500/70 p-3 rounded-xl shadow-xl animate-fadeIn flex flex-col gap-2.5 w-full box-border">
-                <div className="flex justify-between items-center border-b border-slate-800 pb-1.5">
-                  <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-1 truncate">
-                    <span>✅</span> <span className="truncate">{t.trackingViewTitle}</span>
-                  </h3>
-                  <button 
-                    onClick={() => setLatestOrder(null)}
-                    className="text-[11px] text-slate-400 hover:text-white underline cursor-pointer shrink-0"
-                  >
-                    {t.closeBtn}
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="bg-slate-950 p-2 rounded-lg border border-slate-800">
-                    <p className="text-[10px] text-slate-400">{t.orderIdLabel}</p>
-                    <p className="font-mono font-bold text-blue-400 truncate">{latestOrder.orderId}</p>
-                  </div>
-                  <div className="bg-slate-950 p-2 rounded-lg border border-slate-800">
-                    <p className="text-[10px] text-slate-400">{t.shippingStatusLabel}</p>
-                    <p className="font-bold text-amber-400 flex items-center gap-1 truncate">
-                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping shrink-0"></span>
-                      <span className="truncate">{latestOrder.shippingStatus}</span>
-                    </p>
-                  </div>
-                </div>
+              <div className="bg-slate-900 border border-emerald-500 p-3 rounded-xl shadow-xl flex flex-col gap-2">
+                <span className="text-xs font-bold text-emerald-400">{t.trackingViewTitle}</span>
+                <p className="text-xs text-slate-300 font-mono">{latestOrder.orderId} / {latestOrder.shippingStatus}</p>
               </div>
             ) : null}
-
-            {checkoutStatus && !latestOrder && (
-              <div className="mt-2 p-2 bg-emerald-950/80 border border-emerald-500/50 rounded-lg text-xs text-emerald-300 font-semibold text-center shadow">
-                {checkoutStatus}
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Section 2: AI Shopping Agent & Live Chat (채팅창 순수 상품 설명만 출력) */}
-        <div className="md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-2xl flex flex-col h-[calc(100vh-68px)] md:h-full shadow-xl w-full max-w-full overflow-x-hidden box-border snap-start shrink-0">
+        {/* Section 2: AI Shopping Agent & Live Chat (채팅창 길이 고정 및 내부 스크롤 완벽 적용) */}
+        <div className="md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-2xl flex flex-col h-[calc(100vh-68px)] md:h-full shadow-xl w-full max-w-full overflow-x-hidden box-border shrink-0">
           <div className="p-3 border-b border-slate-700 font-semibold text-xs sm:text-sm flex justify-between items-center bg-slate-900/90 shrink-0">
-            <span className="truncate">{t.chatTitle}</span>
-            <span className="text-[11px] text-emerald-400 flex items-center gap-1.5 shrink-0">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> {t.online}
-            </span>
+            <span>{t.chatTitle}</span>
+            <span className="text-[11px] text-emerald-400 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> {t.online}</span>
           </div>
           
-          <div className="flex-1 p-3 overflow-y-auto flex flex-col gap-2.5 w-full max-w-full box-border">
+          {/* 채팅창 내부 스크롤 영역: flex-1 min-h-0 overflow-y-auto 로 박스 길이는 고정되고 내용만 위로 밀려 올라감 */}
+          <div className="flex-1 min-h-0 p-3 overflow-y-auto flex flex-col gap-2.5 w-full box-border">
             {messages.map(msg => (
               <div key={msg.id} className={msg.sender === "user" ? "flex flex-col items-end w-full" : "flex flex-col items-start w-full"}>
                 <div className={msg.sender === "user" ? "max-w-[85%] p-2.5 rounded-xl text-xs sm:text-sm bg-blue-600 text-white shadow break-words whitespace-pre-line" : "max-w-[85%] p-2.5 rounded-xl text-xs sm:text-sm bg-slate-800 text-slate-200 border border-slate-700 shadow break-words whitespace-pre-line"}>
@@ -1641,32 +1138,22 @@ export const LiveStreamView: React.FC = () => {
                 {msg.suggestedProduct && (
                   <div className="mt-2 w-full max-w-full bg-slate-900 border border-slate-700 p-2.5 rounded-xl flex flex-col gap-2 shadow-md box-border">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-lg shrink-0">
-                        {msg.suggestedProduct.icon}
-                      </div>
+                      <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-lg shrink-0">{msg.suggestedProduct.icon}</div>
                       <div className="text-xs min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className="font-bold text-white truncate">{msg.suggestedProduct.name[lang] || msg.suggestedProduct.name.ko}</p>
                           <span className="text-[10px] text-amber-400 font-bold shrink-0">{t.stockLeft}{msg.suggestedProduct.stock}{t.unit}</span>
                         </div>
                         <p className="text-[11px] text-slate-300 mt-0.5">{msg.suggestedProduct.description[lang] || msg.suggestedProduct.description.ko}</p>
-                        <p className="text-amber-300 font-semibold mt-0.5">KRW {msg.suggestedProduct.price.toLocaleString()} (~${Math.round(msg.suggestedProduct.price / 1350)} USD)</p>
+                        <p className="text-amber-300 font-semibold mt-0.5">KRW {msg.suggestedProduct.price.toLocaleString()}</p>
                       </div>
                     </div>
                     {msg.suggestedProduct.stock > 0 ? (
-                      <button
-                        onClick={() => {
-                          setActiveProduct(msg.suggestedProduct!);
-                          setIsCheckingOut(true);
-                        }}
-                        className="w-full bg-[#0070BA] hover:bg-[#003087] text-white py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer shadow border border-blue-400/30"
-                      >
-                        <span>{t.openCheckout}</span>
+                      <button onClick={() => { setActiveProduct(msg.suggestedProduct!); setIsCheckingOut(true); }} className="w-full bg-[#0070BA] text-white py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+                        {t.openCheckout}
                       </button>
                     ) : (
-                      <button disabled className="w-full bg-slate-800 text-slate-500 py-1.5 rounded-lg text-xs font-bold cursor-not-allowed">
-                        {t.soldOut}
-                      </button>
+                      <button disabled className="w-full bg-slate-800 text-slate-500 py-1.5 rounded-lg text-xs font-bold">{t.soldOut}</button>
                     )}
                   </div>
                 )}
@@ -1675,15 +1162,13 @@ export const LiveStreamView: React.FC = () => {
             ))}
           </div>
 
-          {/* 관리자가 등록한 상품 버튼 바 */}
-          <div className="px-2.5 pt-2 pb-2 flex gap-1.5 flex-wrap border-t border-slate-700 bg-slate-900/60 shrink-0 w-full max-w-full box-border">
+          <div className="px-2.5 pt-2 pb-2 flex gap-1.5 flex-wrap border-t border-slate-700 bg-slate-900/60 shrink-0 w-full box-border">
             {products.map((prod) => (
               <button
                 key={prod.id}
                 type="button"
                 onClick={() => handleSelectProductFromChat(prod)}
-                title={prod.description[lang] || prod.description.ko}
-                className={`text-[11px] px-2.5 py-1 rounded-full transition cursor-pointer shadow-sm flex items-center gap-1 border ${currentProd && currentProd.id === prod.id ? "bg-amber-600 text-white border-amber-400 font-bold" : "bg-slate-800 hover:bg-slate-700 text-blue-300 border-slate-600"}`}
+                className={`text-[11px] px-2.5 py-1 rounded-full cursor-pointer shadow-sm flex items-center gap-1 border ${currentProd && currentProd.id === prod.id ? "bg-amber-600 text-white border-amber-400 font-bold" : "bg-slate-800 text-blue-300 border-slate-600"}`}
               >
                 <span>{prod.icon}</span>
                 <span className="truncate max-w-[140px]">{prod.name[lang] || prod.name.ko}</span>
@@ -1691,15 +1176,15 @@ export const LiveStreamView: React.FC = () => {
             ))}
           </div>
 
-          <form onSubmit={handleSendMessage} className="p-2.5 border-t border-slate-700 flex gap-2 bg-slate-900/80 shrink-0 w-full max-w-full box-border">
+          <form onSubmit={handleSendMessage} className="p-2.5 border-t border-slate-700 flex gap-2 bg-slate-900/80 shrink-0 w-full box-border">
             <input
               type="text"
               value={inputText}
               onChange={e => setInputText(e.target.value)}
               placeholder={t.inputPlaceholder}
-              className="flex-1 min-w-0 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs sm:text-sm focus:outline-none focus:border-blue-500 text-slate-100"
+              className="flex-1 min-w-0 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs sm:text-sm text-slate-100 focus:outline-none"
             />
-            <button type="submit" className="bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition cursor-pointer shadow border border-blue-400/30 shrink-0">
+            <button type="submit" className="bg-blue-600 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-white shrink-0 cursor-pointer">
               {t.send}
             </button>
           </form>

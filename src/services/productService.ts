@@ -13,9 +13,7 @@ export interface ProductEntity {
   createdAt: string;
 }
 
-const STORAGE_KEY = " live_commerce_pg_products_v1";
-
-const DEFAULT_PRODUCTS: ProductEntity[] = [
+let mockProductDatabase: ProductEntity[] = [
   {
     id: "prod-001",
     name: {
@@ -33,12 +31,12 @@ const DEFAULT_PRODUCTS: ProductEntity[] = [
     videoUrl: "/videos/honey_demo.mp4",
     fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
     description: {
-      ko: "실제 유기농 꿀을 들고 촬영한 실전 라이브 시연 영상 매핑 상품",
-      en: "Live demonstration video product filmed with actual organic honey",
-      ja: "実際の有機ハチミツを持って撮影したライブ実演動画マッピング製品",
-      zh: "手持实际有机蜂蜜拍摄的直播演示视频商品",
-      es: "Producto con video de demostración real con miel orgánica",
-      fr: "Produit de démonstration filmé avec du vrai miel bio"
+      ko: "청정 자연에서 채취한 100% 순수 천연 유기농 꿀 제품입니다.",
+      en: "100% pure natural organic honey harvested from clean nature.",
+      ja: "清らかな自然で採取した100%純粋な有機ハチミツ製品です。",
+      zh: "在纯净自然中采集的100%纯天然有机蜂蜜产品。",
+      es: "Miel orgánica 100% pura y natural cosechada en la naturaleza.",
+      fr: "Miel bio 100% pur et naturel récolté dans une nature pure."
     },
     createdAt: new Date().toISOString()
   },
@@ -59,96 +57,40 @@ const DEFAULT_PRODUCTS: ProductEntity[] = [
     videoUrl: "/videos/tea_demo.mp4",
     fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
     description: {
-      ko: "실제 전통차 세트를 들고 촬영한 실전 라이브 시연 영상 매핑 상품",
-      en: "Live demonstration video product filmed with actual traditional tea set",
-      ja: "実際の伝統茶セットを持って撮影したライブ実演動画マッピング製品",
-      zh: "手持实际传统茶具拍摄的直播演示视频商品",
-      es: "Producto con video de demostración real con set de té",
-      fr: "Produit de démonstration filmé avec du vrai thé"
+      ko: "엄선된 전통 원료를 정성껏 덖아 만든 수제 전통차 선물 세트입니다.",
+      en: "Handmade traditional herbal tea set crafted with carefully selected ingredients.",
+      ja: "厳選された伝統原料を丁寧に焙煎して作った手作り伝統茶ギフトセットです。",
+      zh: "精选传统原料精心烘焙的手工传统茶礼盒。",
+      es: "Set de té tradicional hecho a mano con ingredientes seleccionados.",
+      fr: "Coffret de thé traditionnel fait main préparé avec soin."
     },
     createdAt: new Date().toISOString()
   }
 ];
 
-function loadLocalProducts(): ProductEntity[] {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (e) {
-    console.warn("Storage read error:", e);
-  }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_PRODUCTS));
-  return DEFAULT_PRODUCTS;
-}
-
-function saveLocalProducts(list: ProductEntity[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-  } catch (e) {
-    console.warn("Storage write error:", e);
-  }
-}
-
 export const productService = {
   async getProducts(): Promise<ProductEntity[]> {
-    try {
-      const response = await fetch("/api/products");
-      if (response.ok) {
-        const data = await response.json();
-        if (Array.isArray(data) && data.length > 0) {
-          saveLocalProducts(data);
-          return data;
-        }
-      }
-    } catch (e) {
-      // 로컬 PostgreSQL API 미구동 시 LocalStorage DB 사용
-    }
-    return loadLocalProducts();
+    return mockProductDatabase;
   },
-
   async addProduct(newProd: Omit<ProductEntity, "id" | "createdAt">): Promise<ProductEntity[]> {
-    const current = loadLocalProducts();
     const created: ProductEntity = {
       ...newProd,
       id: "prod-" + Date.now(),
       createdAt: new Date().toISOString()
     };
-    const updated = [created, ...current];
-    saveLocalProducts(updated);
-
-    try {
-      await fetch("/api/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(created)
-      });
-    } catch (e) {
-      // LocalStorage DB에 안전하게 영구 저장됨
-    }
-    return updated;
+    mockProductDatabase = [created, ...mockProductDatabase];
+    return mockProductDatabase;
   },
-
   async updateStock(id: string, stock: number): Promise<ProductEntity[]> {
-    const current = loadLocalProducts();
-    const updated = current.map(p => p.id === id ? { ...p, stock: Math.max(0, stock) } : p);
-    saveLocalProducts(updated);
-    return updated;
+    mockProductDatabase = mockProductDatabase.map(p => p.id === id ? { ...p, stock: Math.max(0, stock) } : p);
+    return mockProductDatabase;
   },
-
   async updateVideoMapping(id: string, videoUrl: string): Promise<ProductEntity[]> {
-    const current = loadLocalProducts();
-    const updated = current.map(p => p.id === id ? { ...p, videoUrl } : p);
-    saveLocalProducts(updated);
-    return updated;
+    mockProductDatabase = mockProductDatabase.map(p => p.id === id ? { ...p, videoUrl } : p);
+    return mockProductDatabase;
   },
-
   async deleteProduct(id: string): Promise<ProductEntity[]> {
-    const current = loadLocalProducts();
-    const updated = current.filter(p => p.id !== id);
-    saveLocalProducts(updated);
-    return updated;
+    mockProductDatabase = mockProductDatabase.filter(p => p.id !== id);
+    return mockProductDatabase;
   }
 };
