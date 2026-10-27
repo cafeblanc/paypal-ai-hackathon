@@ -53,35 +53,79 @@ const TRANSLATIONS: Record<Language, any> = {
     adminPortalBtn: "🔒 관리자",
     adminTitle: "보안 관리자 대시보드 (상품·동영상·재고·FAQ)",
     adminSubtitle: "PostgreSQL / 로컬 DB 연동 상품 등록, 동영상 매핑 및 실시간 재고 관리",
-    passwordPlaceholder: "비밀번호 (admin1234)",
-    loginBtn: "로그인",
+    adminAuthTitle: "관리자 보안 인증",
+    adminAuthSubtitle: "상품 등록, 동영상 매핑, 재고 및 AI FAQ 관리를 위한 보안 로그인",
+    passwordLabel: "관리자 비밀번호 (기본: admin1234)",
+    passwordPlaceholder: "비밀번호 입력 (admin1234)",
+    loginBtn: "관리자 로그인",
     loginError: "비밀번호가 올바르지 않습니다.",
     logoutBtn: "로그아웃",
     backToStore: "← 라이브 동영상 화면으로",
-    tabInventory: "📦 등록된 상품 및 동영상/재고 목록",
-    tabShipping: "🚚 배송 관리",
-    tabQA: "💬 FAQ",
-    tabVideoEditor: "🎬 동영상 편집 스튜디오",
-    totalRevenue: "총 매출",
-    totalOrders: "총 주문",
-    activeStock: "활성 재고",
-    orderHistory: "주문 내역",
-    noOrders: "주문 내역이 없습니다.",
+    sec0Title: "1. 신규 상품 등록 및 전용 동영상 매핑 (PostgreSQL / Local DB)",
+    sec0Badge: "채팅창 상품 버튼 & 비디오 즉시 연동",
+    sec0Desc: "상품 정보(상품명, 가격, 재고, 상세설명)와 미리 촬영한 동영상 파일 경로를 짝지어 등록하면, 라이브 채팅창 하단에 상품 버튼으로 즉시 생성됩니다.",
+    prodNameLabel: "상품명 *",
+    prodNamePlaceholder: "예: 양평 유기농 산딸기 세트",
+    prodPriceLabel: "가격 (KRW) *",
+    prodStockLabel: "초기 재고 *",
+    prodIconLabel: "아이콘",
+    prodVideoLabel: "매핑할 촬영 동영상 경로 *",
+    prodDescLabel: "상품 상세설명 (채팅창 및 상품 카드에 표시됨)",
+    prodDescPlaceholder: "예: 당일 수확한 100% 친환경 양평 산딸기를 산지 직송으로 보내드립니다.",
+    registerBtn: "💾 상품 + 동영상 DB 등록하기",
+    totalRevenue: "총 누적 매출",
+    sandboxSub: "샌드박스 테스트 거래 기준",
+    totalOrders: "총 주문 건수",
+    ordersSub: "결제 완료된 주문",
+    activeStock: "활성 재고 합계",
+    stockSub: "전체 상품 잔여 수량",
+    tabInventory: "등록된 상품 및 동영상/재고 목록",
+    registeredCount: "개 등록됨",
     productNameCol: "상품명 / 상세설명",
     priceCol: "가격",
     stockCol: "재고",
-    shippingCol: "배송",
-    trackingCol: "운송장",
     videoAssetCol: "매핑된 동영상",
     actionsCol: "관리",
-    trackingViewTitle: "📦 주문 및 배송 추적",
+    changeVideoBtn: "⚙️ 동영상 변경",
+    deleteBtn: "삭제",
+    tabQA: "AI 맞춤 답변 및 FAQ 사전 편집",
+    qaDesc: "소비자가 라이브 채팅에서 질문할 때 즉시 매칭되는 AI 에이전트의 맞춤 답변을 실시간으로 편집하고 관리합니다.",
+    qaKeywordCol: "인식 키워드",
+    qaQuestionCol: "소비자 질문 유형",
+    qaAnswerCol: "AI 에이전트 답변 (편집 가능)",
+    qaKeywordPlace: "예: 배송, 할인, 성분",
+    qaQuestionPlace: "예: 언제 도착하나요?",
+    qaAnswerPlace: "예: 당일 발송됩니다.",
+    addBtn: "추가",
+    tabShipping: "배송 관리",
+    orderHistory: "주문 내역",
+    noOrders: "아직 발생한 주문 내역이 없습니다.",
+    orderIdCol: "주문 번호",
+    shippingCol: "배송 상태",
+    trackingCol: "운송장 번호",
+    dateCol: "주문 일시",
+    statusPrep: "📦 상품 준비중",
+    statusShip: "🚚 배송중",
+    statusDone: "✅ 배송완료",
+    tabVideoEditor: "동영상 편집 및 압축 스튜디오",
+    videoSelectLabel: "편집할 동영상 파일 선택",
+    crfLabel: "고압축 품질 (CRF 20 ~ 35, 권장: 28)",
+    speedLabel: "재생 속도",
+    audioLabel: "오디오 트랙",
+    audioKeep: "🔊 원본 오디오 유지 (권장)",
+    audioMuteOpt: "🔇 무음 (Mute)",
+    renderBtn: "🚀 동영상 편집 및 압축 실행 (Render)",
+    renderingBtn: "⏳ 동영상 압축 및 렌더링 중...",
+    trackingViewTitle: "📦 주문 및 배송 추적 (3초 후 자동 닫힘)",
+    closeBtn: "닫기",
     orderIdLabel: "주문 번호",
     shippingStatusLabel: "배송 상태",
     soundOn: "🔊 소리 켜기",
     soundOff: "🔇 음소거",
     lowStockWarning: "⚠️ [긴급] 재고 임박!",
     stockLeft: "남은 재고: ",
-    unit: "개"
+    unit: "개",
+    orderUnit: "건"
   },
   en: {
     marketName: "Yangpyeong Open Festival",
@@ -94,7 +138,7 @@ const TRANSLATIONS: Record<Language, any> = {
     secureCheckout: "Secure Checkout",
     totalAmount: "Total",
     cancelBack: "Back",
-    paymentCompleted: "Payment completed!",
+    paymentCompleted: "Payment completed! Fulfillment initiated.",
     chatTitle: "AI Shopping Agent & Live Chat",
     online: "Online",
     initialGreeting: "Welcome to PayPal AI Agentic Commerce! Tap a product button below to switch video and view details.",
@@ -102,37 +146,81 @@ const TRANSLATIONS: Record<Language, any> = {
     send: "Send",
     openCheckout: "Open PayPal Checkout",
     adminPortalBtn: "🔒 Admin",
-    adminTitle: "Admin Dashboard",
-    adminSubtitle: "Manage products, video mapping, stock & shipping",
-    passwordPlaceholder: "Password (admin1234)",
-    loginBtn: "Login",
+    adminTitle: "Secure Admin Dashboard (Products, Video, Stock & FAQ)",
+    adminSubtitle: "PostgreSQL / Local DB Product Registration, Video Mapping & Live Inventory",
+    adminAuthTitle: "Admin Portal Authentication",
+    adminAuthSubtitle: "Secure login for product registration, video mapping, stock & AI FAQ management",
+    passwordLabel: "Admin Password (Default: admin1234)",
+    passwordPlaceholder: "Enter password (admin1234)",
+    loginBtn: "Admin Login",
     loginError: "Incorrect password.",
     logoutBtn: "Logout",
     backToStore: "← Back to Live Video",
-    tabInventory: "📦 Product & Video Inventory",
-    tabShipping: "🚚 Shipping",
-    tabQA: "💬 FAQ",
-    tabVideoEditor: "🎬 Video Editor",
-    totalRevenue: "Revenue",
-    totalOrders: "Orders",
-    activeStock: "Stock",
-    orderHistory: "Order History",
-    noOrders: "No orders yet.",
+    sec0Title: "1. Register New Product & Video Mapping (PostgreSQL / Local DB)",
+    sec0Badge: "Instant Chat Button & Video Sync",
+    sec0Desc: "Pair product details with a pre-recorded video path to instantly create a product button in the live chat.",
+    prodNameLabel: "Product Name *",
+    prodNamePlaceholder: "e.g., Organic Raspberry Set",
+    prodPriceLabel: "Price (KRW) *",
+    prodStockLabel: "Initial Stock *",
+    prodIconLabel: "Icon",
+    prodVideoLabel: "Mapped Video Path *",
+    prodDescLabel: "Product Description (Shown in chat & card)",
+    prodDescPlaceholder: "e.g., 100% eco-friendly fresh raspberries shipped directly from the farm.",
+    registerBtn: "💾 Save Product + Video to DB",
+    totalRevenue: "Total Revenue",
+    sandboxSub: "Sandbox Test Transactions",
+    totalOrders: "Total Orders",
+    ordersSub: "Completed Orders",
+    activeStock: "Total Active Stock",
+    stockSub: "Total Available Stock",
+    tabInventory: "Registered Products & Video/Stock List",
+    registeredCount: " registered",
     productNameCol: "Product / Description",
     priceCol: "Price",
     stockCol: "Stock",
-    shippingCol: "Shipping",
-    trackingCol: "Tracking",
-    videoAssetCol: "Video",
+    videoAssetCol: "Mapped Video",
     actionsCol: "Action",
-    trackingViewTitle: "📦 Order & Tracking",
+    changeVideoBtn: "⚙️ Change Video",
+    deleteBtn: "Delete",
+    tabQA: "AI Custom Q&A & FAQ Editor",
+    qaDesc: "Edit and manage custom AI responses matched instantly when shoppers ask questions in live chat.",
+    qaKeywordCol: "Keyword",
+    qaQuestionCol: "Customer Question",
+    qaAnswerCol: "AI Agent Reply (Editable)",
+    qaKeywordPlace: "e.g., shipping, discount",
+    qaQuestionPlace: "e.g., When will it arrive?",
+    qaAnswerPlace: "e.g., Shipped on the same day.",
+    addBtn: "Add",
+    tabShipping: "Shipping",
+    orderHistory: "Order History",
+    noOrders: "No orders yet.",
+    orderIdCol: "Order ID",
+    shippingCol: "Shipping Status",
+    trackingCol: "Tracking No.",
+    dateCol: "Timestamp",
+    statusPrep: "📦 Preparing",
+    statusShip: "🚚 In Transit",
+    statusDone: "✅ Delivered",
+    tabVideoEditor: "Video Editor & Compressor Studio",
+    videoSelectLabel: "Select Video Asset to Edit",
+    crfLabel: "Compression Quality (CRF 20 ~ 35, Rec: 28)",
+    speedLabel: "Playback Speed",
+    audioLabel: "Audio Track",
+    audioKeep: "🔊 Keep Original Audio",
+    audioMuteOpt: "🔇 Mute Audio",
+    renderBtn: "🚀 Run Video Edit & Compression (Render)",
+    renderingBtn: "⏳ Compressing & Rendering...",
+    trackingViewTitle: "📦 Order & Tracking (Auto-closes in 3s)",
+    closeBtn: "Close",
     orderIdLabel: "Order ID",
     shippingStatusLabel: "Status",
     soundOn: "🔊 Sound On",
     soundOff: "🔇 Muted",
     lowStockWarning: "⚠️ Low Stock!",
     stockLeft: "Stock: ",
-    unit: "pcs"
+    unit: "pcs",
+    orderUnit: "orders"
   },
   ja: {
     marketName: "楊平オープンフェスティバル",
@@ -145,45 +233,89 @@ const TRANSLATIONS: Record<Language, any> = {
     secureCheckout: "セキュア決済",
     totalAmount: "合計",
     cancelBack: "戻る",
-    paymentCompleted: "決済完了！",
+    paymentCompleted: "決済完了！配送が開始されます。",
     chatTitle: "AI ショッピングエージェント & チャット",
     online: "オンライン",
-    initialGreeting: "PayPal AI エージェンティックコマースへようこそ！下の商品ボタンで動画を切り替えられます。",
+    initialGreeting: "PayPal AI エージェンティックコマースへようこそ！下の商品ボタンで動画と詳細を確認できます。",
     inputPlaceholder: "メッセージを入力...",
     send: "送信",
     openCheckout: "PayPal 決済を開く",
     adminPortalBtn: "🔒 管理者",
-    adminTitle: "管理者ダッシュボード",
-    adminSubtitle: "商品登録・動画・在庫管理",
-    passwordPlaceholder: "パスワード",
+    adminTitle: "セキュア管理者ダッシュボード (商品・動画・在庫・FAQ)",
+    adminSubtitle: "PostgreSQL / ローカルDB連動 商品登録・動画マッピング・在庫管理",
+    adminAuthTitle: "管理者ポータル認証",
+    adminAuthSubtitle: "商品登録、動画マッピング、在庫、AI FAQ管理のためのログイン",
+    passwordLabel: "管理者パスワード (基本: admin1234)",
+    passwordPlaceholder: "パスワード入力 (admin1234)",
     loginBtn: "ログイン",
-    loginError: "パスワードが違います。",
+    loginError: "パスワードが正しくありません。",
     logoutBtn: "ログアウト",
-    backToStore: "← ストアに戻る",
-    tabInventory: "📦 在庫・動画管理",
-    tabShipping: "🚚 配送",
-    tabQA: "💬 FAQ",
-    tabVideoEditor: "🎬 動画編集",
+    backToStore: "← ライブ動画画面へ",
+    sec0Title: "1. 新規商品登録および専用動画マッピング (PostgreSQL / Local DB)",
+    sec0Badge: "チャット商品ボタン＆動画即時連動",
+    sec0Desc: "商品情報と事前撮影した動画ファイルパスをペアで登録すると、チャット下部に商品ボタンとして即時生成されます。",
+    prodNameLabel: "商品名 *",
+    prodNamePlaceholder: "例: オーガニックラズベリーセット",
+    prodPriceLabel: "価格 (KRW) *",
+    prodStockLabel: "初期在庫 *",
+    prodIconLabel: "アイコン",
+    prodVideoLabel: "マッピングする動画パス *",
+    prodDescLabel: "商品詳細説明 (チャットとカードに表示)",
+    prodDescPlaceholder: "例: 当日収穫した100%無農薬ラズベリーを産地直送でお届けします。",
+    registerBtn: "💾 商品＋動画をDBに登録",
     totalRevenue: "総売上",
-    totalOrders: "注文数",
-    activeStock: "在庫合計",
-    orderHistory: "注文履歴",
-    noOrders: "注文なし",
-    productNameCol: "商品名",
+    sandboxSub: "サンドボックステスト取引",
+    totalOrders: "総注文数",
+    ordersSub: "決済完了注文",
+    activeStock: "有効在庫合計",
+    stockSub: "全商品の残り在庫",
+    tabInventory: "登録済み商品および動画・在庫一覧",
+    registeredCount: "件登録済み",
+    productNameCol: "商品名 / 詳細説明",
     priceCol: "価格",
     stockCol: "在庫",
-    shippingCol: "配送",
-    trackingCol: "追跡",
-    videoAssetCol: "動画",
+    videoAssetCol: "マッピング動画",
     actionsCol: "操作",
-    trackingViewTitle: "📦 注文・配送追跡",
+    changeVideoBtn: "⚙️ 動画変更",
+    deleteBtn: "削除",
+    tabQA: "AIカスタムQ&A・FAQ事前編集",
+    qaDesc: "ライブチャットでの質問に即時マッチングされるAI回答をリアルタイムで編集・管理します。",
+    qaKeywordCol: "認識キーワード",
+    qaQuestionCol: "質問タイプ",
+    qaAnswerCol: "AI回答内容 (編集可能)",
+    qaKeywordPlace: "例: 配送、割引",
+    qaQuestionPlace: "例: いつ届きますか？",
+    qaAnswerPlace: "例: 当日発送いたします。",
+    addBtn: "追加",
+    tabShipping: "配送管理",
+    orderHistory: "注文履歴",
+    noOrders: "注文履歴がありません。",
+    orderIdCol: "注文ID",
+    shippingCol: "配送状態",
+    trackingCol: "追跡番号",
+    dateCol: "注文日時",
+    statusPrep: "📦 商品準備中",
+    statusShip: "🚚 配送中",
+    statusDone: "✅ 配達完了",
+    tabVideoEditor: "動画編集＆圧縮スタジオ",
+    videoSelectLabel: "編集する動画ファイルを選択",
+    crfLabel: "高圧縮品質 (CRF 20 ~ 35, 推奨: 28)",
+    speedLabel: "再生速度",
+    audioLabel: "オーディオトラック",
+    audioKeep: "🔊 元の音声を維持",
+    audioMuteOpt: "🔇 ミュート (無音)",
+    renderBtn: "🚀 動画編集・圧縮を実行 (Render)",
+    renderingBtn: "⏳ 圧縮およびレンダリング中...",
+    trackingViewTitle: "📦 注文・配送追跡 (3秒後に自動で閉じます)",
+    closeBtn: "閉じる",
     orderIdLabel: "注文ID",
     shippingStatusLabel: "状態",
     soundOn: "🔊 音声ON",
     soundOff: "🔇 ミュート",
     lowStockWarning: "⚠️ 残りわずか！",
     stockLeft: "残り在庫: ",
-    unit: "個"
+    unit: "個",
+    orderUnit: "件"
   },
   zh: {
     marketName: "杨平开放节",
@@ -196,45 +328,89 @@ const TRANSLATIONS: Record<Language, any> = {
     secureCheckout: "安全结账",
     totalAmount: "总额",
     cancelBack: "返回",
-    paymentCompleted: "支付成功！",
+    paymentCompleted: "支付成功！实时物流已启动。",
     chatTitle: "AI 购物助手 & 实时聊天",
     online: "在线",
-    initialGreeting: "欢迎来到 PayPal AI 智能代理电商！点击下方商品按钮切换视频。",
+    initialGreeting: "欢迎来到 PayPal AI 智能代理电商！点击下方商品按钮即可切换视频并查看详情。",
     inputPlaceholder: "输入消息...",
     send: "发送",
-    openCheckout: "打开结账",
+    openCheckout: "打开 PayPal 结账",
     adminPortalBtn: "🔒 管理员",
-    adminTitle: "管理后台",
-    adminSubtitle: "商品注册与库存管理",
-    passwordPlaceholder: "密码",
-    loginBtn: "登录",
-    loginError: "密码错误",
+    adminTitle: "安全管理后台 (商品·视频·库存·FAQ)",
+    adminSubtitle: "PostgreSQL / 本地DB联动 商品注册、视频映射与实时库存管理",
+    adminAuthTitle: "管理员安全认证",
+    adminAuthSubtitle: "登录以管理商品注册、视频映射、库存及 AI 问答",
+    passwordLabel: "管理员密码 (默认: admin1234)",
+    passwordPlaceholder: "输入密码 (admin1234)",
+    loginBtn: "管理员登录",
+    loginError: "密码错误。",
     logoutBtn: "登出",
-    backToStore: "← 返回直播",
-    tabInventory: "📦 库存管理",
-    tabShipping: "🚚 物流",
-    tabQA: "💬 FAQ",
-    tabVideoEditor: "🎬 视频编辑",
-    totalRevenue: "收入",
-    totalOrders: "订单",
-    activeStock: "库存",
-    orderHistory: "历史",
-    noOrders: "暂无订单",
-    productNameCol: "商品",
+    backToStore: "← 返回直播视频界面",
+    sec0Title: "1. 注册新商品与专用视频映射 (PostgreSQL / Local DB)",
+    sec0Badge: "聊天商品按钮与视频即时联动",
+    sec0Desc: "将商品信息与预先拍摄的视频路径配对注册，即可在直播聊天底部即时生成商品按钮。",
+    prodNameLabel: "商品名称 *",
+    prodNamePlaceholder: "例: 杨平有机树莓礼盒",
+    prodPriceLabel: "价格 (KRW) *",
+    prodStockLabel: "初始库存 *",
+    prodIconLabel: "图标",
+    prodVideoLabel: "映射视频路径 *",
+    prodDescLabel: "商品详细说明 (显示在聊天和商品卡中)",
+    prodDescPlaceholder: "例: 当日采摘的100%生态树莓，产地直发。",
+    registerBtn: "💾 保存商品 + 视频至数据库",
+    totalRevenue: "总累计收入",
+    sandboxSub: "沙盒测试交易",
+    totalOrders: "总订单数",
+    ordersSub: "已完成支付订单",
+    activeStock: "有效库存总计",
+    stockSub: "所有商品剩余库存",
+    tabInventory: "已注册商品与视频/库存列表",
+    registeredCount: "个已注册",
+    productNameCol: "商品名称 / 详细说明",
     priceCol: "价格",
     stockCol: "库存",
-    shippingCol: "配送",
-    trackingCol: "单号",
-    videoAssetCol: "视频",
+    videoAssetCol: "映射视频",
     actionsCol: "操作",
-    trackingViewTitle: "📦 订单追踪",
+    changeVideoBtn: "⚙️ 更换视频",
+    deleteBtn: "删除",
+    tabQA: "AI 自定义问答与 FAQ 编辑",
+    qaDesc: "实时编辑和管理消费者在直播聊天中提问时自动匹配的 AI 回复。",
+    qaKeywordCol: "识别关键词",
+    qaQuestionCol: "消费者问题类型",
+    qaAnswerCol: "AI 助手回复 (可编辑)",
+    qaKeywordPlace: "例: 物流, 折扣",
+    qaQuestionPlace: "例: 什么时候能到？",
+    qaAnswerPlace: "例: 当天发货。",
+    addBtn: "添加",
+    tabShipping: "物流管理",
+    orderHistory: "订单记录",
+    noOrders: "暂无订单记录。",
+    orderIdCol: "订单号",
+    shippingCol: "配送状态",
+    trackingCol: "运单号",
+    dateCol: "下单时间",
+    statusPrep: "📦 商品准备中",
+    statusShip: "🚚 配送中",
+    statusDone: "✅ 配送完成",
+    tabVideoEditor: "视频编辑与压缩工作室",
+    videoSelectLabel: "选择要编辑的视频文件",
+    crfLabel: "高压缩质量 (CRF 20 ~ 35, 推荐: 28)",
+    speedLabel: "播放速度",
+    audioLabel: "音轨设置",
+    audioKeep: "🔊 保留原声",
+    audioMuteOpt: "🔇 静音 (Mute)",
+    renderBtn: "🚀 执行视频编辑与压缩 (Render)",
+    renderingBtn: "⏳ 正在压缩与渲染...",
+    trackingViewTitle: "📦 订单与物流追踪 (3秒后自动关闭)",
+    closeBtn: "关闭",
     orderIdLabel: "订单号",
     shippingStatusLabel: "状态",
-    soundOn: "🔊 声音",
+    soundOn: "🔊 声音开启",
     soundOff: "🔇 静音",
     lowStockWarning: "⚠️ 库存告急！",
     stockLeft: "剩余库存: ",
-    unit: "个"
+    unit: "个",
+    orderUnit: "单"
   },
   es: {
     marketName: "Festival de Yangpyeong",
@@ -242,50 +418,94 @@ const TRANSLATIONS: Record<Language, any> = {
     sandbox: "Sandbox",
     liveStream: "EN VIVO",
     aiLiveFeatured: "DESTACADO IA",
-    payWithPayPal: "Pagar",
+    payWithPayPal: "Pagar con PayPal",
     soldOut: "Agotado",
     secureCheckout: "Pago Seguro",
     totalAmount: "Total",
     cancelBack: "Volver",
-    paymentCompleted: "¡Pago completado!",
-    chatTitle: "Agente IA & Chat",
+    paymentCompleted: "¡Pago completado! Envío iniciado.",
+    chatTitle: "Agente IA & Chat en Vivo",
     online: "En línea",
-    initialGreeting: "¡Bienvenido! Toca un producto abajo para ver su video.",
-    inputPlaceholder: "Escribe...",
+    initialGreeting: "¡Bienvenido! Toca un botón de producto abajo para ver su video y detalles.",
+    inputPlaceholder: "Escribe un mensaje...",
     send: "Enviar",
-    openCheckout: "Abrir pago",
+    openCheckout: "Abrir Pago PayPal",
     adminPortalBtn: "🔒 Admin",
-    adminTitle: "Admin",
-    adminSubtitle: "Gestión",
-    passwordPlaceholder: "Password",
-    loginBtn: "Login",
-    loginError: "Error",
-    logoutBtn: "Logout",
-    backToStore: "← Volver",
-    tabInventory: "📦 Stock",
-    tabShipping: "🚚 Envíos",
-    tabQA: "💬 FAQ",
-    tabVideoEditor: "🎬 Video",
-    totalRevenue: "Ingresos",
-    totalOrders: "Pedidos",
-    activeStock: "Stock",
-    orderHistory: "Historial",
-    noOrders: "Sin pedidos",
-    productNameCol: "Producto",
+    adminTitle: "Panel de Administración Seguro (Productos, Video, Stock y FAQ)",
+    adminSubtitle: "Registro de productos en PostgreSQL / DB Local, mapeo de video y stock en vivo",
+    adminAuthTitle: "Autenticación de Administrador",
+    adminAuthSubtitle: "Inicio de sesión seguro para gestionar productos, videos, stock y FAQ",
+    passwordLabel: "Contraseña (Default: admin1234)",
+    passwordPlaceholder: "Contraseña (admin1234)",
+    loginBtn: "Iniciar Sesión",
+    loginError: "Contraseña incorrecta.",
+    logoutBtn: "Cerrar Sesión",
+    backToStore: "← Volver al Video en Vivo",
+    sec0Title: "1. Registrar Nuevo Producto y Video (PostgreSQL / Local DB)",
+    sec0Badge: "Sincronización Instantánea con Chat y Video",
+    sec0Desc: "Registra los datos del producto junto con el archivo de video para crear un botón instantáneo en el chat.",
+    prodNameLabel: "Nombre del Producto *",
+    prodNamePlaceholder: "ej., Set de Frambuesas Orgánicas",
+    prodPriceLabel: "Precio (KRW) *",
+    prodStockLabel: "Stock Inicial *",
+    prodIconLabel: "Icono",
+    prodVideoLabel: "Ruta del Video *",
+    prodDescLabel: "Descripción del Producto (Visible en chat y tarjeta)",
+    prodDescPlaceholder: "ej., Frambuesas 100% ecológicas cosechadas hoy y enviadas directamente.",
+    registerBtn: "💾 Guardar Producto + Video en DB",
+    totalRevenue: "Ingresos Totales",
+    sandboxSub: "Transacciones de prueba Sandbox",
+    totalOrders: "Pedidos Totales",
+    ordersSub: "Pedidos completados",
+    activeStock: "Stock Activo Total",
+    stockSub: "Unidades disponibles",
+    tabInventory: "Lista de Productos, Videos y Stock",
+    registeredCount: " registrados",
+    productNameCol: "Producto / Descripción",
     priceCol: "Precio",
     stockCol: "Stock",
-    shippingCol: "Envío",
-    trackingCol: "Tracking",
-    videoAssetCol: "Video",
+    videoAssetCol: "Video Mapeado",
     actionsCol: "Acción",
-    trackingViewTitle: "📦 Seguimiento",
+    changeVideoBtn: "⚙️ Cambiar Video",
+    deleteBtn: "Eliminar",
+    tabQA: "Editor de Respuestas IA y FAQ",
+    qaDesc: "Gestiona las respuestas automáticas del agente IA para preguntas frecuentes en el chat.",
+    qaKeywordCol: "Palabra Clave",
+    qaQuestionCol: "Pregunta del Cliente",
+    qaAnswerCol: "Respuesta IA (Editable)",
+    qaKeywordPlace: "ej., envío, descuento",
+    qaQuestionPlace: "ej., ¿Cuándo llega?",
+    qaAnswerPlace: "ej., Se envía el mismo día.",
+    addBtn: "Añadir",
+    tabShipping: "Gestión de Envíos",
+    orderHistory: "Historial de Pedidos",
+    noOrders: "Aún no hay pedidos.",
+    orderIdCol: "ID Pedido",
+    shippingCol: "Estado de Envío",
+    trackingCol: "N° Seguimiento",
+    dateCol: "Fecha",
+    statusPrep: "📦 Preparando",
+    statusShip: "🚚 En Camino",
+    statusDone: "✅ Entregado",
+    tabVideoEditor: "Estudio de Edición y Compresión de Video",
+    videoSelectLabel: "Seleccionar Archivo de Video",
+    crfLabel: "Calidad de Compresión (CRF 20 ~ 35, Rec: 28)",
+    speedLabel: "Velocidad",
+    audioLabel: "Pista de Audio",
+    audioKeep: "🔊 Mantener Audio Original",
+    audioMuteOpt: "🔇 Silenciar (Mute)",
+    renderBtn: "🚀 Ejecutar Edición y Compresión (Render)",
+    renderingBtn: "⏳ Comprimiendo y Renderizando...",
+    trackingViewTitle: "📦 Seguimiento de Pedido (Cierra en 3s)",
+    closeBtn: "Cerrar",
     orderIdLabel: "ID",
     shippingStatusLabel: "Estado",
     soundOn: "🔊 Sonido",
     soundOff: "🔇 Silencio",
     lowStockWarning: "⚠️ ¡Stock Bajo!",
     stockLeft: "Stock: ",
-    unit: "pcs"
+    unit: "pcs",
+    orderUnit: "pedidos"
   },
   fr: {
     marketName: "Festival de Yangpyeong",
@@ -293,50 +513,94 @@ const TRANSLATIONS: Record<Language, any> = {
     sandbox: "Sandbox",
     liveStream: "EN DIRECT",
     aiLiveFeatured: "PHARE IA",
-    payWithPayPal: "Payer",
+    payWithPayPal: "Payer avec PayPal",
     soldOut: "Épuisé",
-    secureCheckout: "Paiement",
+    secureCheckout: "Paiement Sécurisé",
     totalAmount: "Total",
     cancelBack: "Retour",
-    paymentCompleted: "Paiement réussi !",
-    chatTitle: "Agent IA & Chat",
+    paymentCompleted: "Paiement réussi ! Expédition lancée.",
+    chatTitle: "Agent IA & Chat en Direct",
     online: "En ligne",
-    initialGreeting: "Bienvenue ! Touchez un produit ci-dessous pour voir la vidéo.",
-    inputPlaceholder: "Tapez...",
+    initialGreeting: "Bienvenue ! Touchez un produit ci-dessous pour voir sa vidéo et ses détails.",
+    inputPlaceholder: "Tapez un message...",
     send: "Envoyer",
-    openCheckout: "Ouvrir",
+    openCheckout: "Ouvrir PayPal",
     adminPortalBtn: "🔒 Admin",
-    adminTitle: "Admin",
-    adminSubtitle: "Gestion",
-    passwordPlaceholder: "Mot de passe",
+    adminTitle: "Tableau de Bord Admin Sécurisé (Produits, Vidéo, Stock & FAQ)",
+    adminSubtitle: "Enregistrement de produits PostgreSQL / DB Locale, mappage vidéo et stock en direct",
+    adminAuthTitle: "Authentification Administrateur",
+    adminAuthSubtitle: "Connexion sécurisée pour gérer les produits, vidéos, stocks et FAQ IA",
+    passwordLabel: "Mot de passe (Défaut: admin1234)",
+    passwordPlaceholder: "Mot de passe (admin1234)",
     loginBtn: "Connexion",
-    loginError: "Erreur",
+    loginError: "Mot de passe incorrect.",
     logoutBtn: "Déconnexion",
-    backToStore: "← Retour",
-    tabInventory: "📦 Stock",
-    tabShipping: "🚚 Expéditions",
-    tabQA: "💬 FAQ",
-    tabVideoEditor: "🎬 Vidéo",
-    totalRevenue: "Revenu",
-    totalOrders: "Commandes",
-    activeStock: "Stock",
-    orderHistory: "Historique",
-    noOrders: "Aucune",
-    productNameCol: "Produit",
+    backToStore: "← Retour à la Vidéo en Direct",
+    sec0Title: "1. Enregistrer un Nouveau Produit et Vidéo (PostgreSQL / Local DB)",
+    sec0Badge: "Synchro Instantanée Bouton Chat & Vidéo",
+    sec0Desc: "Associez les détails du produit à un fichier vidéo pour créer instantanément un bouton dans le chat en direct.",
+    prodNameLabel: "Nom du Produit *",
+    prodNamePlaceholder: "ex., Coffret Framboises Bio",
+    prodPriceLabel: "Prix (KRW) *",
+    prodStockLabel: "Stock Initial *",
+    prodIconLabel: "Icône",
+    prodVideoLabel: "Chemin de la Vidéo *",
+    prodDescLabel: "Description du Produit (Affichée dans le chat et la carte)",
+    prodDescPlaceholder: "ex., Framboises 100% bio récoltées du jour et expédiées directement.",
+    registerBtn: "💾 Enregistrer Produit + Vidéo en DB",
+    totalRevenue: "Revenu Total",
+    sandboxSub: "Transactions de test Sandbox",
+    totalOrders: "Commandes Totales",
+    ordersSub: "Commandes payées",
+    activeStock: "Stock Actif Total",
+    stockSub: "Unités disponibles",
+    tabInventory: "Liste des Produits, Vidéos et Stocks",
+    registeredCount: " enregistrés",
+    productNameCol: "Produit / Description",
     priceCol: "Prix",
     stockCol: "Stock",
-    shippingCol: "Expédition",
-    trackingCol: "Suivi",
-    videoAssetCol: "Vidéo",
+    videoAssetCol: "Vidéo Mappée",
     actionsCol: "Action",
-    trackingViewTitle: "📦 Suivi",
+    changeVideoBtn: "⚙️ Changer Vidéo",
+    deleteBtn: "Supprimer",
+    tabQA: "Éditeur de Réponses IA & FAQ",
+    qaDesc: "Gérez en temps réel les réponses automatiques de l'agent IA aux questions du chat.",
+    qaKeywordCol: "Mot-clé",
+    qaQuestionCol: "Question Client",
+    qaAnswerCol: "Réponse IA (Modifiable)",
+    qaKeywordPlace: "ex., livraison, remise",
+    qaQuestionPlace: "ex., Quand arrive-t-il ?",
+    qaAnswerPlace: "ex., Expédié le jour même.",
+    addBtn: "Ajouter",
+    tabShipping: "Gestion des Expéditions",
+    orderHistory: "Historique des Commandes",
+    noOrders: "Aucune commande.",
+    orderIdCol: "ID Commande",
+    shippingCol: "Statut d'Expédition",
+    trackingCol: "N° de Suivi",
+    dateCol: "Date",
+    statusPrep: "📦 En préparation",
+    statusShip: "🚚 En cours",
+    statusDone: "✅ Livré",
+    tabVideoEditor: "Studio d'Édition et Compression Vidéo",
+    videoSelectLabel: "Sélectionner le Fichier Vidéo",
+    crfLabel: "Qualité de Compression (CRF 20 ~ 35, Rec: 28)",
+    speedLabel: "Vitesse",
+    audioLabel: "Piste Audio",
+    audioKeep: "🔊 Conserver l'Audio Original",
+    audioMuteOpt: "🔇 Muet (Mute)",
+    renderBtn: "🚀 Lancer l'Édition et la Compression (Render)",
+    renderingBtn: "⏳ Compression et Rendu en cours...",
+    trackingViewTitle: "📦 Suivi de Commande (Fermeture dans 3s)",
+    closeBtn: "Fermer",
     orderIdLabel: "ID",
     shippingStatusLabel: "Statut",
-    soundOn: "🔊 Son",
+    soundOn: "🔊 Son Activé",
     soundOff: "🔇 Muet",
     lowStockWarning: "⚠️ Stock Limité !",
     stockLeft: "Stock : ",
-    unit: "pcs"
+    unit: "pcs",
+    orderUnit: "commandes"
   }
 };
 
@@ -359,7 +623,7 @@ export const LiveStreamView: React.FC = () => {
   const [lang, setLang] = useState<Language>("ko");
   const t = TRANSLATIONS[lang];
 
-  // 새로고침(F5) 시 무조건 동영상 메인 화면으로 시작하도록 초기화
+  // 새로고침(F5) 시 무조건 동영상 메인 화면으로 시작
   const [isAdminRoute, setIsAdminRoute] = useState<boolean>(false);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
     return sessionStorage.getItem("paypal_admin_auth") === "true";
@@ -414,7 +678,6 @@ export const LiveStreamView: React.FC = () => {
   const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // 초기 마운트 시 URL 해시(#/admin)가 남아있더라도 강제로 제거하여 동영상 화면부터 표시
   useEffect(() => {
     if (window.location.hash.includes("admin")) {
       window.history.replaceState(null, "", window.location.pathname + window.location.search);
@@ -427,7 +690,6 @@ export const LiveStreamView: React.FC = () => {
     });
   }, []);
 
-  // 결제 완료 창 3초 후 자동 닫힘 타이머
   useEffect(() => {
     if (latestOrder) {
       const timer = setTimeout(() => {
@@ -468,11 +730,19 @@ export const LiveStreamView: React.FC = () => {
       timestamp: new Date().toLocaleTimeString()
     };
 
-    const aiReply = `🎬 [${prodTitle}] 전용 영상(${product.videoUrl})으로 전환되었습니다!\n📋 상품 상세설명: ${prodDesc}`;
+    const aiReply = {
+      ko: `🎬 [${prodTitle}] 전용 영상(${product.videoUrl})으로 전환되었습니다!\n📋 상세설명: ${prodDesc}`,
+      en: `🎬 Switched to [${prodTitle}] video (${product.videoUrl})!\n📋 Details: ${prodDesc}`,
+      ja: `🎬 [${prodTitle}] 専用動画(${product.videoUrl})に切り替えました！\n📋 詳細: ${prodDesc}`,
+      zh: `🎬 已切换至 [${prodTitle}] 视频 (${product.videoUrl})！\n📋 详情: ${prodDesc}`,
+      es: `🎬 ¡Cambiado al video de [${prodTitle}] (${product.videoUrl})!\n📋 Detalles: ${prodDesc}`,
+      fr: `🎬 Passage à la vidéo [${prodTitle}] (${product.videoUrl}) !\n📋 Détails : ${prodDesc}`
+    };
+
     const aiMsg: ChatMessage = {
       id: (Date.now() + 1).toString() + "-ai",
       sender: "ai",
-      text: { ko: aiReply, en: aiReply, ja: aiReply, zh: aiReply, es: aiReply, fr: aiReply },
+      text: aiReply,
       timestamp: new Date().toLocaleTimeString(),
       suggestedProduct: product
     };
@@ -508,17 +778,17 @@ export const LiveStreamView: React.FC = () => {
     } else if (matchedProd) {
       setActiveProduct(matchedProd);
       const desc = matchedProd.description[lang] || matchedProd.description.ko;
-      aiReplyText = `🎬 [${matchedProd.name[lang] || matchedProd.name.ko}] 영상(${matchedProd.videoUrl})으로 전환되었습니다!\n📋 상세설명: ${desc}`;
+      aiReplyText = `🎬 [${matchedProd.name[lang] || matchedProd.name.ko}] (${matchedProd.videoUrl})\n📋 ${desc}`;
       suggestedProd = matchedProd;
     } else if (query.includes("pay") || query.includes("결제") || query.includes("checkout")) {
       if (!activeProduct || activeProduct.stock <= 0) {
-        aiReplyText = "죄송합니다. 현재 선택하신 상품은 품절되었습니다.";
+        aiReplyText = t.soldOut;
       } else {
         setIsCheckingOut(true);
-        aiReplyText = "페이팔 안전 결제창을 열어드렸습니다. 아래에서 결제를 진행해 주세요.";
+        aiReplyText = t.secureCheckout;
       }
     } else {
-      aiReplyText = `[AI 에이전트 답변] "${inputText}" 문의가 접수되었습니다. 아래 상품 버튼을 누르시면 상세설명과 전용 동영상을 보실 수 있습니다.`;
+      aiReplyText = `[AI] "${inputText}" - ${t.stockLeft}${activeProduct ? activeProduct.stock : 0}${t.unit}`;
     }
 
     const aiMsg: ChatMessage = {
@@ -570,10 +840,10 @@ export const LiveStreamView: React.FC = () => {
   const handleRegisterNewProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProdName.trim()) {
-      alert("상품명을 입력해 주세요.");
+      alert(t.prodNameLabel);
       return;
     }
-    const descText = newProdDesc.trim() || `${newProdName.trim()} 실전 촬영 라이브 시연 영상 매핑 상품`;
+    const descText = newProdDesc.trim() || `${newProdName.trim()} Live Demo Video Product`;
     const updated = await productService.addProduct({
       name: {
         ko: newProdName.trim(),
@@ -602,7 +872,7 @@ export const LiveStreamView: React.FC = () => {
     setActiveProduct(updated[0]);
     setNewProdName("");
     setNewProdDesc("");
-    alert(`✅ [${newProdName}] 상품과 동영상(${newProdVideo})이 DB에 등록되었으며, 채팅창 상품 버튼에 즉시 반영되었습니다!`);
+    alert(`✅ [${newProdName}] -> (${newProdVideo})`);
   };
 
   const updateShippingStatus = (orderId: string, newStatus: "상품 준비중" | "배송중" | "배송완료") => {
@@ -613,7 +883,7 @@ export const LiveStreamView: React.FC = () => {
   };
 
   const changeProductVideoMapping = async (productId: string) => {
-    const newVideo = prompt("해당 상품에 매핑할 실제 동영상 파일 경로를 입력하세요 (예: /videos/honey_demo.mp4 또는 /videos/tea_demo.mp4):", "/videos/honey_demo.mp4");
+    const newVideo = prompt(t.prodVideoLabel, "/videos/honey_demo.mp4");
     if (newVideo) {
       const updated = await productService.updateVideoMapping(productId, newVideo.trim());
       setProducts(updated);
@@ -621,7 +891,6 @@ export const LiveStreamView: React.FC = () => {
         const found = updated.find(p => p.id === productId);
         if (found) setActiveProduct(found);
       }
-      alert(`상품 동영상 매핑이 변경되었습니다: ${newVideo}`);
     }
   };
 
@@ -635,10 +904,7 @@ export const LiveStreamView: React.FC = () => {
   };
 
   const handleDeleteProduct = async (productId: string) => {
-    if (products.length <= 1) {
-      alert("최소 1개의 상품은 유지되어야 합니다.");
-      return;
-    }
+    if (products.length <= 1) return;
     const updated = await productService.deleteProduct(productId);
     setProducts(updated);
     if (activeProduct && activeProduct.id === productId && updated.length > 0) {
@@ -648,10 +914,7 @@ export const LiveStreamView: React.FC = () => {
 
   const handleAddCustomQA = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newKeyword.trim() || !newAnswer.trim()) {
-      alert("키워드와 답변을 모두 입력해 주세요.");
-      return;
-    }
+    if (!newKeyword.trim() || !newAnswer.trim()) return;
     const newQa: CustomQARecord = {
       id: "qa-" + Date.now(),
       keyword: newKeyword.trim(),
@@ -662,7 +925,6 @@ export const LiveStreamView: React.FC = () => {
     setNewKeyword("");
     setNewQuestion("");
     setNewAnswer("");
-    alert("새로운 소비자 맞춤 답변(FAQ)이 등록되었습니다!");
   };
 
   const updateCustomQAAnswer = (id: string, newAns: string) => {
@@ -680,28 +942,44 @@ export const LiveStreamView: React.FC = () => {
     setTimeout(() => {
       setProcessLog(prev => prev + `\n[FFmpeg] Encoding video stream (libx264) & optimizing moov atom for web streaming...\n[Success] Processed video rendered and saved to public/videos/!`);
       setIsProcessing(false);
-      alert("동영상 압축 및 렌더링이 완료되었습니다!");
     }, 1500);
   };
 
   const currentProd = activeProduct || products[0];
 
+  // 공통 다국어 선택 버튼 바 컴포넌트
+  const renderLanguageSelector = () => (
+    <div className="flex bg-slate-950 border border-slate-700 rounded-md p-0.5 text-xs overflow-x-auto shrink-0">
+      {(["ko", "en", "ja", "zh", "es", "fr"] as Language[]).map((l) => (
+        <button
+          key={l}
+          onClick={() => setLang(l)}
+          className={`px-2 py-0.5 rounded transition cursor-pointer font-medium uppercase text-[10px] shrink-0 ${lang === l ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"}`}
+        >
+          {l === "ko" ? "🇰🇷 한국어" : l === "en" ? "🇺🇸 EN" : l === "ja" ? "🇯🇵 日本語" : l === "zh" ? "🇨🇳 中文" : l === "es" ? "🇪🇸 ES" : "🇫🇷 FR"}
+        </button>
+      ))}
+    </div>
+  );
+
+  // 관리자 화면 (선택된 언어로 100% 일괄 표시)
   if (isAdminRoute) {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col w-full max-w-full overflow-x-hidden">
-        <header className="border-b border-slate-700 px-4 py-3 flex justify-between items-center bg-slate-900/90 backdrop-blur shadow-md w-full">
+        <header className="border-b border-slate-700 px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-2 bg-slate-900/90 backdrop-blur shadow-md w-full">
           <h1 className="text-sm font-bold flex items-center gap-2 truncate">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
             <span className="truncate">{t.adminTitle}</span>
           </h1>
-          <button
-            onClick={() => {
-              setIsAdminRoute(false);
-            }}
-            className="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shadow shrink-0"
-          >
-            {t.backToStore}
-          </button>
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            {renderLanguageSelector()}
+            <button
+              onClick={() => setIsAdminRoute(false)}
+              className="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer shadow shrink-0"
+            >
+              {t.backToStore}
+            </button>
+          </div>
         </header>
 
         <div className="flex-1 max-w-6xl mx-auto w-full p-4 flex flex-col gap-6">
@@ -709,13 +987,13 @@ export const LiveStreamView: React.FC = () => {
             <div className="max-w-md mx-auto mt-12 bg-slate-900 border-2 border-slate-700 p-6 rounded-2xl shadow-2xl flex flex-col gap-5 w-full">
               <div className="text-center">
                 <span className="text-4xl">🔐</span>
-                <h2 className="text-lg font-bold text-white mt-2">Admin Portal Authentication</h2>
-                <p className="text-xs text-slate-400 mt-1">상품 등록, 동영상 매핑, 재고 및 AI FAQ 관리를 위한 보안 로그인</p>
+                <h2 className="text-lg font-bold text-white mt-2">{t.adminAuthTitle}</h2>
+                <p className="text-xs text-slate-400 mt-1">{t.adminAuthSubtitle}</p>
               </div>
 
               <form onSubmit={handleAdminLogin} className="flex flex-col gap-4">
                 <div>
-                  <label className="text-xs text-slate-300 font-semibold mb-1 block">Password (기본: admin1234)</label>
+                  <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.passwordLabel}</label>
                   <input
                     type="password"
                     value={adminPassword}
@@ -762,33 +1040,31 @@ export const LiveStreamView: React.FC = () => {
                 </div>
               </div>
 
-              {/* [최상단 배치] SECTION 0: 신규 상품 등록 및 동영상 짝 매핑 폼 */}
+              {/* SECTION 0: 신규 상품 등록 및 동영상 짝 매핑 폼 (다국어 완벽 적용) */}
               <div className="bg-slate-900 border-2 border-amber-500 p-5 rounded-2xl flex flex-col gap-4 shadow-2xl w-full">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-3 gap-2">
                   <h3 className="text-base font-bold text-amber-400 flex items-center gap-2">
-                    <span>➕</span> 1. 신규 상품 등록 및 전용 동영상 매핑 (PostgreSQL / Local DB)
+                    <span>➕</span> {t.sec0Title}
                   </h3>
                   <span className="text-[11px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded font-semibold">
-                    채팅창 상품 버튼 & 비디오 즉시 연동
+                    {t.sec0Badge}
                   </span>
                 </div>
-                <p className="text-xs text-slate-300">
-                  상품 정보(상품명, 가격, 재고, 상세설명)와 미리 촬영한 동영상 파일 경로를 짝지어 등록하면, 라이브 채팅창 하단에 상품 버튼으로 즉시 생성됩니다.
-                </p>
+                <p className="text-xs text-slate-300">{t.sec0Desc}</p>
 
                 <form onSubmit={handleRegisterNewProduct} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                   <div className="md:col-span-3">
-                    <label className="text-xs text-slate-300 font-semibold mb-1 block">상품명 *</label>
+                    <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.prodNameLabel}</label>
                     <input
                       type="text"
                       value={newProdName}
                       onChange={e => setNewProdName(e.target.value)}
-                      placeholder="예: 양평 유기농 산딸기 세트"
+                      placeholder={t.prodNamePlaceholder}
                       className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="text-xs text-slate-300 font-semibold mb-1 block">가격 (KRW) *</label>
+                    <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.prodPriceLabel}</label>
                     <input
                       type="number"
                       value={newProdPrice}
@@ -797,7 +1073,7 @@ export const LiveStreamView: React.FC = () => {
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="text-xs text-slate-300 font-semibold mb-1 block">초기 재고 *</label>
+                    <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.prodStockLabel}</label>
                     <input
                       type="number"
                       value={newProdStock}
@@ -806,7 +1082,7 @@ export const LiveStreamView: React.FC = () => {
                     />
                   </div>
                   <div className="md:col-span-1">
-                    <label className="text-xs text-slate-300 font-semibold mb-1 block">아이콘</label>
+                    <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.prodIconLabel}</label>
                     <input
                       type="text"
                       value={newProdIcon}
@@ -815,7 +1091,7 @@ export const LiveStreamView: React.FC = () => {
                     />
                   </div>
                   <div className="md:col-span-4">
-                    <label className="text-xs text-slate-300 font-semibold mb-1 block">매핑할 촬영 동영상 경로 *</label>
+                    <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.prodVideoLabel}</label>
                     <input
                       type="text"
                       value={newProdVideo}
@@ -825,12 +1101,12 @@ export const LiveStreamView: React.FC = () => {
                     />
                   </div>
                   <div className="md:col-span-9">
-                    <label className="text-xs text-slate-300 font-semibold mb-1 block">상품 상세설명 (채팅창 및 상품 카드에 표시됨)</label>
+                    <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.prodDescLabel}</label>
                     <input
                       type="text"
                       value={newProdDesc}
                       onChange={e => setNewProdDesc(e.target.value)}
-                      placeholder="예: 당일 수확한 100% 친환경 양평 산딸기를 산지 직송으로 보내드립니다."
+                      placeholder={t.prodDescPlaceholder}
                       className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"
                     />
                   </div>
@@ -839,7 +1115,7 @@ export const LiveStreamView: React.FC = () => {
                       type="submit"
                       className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2.5 rounded-lg text-xs font-bold transition shadow-lg cursor-pointer border border-amber-400/40"
                     >
-                      💾 상품 + 동영상 DB 등록하기
+                      {t.registerBtn}
                     </button>
                   </div>
                 </form>
@@ -851,24 +1127,24 @@ export const LiveStreamView: React.FC = () => {
                   <p className="text-xl font-bold text-emerald-400">
                     KRW {orders.reduce((sum, o) => sum + o.amount, 0).toLocaleString()}
                   </p>
-                  <p className="text-[10px] text-slate-500">Sandbox Test Transactions</p>
+                  <p className="text-[10px] text-slate-500">{t.sandboxSub}</p>
                 </div>
                 <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-1 shadow">
                   <p className="text-xs text-slate-400 font-medium">{t.totalOrders}</p>
-                  <p className="text-xl font-bold text-blue-400">{orders.length} 건</p>
-                  <p className="text-[10px] text-slate-500">Completed Orders</p>
+                  <p className="text-xl font-bold text-blue-400">{orders.length} {t.orderUnit}</p>
+                  <p className="text-[10px] text-slate-500">{t.ordersSub}</p>
                 </div>
                 <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-1 shadow">
                   <p className="text-xs text-slate-400 font-medium">{t.activeStock}</p>
-                  <p className="text-xl font-bold text-amber-400">{products.reduce((sum, p) => sum + p.stock, 0)} 개</p>
-                  <p className="text-[10px] text-slate-500">Total Available Stock</p>
+                  <p className="text-xl font-bold text-amber-400">{products.reduce((sum, p) => sum + p.stock, 0)} {t.unit}</p>
+                  <p className="text-[10px] text-slate-500">{t.stockSub}</p>
                 </div>
               </div>
 
               {/* SECTION 1: 등록된 상품 및 동영상/재고 목록 */}
               <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-4 w-full overflow-hidden">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <span>📦</span> {t.tabInventory} ({products.length}개 등록됨)
+                  <span>📦</span> {t.tabInventory} ({products.length}{t.registeredCount})
                 </h3>
                 <div className="overflow-x-auto w-full">
                   <table className="w-full text-left text-xs min-w-[600px]">
@@ -899,7 +1175,7 @@ export const LiveStreamView: React.FC = () => {
                                 onChange={(e) => updateProductStock(prod.id, Number(e.target.value))}
                                 className="w-16 bg-slate-950 border border-slate-700 text-amber-400 font-bold rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500"
                               />
-                              <span className="text-slate-400">개</span>
+                              <span className="text-slate-400">{t.unit}</span>
                             </div>
                           </td>
                           <td className="py-3.5 text-slate-400">
@@ -910,13 +1186,13 @@ export const LiveStreamView: React.FC = () => {
                               onClick={() => changeProductVideoMapping(prod.id)}
                               className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/40 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer"
                             >
-                              ⚙️ 동영상 변경
+                              {t.changeVideoBtn}
                             </button>
                             <button
                               onClick={() => handleDeleteProduct(prod.id)}
                               className="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/40 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer"
                             >
-                              삭제
+                              {t.deleteBtn}
                             </button>
                           </td>
                         </tr>
@@ -931,14 +1207,16 @@ export const LiveStreamView: React.FC = () => {
                 <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2">
                   <span>💬</span> {t.tabQA}
                 </h3>
+                <p className="text-xs text-slate-400">{t.qaDesc}</p>
+
                 <div className="overflow-x-auto w-full">
                   <table className="w-full text-left text-xs min-w-[500px]">
                     <thead>
                       <tr className="border-b border-slate-800 text-slate-400">
-                        <th className="pb-3 font-semibold">인식 키워드</th>
-                        <th className="pb-3 font-semibold">소비자 질문 유형</th>
-                        <th className="pb-3 font-semibold">AI 에이전트 답변 (편집 가능)</th>
-                        <th className="pb-3 font-semibold text-right">관리</th>
+                        <th className="pb-3 font-semibold">{t.qaKeywordCol}</th>
+                        <th className="pb-3 font-semibold">{t.qaQuestionCol}</th>
+                        <th className="pb-3 font-semibold">{t.qaAnswerCol}</th>
+                        <th className="pb-3 font-semibold text-right">{t.actionsCol}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/60">
@@ -959,7 +1237,7 @@ export const LiveStreamView: React.FC = () => {
                               onClick={() => deleteCustomQA(qa.id)}
                               className="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/40 px-2.5 py-1 rounded text-[11px] transition cursor-pointer"
                             >
-                              삭제
+                              {t.deleteBtn}
                             </button>
                           </td>
                         </tr>
@@ -970,32 +1248,32 @@ export const LiveStreamView: React.FC = () => {
 
                 <form onSubmit={handleAddCustomQA} className="mt-3 pt-4 border-t border-slate-800 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                   <div className="md:col-span-3">
-                    <label className="text-[11px] text-slate-400 mb-1 block">인식 키워드</label>
+                    <label className="text-[11px] text-slate-400 mb-1 block">{t.qaKeywordCol}</label>
                     <input
                       type="text"
                       value={newKeyword}
                       onChange={e => setNewKeyword(e.target.value)}
-                      placeholder="예: 배송, 할인, 성분"
+                      placeholder={t.qaKeywordPlace}
                       className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
                     />
                   </div>
                   <div className="md:col-span-4">
-                    <label className="text-[11px] text-slate-400 mb-1 block">질문 유형 설명</label>
+                    <label className="text-[11px] text-slate-400 mb-1 block">{t.qaQuestionCol}</label>
                     <input
                       type="text"
                       value={newQuestion}
                       onChange={e => setNewQuestion(e.target.value)}
-                      placeholder="예: 언제 도착하나요?"
+                      placeholder={t.qaQuestionPlace}
                       className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
                     />
                   </div>
                   <div className="md:col-span-4">
-                    <label className="text-[11px] text-slate-400 mb-1 block">에이전트 답변 내용</label>
+                    <label className="text-[11px] text-slate-400 mb-1 block">{t.qaAnswerCol}</label>
                     <input
                       type="text"
                       value={newAnswer}
                       onChange={e => setNewAnswer(e.target.value)}
-                      placeholder="예: 당일 발송됩니다."
+                      placeholder={t.qaAnswerPlace}
                       className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
                     />
                   </div>
@@ -1004,7 +1282,7 @@ export const LiveStreamView: React.FC = () => {
                       type="submit"
                       className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-xs font-bold transition cursor-pointer shadow border border-blue-400/30"
                     >
-                      추가
+                      {t.addBtn}
                     </button>
                   </div>
                 </form>
@@ -1022,12 +1300,12 @@ export const LiveStreamView: React.FC = () => {
                     <table className="w-full text-left text-xs min-w-[500px]">
                       <thead>
                         <tr className="border-b border-slate-800 text-slate-400">
-                          <th className="pb-3 font-semibold">Order ID</th>
-                          <th className="pb-3 font-semibold">Product</th>
-                          <th className="pb-3 font-semibold">Amount</th>
+                          <th className="pb-3 font-semibold">{t.orderIdCol}</th>
+                          <th className="pb-3 font-semibold">{t.productNameCol}</th>
+                          <th className="pb-3 font-semibold">{t.priceCol}</th>
                           <th className="pb-3 font-semibold">{t.trackingCol}</th>
                           <th className="pb-3 font-semibold">{t.shippingCol}</th>
-                          <th className="pb-3 font-semibold text-right">Action</th>
+                          <th className="pb-3 font-semibold text-right">{t.dateCol}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-800/60">
@@ -1043,9 +1321,9 @@ export const LiveStreamView: React.FC = () => {
                                 onChange={(e) => updateShippingStatus(ord.orderId, e.target.value as any)}
                                 className="bg-slate-950 border border-slate-700 text-slate-100 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500"
                               >
-                                <option value="상품 준비중">📦 상품 준비중</option>
-                                <option value="배송중">🚚 배송중</option>
-                                <option value="배송완료">✅ 배송완료</option>
+                                <option value="상품 준비중">{t.statusPrep}</option>
+                                <option value="배송중">{t.statusShip}</option>
+                                <option value="배송완료">{t.statusDone}</option>
                               </select>
                             </td>
                             <td className="py-3.5 text-right">
@@ -1073,20 +1351,20 @@ export const LiveStreamView: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
                   <div className="flex flex-col gap-4">
                     <div>
-                      <label className="text-xs text-slate-300 font-semibold mb-1 block">편집할 동영상 파일 선택</label>
+                      <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.videoSelectLabel}</label>
                       <select
                         value={selectedVideoAsset}
                         onChange={(e) => setSelectedVideoAsset(e.target.value)}
                         className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-amber-500"
                       >
                         {products.map(p => (
-                          <option key={p.id} value={p.videoUrl}>{p.icon} {p.videoUrl} ({p.name.ko})</option>
+                          <option key={p.id} value={p.videoUrl}>{p.icon} {p.videoUrl} ({p.name[lang] || p.name.ko})</option>
                         ))}
                       </select>
                     </div>
 
                     <div>
-                      <label className="text-xs text-slate-300 font-semibold mb-1 block">고압축 품질 (CRF 20 ~ 35, 권장: 28)</label>
+                      <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.crfLabel}</label>
                       <input
                         type="number"
                         min="20"
@@ -1099,7 +1377,7 @@ export const LiveStreamView: React.FC = () => {
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="text-xs text-slate-300 font-semibold mb-1 block">재생 속도</label>
+                        <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.speedLabel}</label>
                         <select
                           value={videoSpeed}
                           onChange={(e) => setVideoSpeed(e.target.value)}
@@ -1111,14 +1389,14 @@ export const LiveStreamView: React.FC = () => {
                         </select>
                       </div>
                       <div>
-                        <label className="text-xs text-slate-300 font-semibold mb-1 block">오디오 트랙</label>
+                        <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.audioLabel}</label>
                         <select
                           value={audioMute ? "mute" : "keep"}
                           onChange={(e) => setAudioMute(e.target.value === "mute")}
                           className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-amber-500"
                         >
-                          <option value="keep">🔊 원본 오디오 유지 (권장)</option>
-                          <option value="mute">🔇 무음 (Mute)</option>
+                          <option value="keep">{t.audioKeep}</option>
+                          <option value="mute">{t.audioMuteOpt}</option>
                         </select>
                       </div>
                     </div>
@@ -1128,7 +1406,7 @@ export const LiveStreamView: React.FC = () => {
                       onClick={runVideoEditorCompression}
                       className="mt-2 bg-amber-600 hover:bg-amber-500 disabled:bg-slate-700 text-white py-2.5 rounded-lg text-xs font-bold transition shadow-lg cursor-pointer border border-amber-400/30 flex items-center justify-center gap-2"
                     >
-                      {isProcessing ? "⏳ 동영상 압축 및 렌더링 중..." : "🚀 동영상 편집 및 압축 실행 (Render)"}
+                      {isProcessing ? t.renderingBtn : t.renderBtn}
                     </button>
                   </div>
 
@@ -1149,7 +1427,7 @@ export const LiveStreamView: React.FC = () => {
     );
   }
 
-  // Main Live Commerce Store View (Mobile Full-Width Snap Scroll UI/UX)
+  // Main Live Commerce Store View (동영상 상하 길이를 빈공간 없이 100% 꽉 채움)
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col w-full max-w-full overflow-x-hidden box-border">
       {/* Header */}
@@ -1166,25 +1444,13 @@ export const LiveStreamView: React.FC = () => {
         
         <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
           <button
-            onClick={() => {
-              setIsAdminRoute(true);
-            }}
+            onClick={() => setIsAdminRoute(true)}
             className="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/40 px-2.5 py-1 rounded-md text-[11px] font-semibold transition cursor-pointer flex items-center gap-1 shadow shrink-0"
           >
             <span>{t.adminPortalBtn}</span>
           </button>
 
-          <div className="flex bg-slate-950 border border-slate-700 rounded-md p-0.5 text-xs overflow-x-auto shrink-0">
-            {(["ko", "en", "ja", "zh", "es", "fr"] as Language[]).map((l) => (
-              <button
-                key={l}
-                onClick={() => setLang(l)}
-                className={`px-2 py-0.5 rounded transition cursor-pointer font-medium uppercase text-[10px] shrink-0 ${lang === l ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"}`}
-              >
-                {l === "ko" ? "🇰🇷" : l === "en" ? "EN" : l === "ja" ? "🇯🇵" : l === "zh" ? "中文" : l === "es" ? "ES" : "FR"}
-              </button>
-            ))}
-          </div>
+          {renderLanguageSelector()}
 
           <span className="text-[11px] bg-blue-600/20 text-blue-400 border border-blue-500/40 px-2.5 py-1 rounded-full font-medium shrink-0 hidden sm:inline-block">
             {t.sandbox}
@@ -1193,11 +1459,12 @@ export const LiveStreamView: React.FC = () => {
       </header>
 
       {/* Main Snap Scroll Container for Mobile / Grid for Desktop */}
-      <div className="flex-1 flex flex-col md:grid md:grid-cols-12 gap-3 p-2 sm:p-4 w-full max-w-full box-border items-stretch md:overflow-hidden snap-y md:snap-none snap-mandatory overflow-y-auto" style={{ height: "calc(100vh - 55px)" }}>
+      <div className="flex-1 flex flex-col md:grid md:grid-cols-12 gap-3 p-2 sm:p-4 w-full max-w-full box-border items-stretch md:overflow-hidden snap-y md:snap-none snap-mandatory overflow-y-auto" style={{ height: "calc(100vh - 52px)" }}>
         
-        {/* Section 1: Video & Live Commerce Player (Snap Page 1) */}
-        <div className="md:col-span-7 relative min-h-[580px] md:h-full bg-slate-900/40 border border-slate-700/80 rounded-2xl p-3 shadow-xl flex flex-col w-full max-w-full box-border snap-start shrink-0">
-          <div className="relative w-full h-[380px] md:h-[460px] bg-slate-900 rounded-xl overflow-hidden border border-slate-700 flex items-center justify-center shadow-lg shrink-0">
+        {/* Section 1: Video & Live Commerce Player (빈 공간 제거 및 동영상 flex-1 꽉 채움) */}
+        <div className="md:col-span-7 relative h-[calc(100vh-68px)] md:h-full bg-slate-900/40 border border-slate-700/80 rounded-2xl p-2.5 sm:p-3 shadow-xl flex flex-col justify-between w-full max-w-full box-border snap-start shrink-0">
+          {/* 비디오 영역이 남은 상하 공간을 100% 꽉 채우도록 flex-1 min-h-0 적용 */}
+          <div className="relative w-full flex-1 min-h-0 bg-slate-900 rounded-xl overflow-hidden border border-slate-700 flex items-center justify-center shadow-lg">
             {currentProd && (
               <video
                 ref={videoRef}
@@ -1206,7 +1473,7 @@ export const LiveStreamView: React.FC = () => {
                 loop
                 muted={isAudioMuted}
                 playsInline
-                className="absolute inset-0 w-full h-full object-cover object-[center_35%] bg-black"
+                className="absolute inset-0 w-full h-full object-cover object-center bg-black"
                 onError={(e) => {
                   const target = e.currentTarget;
                   if (target.src !== currentProd.fallbackVideoUrl) {
@@ -1221,7 +1488,7 @@ export const LiveStreamView: React.FC = () => {
               </video>
             )}
             
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none"></div>
 
             {/* Top-Left Badges */}
             <div className="absolute top-3 left-3 z-20 flex flex-col items-start gap-1">
@@ -1250,7 +1517,8 @@ export const LiveStreamView: React.FC = () => {
             </div>
           </div>
 
-          <div className="mt-3 flex-1 flex flex-col justify-end w-full max-w-full box-border">
+          {/* 하단 결제창 영역: 불필요한 flex-1 여백을 없애고 shrink-0 mt-2.5로 동영상 바로 아래에 밀착 */}
+          <div className="mt-2.5 shrink-0 w-full max-w-full box-border">
             {currentProd && !isCheckingOut && !latestOrder ? (
               <div className="bg-slate-900/95 backdrop-blur-md p-3 rounded-xl border border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 shadow-xl animate-fadeIn w-full box-border">
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
@@ -1274,14 +1542,14 @@ export const LiveStreamView: React.FC = () => {
                 {currentProd.stock > 0 ? (
                   <button 
                     onClick={() => setIsCheckingOut(true)}
-                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-semibold transition shadow-lg cursor-pointer shrink-0 border border-blue-400/30 text-center"
+                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-lg text-xs font-semibold transition shadow-lg cursor-pointer shrink-0 border border-blue-400/30 text-center"
                   >
                     {t.payWithPayPal}
                   </button>
                 ) : (
                   <button 
                     disabled
-                    className="w-full sm:w-auto bg-slate-800 text-slate-500 px-4 py-2 rounded-lg text-xs font-bold cursor-not-allowed border border-slate-700 text-center"
+                    className="w-full sm:w-auto bg-slate-800 text-slate-500 px-4 py-2.5 rounded-lg text-xs font-bold cursor-not-allowed border border-slate-700 text-center"
                   >
                     {t.soldOut}
                   </button>
@@ -1313,13 +1581,13 @@ export const LiveStreamView: React.FC = () => {
               <div className="bg-slate-900 border border-emerald-500/70 p-3 rounded-xl shadow-xl animate-fadeIn flex flex-col gap-2.5 w-full box-border">
                 <div className="flex justify-between items-center border-b border-slate-800 pb-1.5">
                   <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-1 truncate">
-                    <span>✅</span> <span className="truncate">{t.trackingViewTitle} (3초 후 자동 닫힘)</span>
+                    <span>✅</span> <span className="truncate">{t.trackingViewTitle}</span>
                   </h3>
                   <button 
                     onClick={() => setLatestOrder(null)}
                     className="text-[11px] text-slate-400 hover:text-white underline cursor-pointer shrink-0"
                   >
-                    닫기
+                    {t.closeBtn}
                   </button>
                 </div>
 
@@ -1340,7 +1608,7 @@ export const LiveStreamView: React.FC = () => {
             ) : null}
 
             {checkoutStatus && !latestOrder && (
-              <div className="mt-2 p-2.5 bg-emerald-950/80 border border-emerald-500/50 rounded-lg text-xs text-emerald-300 font-semibold text-center shadow">
+              <div className="mt-2 p-2 bg-emerald-950/80 border border-emerald-500/50 rounded-lg text-xs text-emerald-300 font-semibold text-center shadow">
                 {checkoutStatus}
               </div>
             )}
@@ -1348,7 +1616,7 @@ export const LiveStreamView: React.FC = () => {
         </div>
 
         {/* Section 2: AI Shopping Agent & Live Chat (Snap Page 2) */}
-        <div className="md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-2xl flex flex-col min-h-[520px] md:h-full shadow-xl w-full max-w-full box-border snap-start shrink-0">
+        <div className="md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-2xl flex flex-col h-[calc(100vh-68px)] md:h-full shadow-xl w-full max-w-full box-border snap-start shrink-0">
           <div className="p-3 border-b border-slate-700 font-semibold text-xs sm:text-sm flex justify-between items-center bg-slate-900/90 shrink-0">
             <span className="truncate">{t.chatTitle}</span>
             <span className="text-[11px] text-emerald-400 flex items-center gap-1.5 shrink-0">
@@ -1399,7 +1667,7 @@ export const LiveStreamView: React.FC = () => {
             ))}
           </div>
 
-          {/* 관리자가 등록한 모든 상품이 상세설명 툴팁과 함께 채팅창 버튼으로 동적 표시됨 */}
+          {/* 관리자가 등록한 모든 상품이 상세설명과 함께 채팅창 버튼으로 동적 표시됨 */}
           <div className="px-2.5 pt-2 pb-2 flex gap-1.5 flex-wrap border-t border-slate-700 bg-slate-900/60 shrink-0 w-full max-w-full box-border">
             {products.map((prod) => (
               <button
