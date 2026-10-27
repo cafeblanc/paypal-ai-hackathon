@@ -97,7 +97,9 @@ const TRANSLATIONS: Record<Language, any> = {
     shippingStatusLabel: "현재 배송 상태",
     soundOn: "🔊 소리 켜기",
     soundOff: "🔇 음소거 중",
-    lowStockWarning: "⚠️ [긴급] 남은 재고 마감 임박!"
+    lowStockWarning: "⚠️ [긴급] 남은 재고 마감 임박!",
+    stockLeft: "남은 재고: ",
+    unit: "개"
   },
   en: {
     marketName: "Yangpyeong Open Festival",
@@ -154,7 +156,9 @@ const TRANSLATIONS: Record<Language, any> = {
     shippingStatusLabel: "Shipping Status",
     soundOn: "🔊 Sound On",
     soundOff: "🔇 Muted",
-    lowStockWarning: "⚠️ [Urgent] Low Stock Alert!"
+    lowStockWarning: "⚠️ [Urgent] Low Stock Alert!",
+    stockLeft: "Stock Left: ",
+    unit: "pcs"
   },
   ja: {
     marketName: "楊平オープンフェスティバル",
@@ -211,7 +215,9 @@ const TRANSLATIONS: Record<Language, any> = {
     shippingStatusLabel: "配送状態",
     soundOn: "🔊 音声ON",
     soundOff: "🔇 ミュート",
-    lowStockWarning: "⚠️ [緊急] 残りわずか！"
+    lowStockWarning: "⚠️ [緊急] 残りわずか！",
+    stockLeft: "残り在庫: ",
+    unit: "個"
   },
   zh: {
     marketName: "杨平开放节",
@@ -268,7 +274,9 @@ const TRANSLATIONS: Record<Language, any> = {
     shippingStatusLabel: "配送状态",
     soundOn: "🔊 开启声音",
     soundOff: "🔇 静音",
-    lowStockWarning: "⚠️ [紧急] 库存告急！"
+    lowStockWarning: "⚠️ [紧急] 库存告急！",
+    stockLeft: "剩余库存: ",
+    unit: "个"
   },
   es: {
     marketName: "Festival Abierto de Yangpyeong",
@@ -325,7 +333,9 @@ const TRANSLATIONS: Record<Language, any> = {
     shippingStatusLabel: "Estado de Envío",
     soundOn: "🔊 Sonido Activo",
     soundOff: "🔇 Silenciado",
-    lowStockWarning: "⚠️ [Urgente] ¡Stock Bajo!"
+    lowStockWarning: "⚠️ [Urgente] ¡Stock Bajo!",
+    stockLeft: "Stock Restante: ",
+    unit: "pcs"
   },
   fr: {
     marketName: "Festival Ouvert de Yangpyeong",
@@ -382,7 +392,9 @@ const TRANSLATIONS: Record<Language, any> = {
     shippingStatusLabel: "Statut d'expédition",
     soundOn: "🔊 Son Activé",
     soundOff: "🔇 Muet",
-    lowStockWarning: "⚠️ [Urgent] Stock Limité !"
+    lowStockWarning: "⚠️ [Urgent] Stock Limité !",
+    stockLeft: "Stock Restant : ",
+    unit: "pcs"
   }
 };
 
@@ -1079,7 +1091,7 @@ export const LiveStreamView: React.FC = () => {
     );
   }
 
-  // Main Live Commerce Store View (Live Badge & Market Name Stacked Vertically, Video Position Adjusted Lower)
+  // Main Live Commerce Store View
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col relative">
       <header className="border-b border-slate-700 px-6 py-3 flex justify-between items-center bg-slate-900/90 backdrop-blur shadow-md">
@@ -1155,7 +1167,7 @@ export const LiveStreamView: React.FC = () => {
               </span>
             </div>
 
-            {/* Top-Right: Sound Button on Top, Stock Badge Directly Below */}
+            {/* Top-Right: Sound Button on Top, Stock Badge Directly Below (다국어 연동 완료) */}
             <div className="absolute top-3 right-3 z-20 flex flex-col items-end gap-2">
               <button
                 onClick={() => setIsAudioMuted(!isAudioMuted)}
@@ -1165,7 +1177,7 @@ export const LiveStreamView: React.FC = () => {
               </button>
 
               <span className={`text-xs font-bold px-3 py-1.5 rounded-lg border backdrop-blur-md shadow-lg ${activeProduct.stock <= 0 ? 'bg-red-600/90 text-white border-red-500' : activeProduct.stock <= 5 ? 'bg-amber-600/90 text-white border-amber-500 animate-pulse' : 'bg-black/80 text-amber-300 border-slate-600'}`}>
-                {activeProduct.stock <= 0 ? t.soldOut : `🔥 남은 재고: ${activeProduct.stock}개`}
+                {activeProduct.stock <= 0 ? t.soldOut : `🔥 ${t.stockLeft}${activeProduct.stock}${t.unit}`}
               </span>
             </div>
           </div>
@@ -1182,7 +1194,7 @@ export const LiveStreamView: React.FC = () => {
                       <p className="text-[11px] text-blue-400 font-semibold tracking-wide">{t.aiLiveFeatured}</p>
                       {activeProduct.stock <= 5 && activeProduct.stock > 0 && (
                         <span className="text-[10px] text-red-400 font-bold bg-red-950/80 px-2 py-0.5 rounded border border-red-500/50 animate-pulse">
-                          {t.lowStockWarning} ({activeProduct.stock}개 남음)
+                          {t.lowStockWarning} ({activeProduct.stock}{t.unit})
                         </span>
                       )}
                     </div>
@@ -1210,7 +1222,7 @@ export const LiveStreamView: React.FC = () => {
               <div className="bg-slate-900 border-2 border-blue-500/70 p-4 rounded-xl shadow-2xl animate-fadeIn">
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="text-xs font-bold text-blue-400 flex items-center gap-1.5">
-                    <span>💳</span> {t.secureCheckout}: {activeProduct.icon} {activeProduct.name[lang]} (재고: {activeProduct.stock}개)
+                    <span>💳</span> {t.secureCheckout}: {activeProduct.icon} {activeProduct.name[lang]} ({t.stockLeft}{activeProduct.stock}{t.unit})
                   </h3>
                   <button 
                     onClick={() => setIsCheckingOut(false)}
@@ -1299,7 +1311,7 @@ export const LiveStreamView: React.FC = () => {
                       <div className="text-xs">
                         <div className="flex items-center gap-2">
                           <p className="font-bold text-white">{msg.suggestedProduct.name[lang]}</p>
-                          <span className="text-[10px] text-amber-400 font-bold">재고: {msg.suggestedProduct.stock}개</span>
+                          <span className="text-[10px] text-amber-400 font-bold">{t.stockLeft}{msg.suggestedProduct.stock}{t.unit}</span>
                         </div>
                         <p className="text-slate-400">KRW {msg.suggestedProduct.price.toLocaleString()} (~${Math.round(msg.suggestedProduct.price / 1350)} USD)</p>
                       </div>
