@@ -516,6 +516,16 @@ export const LiveStreamView: React.FC = () => {
   const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
+  // 자동 3초 뒤 결제 완료(추적) 창 닫기 및 기본 화면 복귀 타이머
+  useEffect(() => {
+    if (latestOrder) {
+      const timer = setTimeout(() => {
+        setLatestOrder(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [latestOrder]);
+
   useEffect(() => {
     const handleHashChange = () => {
       setIsAdminRoute(window.location.hash.includes("admin") || window.location.pathname.includes("admin"));
@@ -652,8 +662,6 @@ export const LiveStreamView: React.FC = () => {
     setLatestOrder(newOrder);
 
     setProducts(prev => prev.map(p => p.id === product.id ? { ...p, stock: Math.max(0, p.stock - 1) } : p));
-
-    alert("[PayPal Sandbox Payment Success]\nProduct: " + product.name[lang] + "\nOrder ID: " + orderId);
     setIsCheckingOut(false);
   };
 
@@ -1167,7 +1175,7 @@ export const LiveStreamView: React.FC = () => {
               </span>
             </div>
 
-            {/* Top-Right: Sound Button on Top, Stock Badge Directly Below (다국어 연동 완료) */}
+            {/* Top-Right: Sound Button on Top, Stock Badge Directly Below */}
             <div className="absolute top-3 right-3 z-20 flex flex-col items-end gap-2">
               <button
                 onClick={() => setIsAudioMuted(!isAudioMuted)}
@@ -1244,7 +1252,7 @@ export const LiveStreamView: React.FC = () => {
               <div className="bg-slate-900 border-2 border-emerald-500/70 p-4 rounded-xl shadow-2xl animate-fadeIn flex flex-col gap-3">
                 <div className="flex justify-between items-center border-b border-slate-800 pb-2">
                   <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
-                    <span>✅</span> {t.trackingViewTitle}
+                    <span>✅</span> {t.trackingViewTitle} (3초 후 자동 닫힘)
                   </h3>
                   <button 
                     onClick={() => setLatestOrder(null)}

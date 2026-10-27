@@ -734,29 +734,29 @@ export const LiveStreamView: React.FC = () => {
 
   if (isAdminRoute) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-        <header className="border-b border-slate-700 px-6 py-3 flex justify-between items-center bg-slate-900/90 backdrop-blur shadow-md">
-          <h1 className="text-lg font-bold flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-amber-500 animate-pulse"></span>
-            {t.adminTitle}
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col w-full overflow-x-hidden">
+        <header className="border-b border-slate-700 px-4 py-3 flex justify-between items-center bg-slate-900/90 backdrop-blur shadow-md w-full">
+          <h1 className="text-base font-bold flex items-center gap-2 truncate">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
+            <span className="truncate">{t.adminTitle}</span>
           </h1>
           <button
             onClick={() => {
               window.location.hash = "";
               setIsAdminRoute(false);
             }}
-            className="bg-slate-800 hover:bg-slate-700 text-blue-400 border border-blue-500/40 px-4 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer shadow"
+            className="bg-slate-800 hover:bg-slate-700 text-blue-400 border border-blue-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer shadow shrink-0"
           >
             {t.backToStore}
           </button>
         </header>
 
-        <div className="flex-1 max-w-6xl mx-auto w-full p-6 flex flex-col gap-6">
+        <div className="flex-1 max-w-6xl mx-auto w-full p-4 flex flex-col gap-6">
           {!isAdminLoggedIn ? (
-            <div className="max-w-md mx-auto mt-20 bg-slate-900 border-2 border-slate-700 p-8 rounded-2xl shadow-2xl flex flex-col gap-5">
+            <div className="max-w-md mx-auto mt-12 bg-slate-900 border-2 border-slate-700 p-6 rounded-2xl shadow-2xl flex flex-col gap-5 w-full">
               <div className="text-center">
                 <span className="text-4xl">🔐</span>
-                <h2 className="text-xl font-bold text-white mt-2">Admin Portal Authentication</h2>
+                <h2 className="text-lg font-bold text-white mt-2">Admin Portal Authentication</h2>
                 <p className="text-xs text-slate-400 mt-1">매출, 재고, 배송 및 AI FAQ 편집을 위한 보안 로그인</p>
               </div>
 
@@ -784,21 +784,21 @@ export const LiveStreamView: React.FC = () => {
               </form>
             </div>
           ) : (
-            <div className="flex flex-col gap-6 animate-fadeIn">
-              <div className="flex justify-between items-center bg-slate-900 border border-slate-800 p-5 rounded-xl">
+            <div className="flex flex-col gap-6 animate-fadeIn w-full">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-900 border border-slate-800 p-4 rounded-xl gap-3">
                 <div>
-                  <h2 className="text-lg font-bold text-amber-400">{t.adminTitle}</h2>
+                  <h2 className="text-base font-bold text-amber-400">{t.adminTitle}</h2>
                   <p className="text-xs text-slate-400 mt-0.5">{t.adminSubtitle}</p>
                 </div>
                 <button
                   onClick={() => setIsAdminLoggedIn(false)}
-                  className="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 px-4 py-2 rounded-lg text-xs font-semibold transition cursor-pointer"
+                  className="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0"
                 >
                   {t.logoutBtn}
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
                 <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-1 shadow">
                   <p className="text-xs text-slate-400 font-medium">{t.totalRevenue}</p>
                   <p className="text-xl font-bold text-emerald-400">
@@ -819,14 +819,14 @@ export const LiveStreamView: React.FC = () => {
               </div>
 
               {/* SECTION 1: AI Custom Q&A / FAQ Editor & Manager */}
-              <div className="bg-slate-900 border-2 border-blue-500/40 p-5 rounded-xl flex flex-col gap-4 shadow-xl">
+              <div className="bg-slate-900 border-2 border-blue-500/40 p-4 rounded-xl flex flex-col gap-4 shadow-xl w-full overflow-hidden">
                 <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2">
                   <span>💬</span> {t.tabQA}
                 </h3>
                 <p className="text-xs text-slate-400">소비자가 라이브 채팅에서 질문할 때 즉시 매칭되는 AI 에이전트의 맞춤 답변을 실시간으로 편집하고 관리합니다.</p>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full text-left text-xs min-w-[500px]">
                     <thead>
                       <tr className="border-b border-slate-800 text-slate-400">
                         <th className="pb-3 font-semibold">인식 키워드</th>
@@ -905,12 +905,12 @@ export const LiveStreamView: React.FC = () => {
               </div>
 
               {/* SECTION 2: Real-Time Inventory & Video Mapping Editor */}
-              <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl flex flex-col gap-4">
+              <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-4 w-full overflow-hidden">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                   <span>📦</span> {t.tabInventory}
                 </h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full text-left text-xs min-w-[500px]">
                     <thead>
                       <tr className="border-b border-slate-800 text-slate-400">
                         <th className="pb-3 font-semibold">{t.productNameCol}</th>
@@ -944,12 +944,12 @@ export const LiveStreamView: React.FC = () => {
                             </div>
                           </td>
                           <td className="py-3.5 text-slate-400">
-                            <code className="bg-slate-950 px-2.5 py-1 rounded text-amber-300 border border-slate-800 font-mono">{prod.videoUrl}</code>
+                            <code className="bg-slate-950 px-2.5 py-1 rounded text-amber-300 border border-slate-800 font-mono text-[11px]">{prod.videoUrl}</code>
                           </td>
                           <td className="py-3.5 text-right">
                             <button
                               onClick={() => changeProductVideoMapping(prod.id)}
-                              className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer"
+                              className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0"
                             >
                               ⚙️ 동영상 변경
                             </button>
@@ -962,15 +962,15 @@ export const LiveStreamView: React.FC = () => {
               </div>
 
               {/* SECTION 3: Shipping & Order Management */}
-              <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl flex flex-col gap-4">
+              <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-4 w-full overflow-hidden">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                   <span>🚚</span> {t.tabShipping} & {t.orderHistory}
                 </h3>
                 {orders.length === 0 ? (
                   <p className="text-xs text-slate-500 py-4 text-center">{t.noOrders}</p>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs">
+                  <div className="overflow-x-auto w-full">
+                    <table className="w-full text-left text-xs min-w-[500px]">
                       <thead>
                         <tr className="border-b border-slate-800 text-slate-400">
                           <th className="pb-3 font-semibold">Order ID</th>
@@ -1011,8 +1011,8 @@ export const LiveStreamView: React.FC = () => {
               </div>
 
               {/* SECTION 4: Video Editor & Compressor Studio */}
-              <div className="bg-slate-900 border-2 border-amber-500/40 p-5 rounded-xl flex flex-col gap-4 shadow-xl">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="bg-slate-900 border-2 border-amber-500/40 p-4 rounded-xl flex flex-col gap-4 shadow-xl w-full">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-slate-800 pb-3 gap-2">
                   <h3 className="text-sm font-bold text-amber-400 flex items-center gap-2">
                     <span>🎬</span> {t.tabVideoEditor}
                   </h3>
@@ -1021,7 +1021,7 @@ export const LiveStreamView: React.FC = () => {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
                   <div className="flex flex-col gap-4">
                     <div>
                       <label className="text-xs text-slate-300 font-semibold mb-1 block">편집할 동영상 파일 선택</label>
@@ -1082,7 +1082,7 @@ export const LiveStreamView: React.FC = () => {
                     </button>
                   </div>
 
-                  <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col font-mono text-[11px] text-emerald-400 h-[240px] overflow-y-auto shadow-inner">
+                  <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col font-mono text-[11px] text-emerald-400 h-[220px] overflow-y-auto shadow-inner w-full">
                     <p className="text-slate-500 pb-2 border-b border-slate-900 mb-2">// FFmpeg Studio Console Output</p>
                     {processLog ? (
                       <pre className="whitespace-pre-wrap">{processLog}</pre>
@@ -1099,47 +1099,47 @@ export const LiveStreamView: React.FC = () => {
     );
   }
 
-  // Main Live Commerce Store View
+  // Main Live Commerce Store View (Mobile Fully Responsive Layout)
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col relative">
-      <header className="border-b border-slate-700 px-6 py-3 flex justify-between items-center bg-slate-900/90 backdrop-blur shadow-md">
-        <h1 className="text-lg font-bold flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></span>
-          {t.title}
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col relative w-full overflow-x-hidden box-border">
+      <header className="border-b border-slate-700 px-3 md:px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-3 bg-slate-900/90 backdrop-blur shadow-md w-full box-border">
+        <h1 className="text-sm md:text-lg font-bold flex items-center gap-2 w-full md:w-auto justify-center md:justify-start">
+          <span className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-red-500 animate-pulse shrink-0"></span>
+          <span className="truncate">{t.title}</span>
         </h1>
         
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center justify-center gap-2 w-full md:w-auto">
           <button
             onClick={() => {
               window.location.hash = "#/admin";
               setIsAdminRoute(true);
             }}
-            className="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/40 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow"
+            className="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow shrink-0"
           >
             <span>{t.adminPortalBtn}</span>
           </button>
 
-          <div className="flex bg-slate-950 border border-slate-700 rounded-lg p-0.5 text-xs overflow-x-auto">
+          <div className="flex bg-slate-950 border border-slate-700 rounded-lg p-0.5 text-xs overflow-x-auto max-w-full shrink-0">
             {(["ko", "en", "ja", "zh", "es", "fr"] as Language[]).map((l) => (
               <button
                 key={l}
                 onClick={() => setLang(l)}
-                className={`px-2.5 py-1 rounded-md transition cursor-pointer font-medium uppercase ${lang === l ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"}`}
+                className={`px-2 py-1 rounded-md transition cursor-pointer font-medium uppercase text-[11px] shrink-0 ${lang === l ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"}`}
               >
-                {l === "ko" ? "🇰🇷 한국어" : l === "en" ? "🇺🇸 EN" : l === "ja" ? "🇯🇵 日本語" : l === "zh" ? "🇨🇳 中文" : l === "es" ? "🇪🇸 ES" : "🇫🇷 FR"}
+                {l === "ko" ? "🇰🇷" : l === "en" ? "EN" : l === "ja" ? "🇯🇵" : l === "zh" ? "中文" : l === "es" ? "ES" : "FR"}
               </button>
             ))}
           </div>
 
-          <span className="text-xs bg-blue-600/20 text-blue-400 border border-blue-500/40 px-3 py-1 rounded-full font-medium shrink-0">
+          <span className="text-xs bg-blue-600/20 text-blue-400 border border-blue-500/40 px-2.5 py-1 rounded-full font-medium shrink-0">
             {t.sandbox}
           </span>
         </div>
       </header>
 
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-5 p-5 max-w-7xl mx-auto w-full items-stretch">
-        <div className="md:col-span-7 relative h-[660px] bg-slate-900/40 border-2 border-slate-700 rounded-xl p-4 shadow-2xl flex flex-col">
-          <div className="relative w-full h-[520px] bg-slate-900 rounded-xl overflow-hidden border-2 border-slate-700 flex items-center justify-center shadow-2xl shrink-0">
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-12 gap-4 p-3 md:p-5 max-w-7xl mx-auto w-full items-stretch box-border overflow-hidden">
+        <div className="md:col-span-7 relative h-auto md:h-[660px] bg-slate-900/40 border-2 border-slate-700 rounded-xl p-3 md:p-4 shadow-2xl flex flex-col w-full">
+          <div className="relative w-full h-[360px] md:h-[520px] bg-slate-900 rounded-xl overflow-hidden border-2 border-slate-700 flex items-center justify-center shadow-2xl shrink-0">
             <video
               ref={videoRef}
               key={activeProduct.id}
@@ -1167,74 +1167,74 @@ export const LiveStreamView: React.FC = () => {
 
             {/* Top-Left: Live Badge on top, Subtitle Market Name Stacked Below */}
             <div className="absolute top-3 left-3 z-20 flex flex-col items-start gap-1.5">
-              <span className="bg-red-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-md animate-pulse uppercase tracking-wider shadow">
+              <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 md:px-2.5 md:py-1 rounded-md animate-pulse uppercase tracking-wider shadow">
                 ● {t.liveStream}
               </span>
-              <span className="bg-black/70 backdrop-blur-md text-slate-200 text-xs px-2.5 py-1 rounded-md border border-slate-600 font-medium shadow">
+              <span className="bg-black/70 backdrop-blur-md text-slate-200 text-[11px] md:text-xs px-2 py-0.5 md:px-2.5 md:py-1 rounded-md border border-slate-600 font-medium shadow">
                 {t.marketName}
               </span>
             </div>
 
             {/* Top-Right: Sound Button on Top, Stock Badge Directly Below */}
-            <div className="absolute top-3 right-3 z-20 flex flex-col items-end gap-2">
+            <div className="absolute top-3 right-3 z-20 flex flex-col items-end gap-1.5 md:gap-2">
               <button
                 onClick={() => setIsAudioMuted(!isAudioMuted)}
-                className="bg-black/80 hover:bg-black text-white text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-600 backdrop-blur-md shadow-lg transition cursor-pointer flex items-center gap-1.5"
+                className="bg-black/80 hover:bg-black text-white text-[11px] md:text-xs font-semibold px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg border border-slate-600 backdrop-blur-md shadow-lg transition cursor-pointer flex items-center gap-1"
               >
                 <span>{isAudioMuted ? t.soundOff : t.soundOn}</span>
               </button>
 
-              <span className={`text-xs font-bold px-3 py-1.5 rounded-lg border backdrop-blur-md shadow-lg ${activeProduct.stock <= 0 ? 'bg-red-600/90 text-white border-red-500' : activeProduct.stock <= 5 ? 'bg-amber-600/90 text-white border-amber-500 animate-pulse' : 'bg-black/80 text-amber-300 border-slate-600'}`}>
+              <span className={`text-[11px] md:text-xs font-bold px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg border backdrop-blur-md shadow-lg ${activeProduct.stock <= 0 ? 'bg-red-600/90 text-white border-red-500' : activeProduct.stock <= 5 ? 'bg-amber-600/90 text-white border-amber-500 animate-pulse' : 'bg-black/80 text-amber-300 border-slate-600'}`}>
                 {activeProduct.stock <= 0 ? t.soldOut : `🔥 ${t.stockLeft}${activeProduct.stock}${t.unit}`}
               </span>
             </div>
           </div>
 
-          <div className="absolute bottom-4 left-4 right-4 z-30">
+          <div className="mt-3 md:absolute md:bottom-4 md:left-4 md:right-4 z-30 w-full">
             {!isCheckingOut && !latestOrder ? (
-              <div className="bg-slate-900/95 backdrop-blur-md p-4 rounded-xl border-2 border-slate-700 flex items-center justify-between shadow-2xl animate-fadeIn">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-2xl shadow-inner">
+              <div className="bg-slate-900/95 backdrop-blur-md p-3 md:p-4 rounded-xl border-2 border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xl animate-fadeIn w-full box-border">
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-xl md:text-2xl shadow-inner shrink-0">
                     {activeProduct.icon}
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="text-[11px] text-blue-400 font-semibold tracking-wide">{t.aiLiveFeatured}</p>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-[10px] md:text-[11px] text-blue-400 font-semibold tracking-wide">{t.aiLiveFeatured}</p>
                       {activeProduct.stock <= 5 && activeProduct.stock > 0 && (
-                        <span className="text-[10px] text-red-400 font-bold bg-red-950/80 px-2 py-0.5 rounded border border-red-500/50 animate-pulse">
+                        <span className="text-[9px] md:text-[10px] text-red-400 font-bold bg-red-950/80 px-1.5 py-0.5 rounded border border-red-500/50 animate-pulse">
                           {t.lowStockWarning} ({activeProduct.stock}{t.unit})
                         </span>
                       )}
                     </div>
-                    <p className="text-sm font-bold text-white">{activeProduct.name[lang]}</p>
-                    <p className="text-xs text-slate-300">KRW {activeProduct.price.toLocaleString()} (~${Math.round(activeProduct.price / 1350)} USD)</p>
+                    <p className="text-xs md:text-sm font-bold text-white truncate">{activeProduct.name[lang]}</p>
+                    <p className="text-[11px] md:text-xs text-slate-300">KRW {activeProduct.price.toLocaleString()} (~${Math.round(activeProduct.price / 1350)} USD)</p>
                   </div>
                 </div>
                 {activeProduct.stock > 0 ? (
                   <button 
                     onClick={() => setIsCheckingOut(true)}
-                    className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition shadow-lg cursor-pointer shrink-0 border border-blue-400/30"
+                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-lg text-xs md:text-sm font-semibold transition shadow-lg cursor-pointer shrink-0 border border-blue-400/30 text-center"
                   >
                     {t.payWithPayPal}
                   </button>
                 ) : (
                   <button 
                     disabled
-                    className="bg-slate-800 text-slate-500 px-5 py-2.5 rounded-lg text-sm font-bold cursor-not-allowed border border-slate-700"
+                    className="w-full sm:w-auto bg-slate-800 text-slate-500 px-4 py-2 md:px-5 md:py-2.5 rounded-lg text-xs md:text-sm font-bold cursor-not-allowed border border-slate-700 text-center"
                   >
                     {t.soldOut}
                   </button>
                 )}
               </div>
             ) : isCheckingOut ? (
-              <div className="bg-slate-900 border-2 border-blue-500/70 p-4 rounded-xl shadow-2xl animate-fadeIn">
+              <div className="bg-slate-900 border-2 border-blue-500/70 p-3 md:p-4 rounded-xl shadow-2xl animate-fadeIn w-full box-border">
                 <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-xs font-bold text-blue-400 flex items-center gap-1.5">
-                    <span>💳</span> {t.secureCheckout}: {activeProduct.icon} {activeProduct.name[lang]} ({t.stockLeft}{activeProduct.stock}{t.unit})
+                  <h3 className="text-xs font-bold text-blue-400 flex items-center gap-1.5 truncate">
+                    <span>💳</span> <span className="truncate">{t.secureCheckout}: {activeProduct.icon} {activeProduct.name[lang]} ({t.stockLeft}{activeProduct.stock}{t.unit})</span>
                   </h3>
                   <button 
                     onClick={() => setIsCheckingOut(false)}
-                    className="text-[11px] text-slate-400 hover:text-white underline cursor-pointer"
+                    className="text-[11px] text-slate-400 hover:text-white underline cursor-pointer shrink-0"
                   >
                     {t.cancelBack}
                   </button>
@@ -1249,40 +1249,40 @@ export const LiveStreamView: React.FC = () => {
                 />
               </div>
             ) : latestOrder ? (
-              <div className="bg-slate-900 border-2 border-emerald-500/70 p-4 rounded-xl shadow-2xl animate-fadeIn flex flex-col gap-3">
+              <div className="bg-slate-900 border-2 border-emerald-500/70 p-3 md:p-4 rounded-xl shadow-2xl animate-fadeIn flex flex-col gap-3 w-full box-border">
                 <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-                  <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
-                    <span>✅</span> {t.trackingViewTitle} (3초 후 자동 닫힘)
+                  <h3 className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 truncate">
+                    <span>✅</span> <span className="truncate">{t.trackingViewTitle} (3초 후 자동 닫힘)</span>
                   </h3>
                   <button 
                     onClick={() => setLatestOrder(null)}
-                    className="text-[11px] text-slate-400 hover:text-white underline cursor-pointer"
+                    className="text-[11px] text-slate-400 hover:text-white underline cursor-pointer shrink-0"
                   >
-                    닫기 / 쇼핑 계속하기
+                    닫기
                   </button>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
                     <p className="text-[10px] text-slate-400">{t.orderIdLabel}</p>
-                    <p className="font-mono font-bold text-blue-400">{latestOrder.orderId}</p>
+                    <p className="font-mono font-bold text-blue-400 truncate">{latestOrder.orderId}</p>
                   </div>
                   <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
                     <p className="text-[10px] text-slate-400">{t.shippingStatusLabel}</p>
-                    <p className="font-bold text-amber-400 flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-                      {latestOrder.shippingStatus}
+                    <p className="font-bold text-amber-400 flex items-center gap-1 truncate">
+                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping shrink-0"></span>
+                      <span className="truncate">{latestOrder.shippingStatus}</span>
                     </p>
                   </div>
                 </div>
 
                 <div className="bg-slate-950 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center text-xs">
-                  <div>
+                  <div className="min-w-0 flex-1 truncate">
                     <p className="text-[10px] text-slate-400">운송장 번호 (Tracking No.)</p>
-                    <p className="font-mono text-emerald-300 font-bold">{latestOrder.trackingNumber}</p>
+                    <p className="font-mono text-emerald-300 font-bold truncate">{latestOrder.trackingNumber}</p>
                   </div>
-                  <span className="text-[10px] bg-blue-600/20 text-blue-400 border border-blue-500/40 px-2 py-1 rounded">
-                    CJ대한통운 연동
+                  <span className="text-[10px] bg-blue-600/20 text-blue-400 border border-blue-500/40 px-2 py-1 rounded shrink-0 ml-2">
+                    CJ대한통운
                   </span>
                 </div>
               </div>
@@ -1296,30 +1296,30 @@ export const LiveStreamView: React.FC = () => {
           </div>
         </div>
 
-        <div className="md:col-span-5 bg-slate-900/80 border-2 border-slate-700 rounded-xl flex flex-col h-[660px] shadow-2xl">
+        <div className="md:col-span-5 bg-slate-900/80 border-2 border-slate-700 rounded-xl flex flex-col h-[520px] md:h-[660px] shadow-2xl w-full">
           <div className="p-3.5 border-b border-slate-700 font-semibold text-sm flex justify-between items-center bg-slate-900/90 shrink-0">
-            <span>{t.chatTitle}</span>
-            <span className="text-[11px] text-emerald-400 flex items-center gap-1.5">
+            <span className="truncate">{t.chatTitle}</span>
+            <span className="text-[11px] text-emerald-400 flex items-center gap-1.5 shrink-0">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> {t.online}
             </span>
           </div>
           
-          <div className="flex-1 p-4 overflow-y-auto flex flex-col gap-3">
+          <div className="flex-1 p-3 md:p-4 overflow-y-auto flex flex-col gap-3 w-full box-border">
             {messages.map(msg => (
-              <div key={msg.id} className={msg.sender === "user" ? "flex flex-col items-end" : "flex flex-col items-start"}>
-                <div className={msg.sender === "user" ? "max-w-[85%] p-3 rounded-xl text-sm bg-blue-600 text-white shadow" : "max-w-[85%] p-3 rounded-xl text-sm bg-slate-800 text-slate-200 border border-slate-700 shadow"}>
+              <div key={msg.id} className={msg.sender === "user" ? "flex flex-col items-end w-full" : "flex flex-col items-start w-full"}>
+                <div className={msg.sender === "user" ? "max-w-[85%] p-3 rounded-xl text-xs md:text-sm bg-blue-600 text-white shadow break-words" : "max-w-[85%] p-3 rounded-xl text-xs md:text-sm bg-slate-800 text-slate-200 border border-slate-700 shadow break-words"}>
                   {typeof msg.text === "string" ? msg.text : msg.text[lang]}
                 </div>
                 {msg.suggestedProduct && (
-                  <div className="mt-2 w-full bg-slate-900 border border-slate-700 p-3 rounded-xl flex flex-col gap-2 shadow-md">
+                  <div className="mt-2 w-full max-w-full bg-slate-900 border border-slate-700 p-3 rounded-xl flex flex-col gap-2 shadow-md box-border">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-xl">
+                      <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-lg md:text-xl shrink-0">
                         {msg.suggestedProduct.icon}
                       </div>
-                      <div className="text-xs">
-                        <div className="flex items-center gap-2">
-                          <p className="font-bold text-white">{msg.suggestedProduct.name[lang]}</p>
-                          <span className="text-[10px] text-amber-400 font-bold">{t.stockLeft}{msg.suggestedProduct.stock}{t.unit}</span>
+                      <div className="text-xs min-w-0 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-bold text-white truncate">{msg.suggestedProduct.name[lang]}</p>
+                          <span className="text-[10px] text-amber-400 font-bold shrink-0">{t.stockLeft}{msg.suggestedProduct.stock}{t.unit}</span>
                         </div>
                         <p className="text-slate-400">KRW {msg.suggestedProduct.price.toLocaleString()} (~${Math.round(msg.suggestedProduct.price / 1350)} USD)</p>
                       </div>
@@ -1346,28 +1346,28 @@ export const LiveStreamView: React.FC = () => {
             ))}
           </div>
 
-          <div className="px-3 pt-2 pb-1.5 flex gap-1.5 flex-wrap border-t border-slate-700 bg-slate-900/50 shrink-0">
+          <div className="px-3 pt-2 pb-1.5 flex gap-1.5 flex-wrap border-t border-slate-700 bg-slate-900/50 shrink-0 w-full box-border">
             {t.quickPrompts.map((p: any, idx: number) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => handleProductSwitch(p.type, p.label)}
-                className="text-[11px] bg-slate-800 hover:bg-slate-700 text-blue-300 border border-slate-600 px-2.5 py-1 rounded-full transition cursor-pointer shadow-sm"
+                className="text-[11px] bg-slate-800 hover:bg-slate-700 text-blue-300 border border-slate-600 px-2.5 py-1 rounded-full transition cursor-pointer shadow-sm truncate max-w-full"
               >
                 {p.label}
               </button>
             ))}
           </div>
 
-          <form onSubmit={handleSendMessage} className="p-3 border-t border-slate-700 flex gap-2 bg-slate-900/80 shrink-0">
+          <form onSubmit={handleSendMessage} className="p-3 border-t border-slate-700 flex gap-2 bg-slate-900/80 shrink-0 w-full box-border">
             <input
               type="text"
               value={inputText}
               onChange={e => setInputText(e.target.value)}
               placeholder={t.inputPlaceholder}
-              className="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 text-slate-100"
+              className="flex-1 min-w-0 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs md:text-sm focus:outline-none focus:border-blue-500 text-slate-100"
             />
-            <button type="submit" className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-sm font-semibold transition cursor-pointer shadow border border-blue-400/30">
+            <button type="submit" className="bg-blue-600 hover:bg-blue-500 px-3.5 py-2 rounded-lg text-xs md:text-sm font-semibold transition cursor-pointer shadow border border-blue-400/30 shrink-0">
               {t.send}
             </button>
           </form>
