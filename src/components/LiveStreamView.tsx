@@ -1111,7 +1111,12 @@ export const LiveStreamView: React.FC = () => {
                   <span className="text-xs font-bold text-blue-400">{t.secureCheckout}</span>
                   <button onClick={() => setIsCheckingOut(false)} className="text-[11px] text-slate-400 underline">{t.cancelBack}</button>
                 </div>
-                <PayPalCheckoutButton amount={Math.round(currentProd.price / 1350)} currency="USD" onSuccess={(orderId) => handlePaymentSuccess(orderId, currentProd)} />
+                <PayPalCheckoutButton 
+                  amount={Math.round(currentProd.price / 1350)} 
+                  currency="USD" 
+                  lang={lang}
+                  onSuccess={(orderId) => handlePaymentSuccess(orderId, currentProd)} 
+                />
               </div>
             ) : latestOrder ? (
               <div className="bg-slate-900 border border-emerald-500 p-3 rounded-xl shadow-xl flex flex-col gap-2">
