@@ -1660,7 +1660,6 @@ export const LiveStreamView: React.FC = () => {
                     )}
                   </div>
                 )}
-                <span className="text-[9px] text-slate-500 mt-0.5">{msg.timestamp}</span>
               </div>
             ))}
             {/* 최신 대화로 자동 스크롤 타겟 */}
