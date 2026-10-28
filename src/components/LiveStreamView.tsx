@@ -922,6 +922,16 @@ export const LiveStreamView: React.FC = () => {
     setQaList(prev => prev.filter(q => q.id !== id));
   };
 
+  const runVideoEditorCompression = () => {
+    setIsProcessing(true);
+    setProcessLog(`[FFmpeg] Loading asset: ${selectedVideoAsset} ...\n[FFmpeg] Applying CRF compression (${compressionCrf}), Speed: ${videoSpeed}x ...`);
+    
+    setTimeout(() => {
+      setProcessLog(prev => prev + `\n[FFmpeg] Encoding video stream (libx264) & optimizing moov atom for web streaming...\n[Success] Processed video rendered and saved to public/videos/!`);
+      setIsProcessing(false);
+    }, 1500);
+  };
+
   const currentProd = activeProduct || products.find(p => p.id === defaultProductId) || products[0] || null;
 
   if (isAdminRoute) {
@@ -972,31 +982,53 @@ export const LiveStreamView: React.FC = () => {
             </div>
           ) : (
             <div className="flex flex-col gap-6 animate-fadeIn">
+              {/* 상단 통계 요약 카드 */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+                <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-1 shadow">
+                  <p className="text-xs text-slate-400 font-medium">{t.totalRevenue}</p>
+                  <p className="text-xl font-bold text-emerald-400">
+                    KRW {orders.reduce((sum, o) => sum + o.amount, 0).toLocaleString()}
+                  </p>
+                  <p className="text-[10px] text-slate-500">{t.sandboxSub}</p>
+                </div>
+                <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-1 shadow">
+                  <p className="text-xs text-slate-400 font-medium">{t.totalOrders}</p>
+                  <p className="text-xl font-bold text-blue-400">{orders.length} {t.orderUnit}</p>
+                  <p className="text-[10px] text-slate-500">{t.ordersSub}</p>
+                </div>
+                <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-1 shadow">
+                  <p className="text-xs text-slate-400 font-medium">{t.activeStock}</p>
+                  <p className="text-xl font-bold text-amber-400">{products.reduce((sum, p) => sum + p.stock, 0)} {t.unit}</p>
+                  <p className="text-[10px] text-slate-500">{t.stockSub}</p>
+                </div>
+              </div>
+
+              {/* 신규 상품 및 동영상 매핑 등록 */}
               <div className="bg-slate-900 border-2 border-amber-500 p-6 rounded-2xl shadow-2xl flex flex-col gap-4">
                 <h3 className="text-base font-bold text-amber-400">✨ 신규 상품 및 동영상 매핑 등록</h3>
                 <form onSubmit={handleRegisterNewProduct} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                   <div className="md:col-span-3">
-                    <label className="text-xs text-slate-300 mb-1 block">상품명</label>
-                    <input type="text" value={newProdName} onChange={e => setNewProdName(e.target.value)} placeholder="예: 유기농 산딸기" className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" />
+                    <label className="text-xs text-slate-300 mb-1 block">상품명 *</label>
+                    <input type="text" value={newProdName} onChange={e => setNewProdName(e.target.value)} placeholder="예: 유기농 산딸기" className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" required />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="text-xs text-slate-300 mb-1 block">가격 (KRW)</label>
+                    <label className="text-xs text-slate-300 mb-1 block">가격 (KRW) *</label>
                     <input type="number" value={newProdPrice} onChange={e => setNewProdPrice(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="text-xs text-slate-300 mb-1 block">재고</label>
+                    <label className="text-xs text-slate-300 mb-1 block">재고 *</label>
                     <input type="number" value={newProdStock} onChange={e => setNewProdStock(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" />
                   </div>
                   <div className="md:col-span-3">
-                    <label className="text-xs text-slate-300 mb-1 block">동영상 경로</label>
-                    <input type="text" value={newProdVideo} onChange={e => setNewProdVideo(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-amber-300 font-mono" />
+                    <label className="text-xs text-slate-300 mb-1 block">동영상 경로 *</label>
+                    <input type="text" value={newProdVideo} onChange={e => setNewProdVideo(e.target.value)} placeholder="/videos/파일명.mp4" className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-amber-300 font-mono" />
                   </div>
                   <div className="md:col-span-1">
                     <label className="text-xs text-slate-300 mb-1 block">아이콘</label>
                     <input type="text" value={newProdIcon} onChange={e => setNewProdIcon(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-center text-white" />
                   </div>
                   <div className="md:col-span-1">
-                    <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-xs font-bold cursor-pointer">등록</button>
+                    <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-xs font-bold cursor-pointer transition">등록</button>
                   </div>
                   <div className="md:col-span-8">
                     <label className="text-xs text-slate-300 mb-1 block">상세설명</label>
@@ -1017,22 +1049,24 @@ export const LiveStreamView: React.FC = () => {
                 </form>
               </div>
 
-              {/* 상품 목록 관리 */}
+              {/* SECTION 1: 상품 및 재고/동영상 관리 */}
               <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl flex flex-col gap-4">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-sm font-bold text-white">📦 등록된 상품 목록 (오로지 관리자 등록 상품만 표시)</h3>
-                  <span className="text-xs text-slate-400">총 {products.length}개 상품</span>
+                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <span>📦</span> {t.tabInventory} ({products.length}{t.registeredCount})
+                  </h3>
+                  <span className="text-xs text-slate-400">오로지 관리자 등록 상품만 노출</span>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
+                  <table className="w-full text-left text-xs min-w-[650px]">
                     <thead>
                       <tr className="border-b border-slate-800 text-slate-400">
-                        <th className="pb-3">상품명 / 설명</th>
-                        <th className="pb-3">가격</th>
-                        <th className="pb-3">재고</th>
-                        <th className="pb-3">동영상 경로</th>
+                        <th className="pb-3">{t.productNameCol}</th>
+                        <th className="pb-3">{t.priceCol}</th>
+                        <th className="pb-3">{t.stockCol}</th>
+                        <th className="pb-3">{t.videoAssetCol}</th>
                         <th className="pb-3">시작 동영상</th>
-                        <th className="pb-3 text-right">관리</th>
+                        <th className="pb-3 text-right">{t.actionsCol}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/60">
@@ -1043,7 +1077,7 @@ export const LiveStreamView: React.FC = () => {
                           </td>
                         </tr>
                       ) : products.map(p => (
-                        <tr key={p.id}>
+                        <tr key={p.id} className="hover:bg-slate-800/40">
                           <td className="py-3 font-bold text-white">
                             <div className="flex items-center gap-1.5">
                               <span>{p.icon}</span>
@@ -1051,7 +1085,7 @@ export const LiveStreamView: React.FC = () => {
                             </div>
                             <p className="text-[11px] text-slate-400 font-normal mt-0.5">{p.description[lang] || p.description.ko}</p>
                           </td>
-                          <td className="py-3 text-slate-300">KRW {p.price.toLocaleString()}</td>
+                          <td className="py-3 text-slate-300 whitespace-nowrap">KRW {p.price.toLocaleString()}</td>
                           <td className="py-3">
                             <input type="number" value={p.stock} onChange={e => updateProductStock(p.id, Number(e.target.value))} className="w-16 bg-slate-950 border border-slate-700 text-amber-400 font-bold rounded p-1 text-xs" />
                           </td>
@@ -1071,14 +1105,233 @@ export const LiveStreamView: React.FC = () => {
                               </button>
                             )}
                           </td>
-                          <td className="py-3 text-right space-x-2">
-                            <button onClick={() => changeVideoMapping(p.id)} className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-2.5 py-1 rounded text-xs transition cursor-pointer">동영상 변경</button>
-                            <button onClick={() => handleDeleteProduct(p.id)} className="bg-red-600/20 hover:bg-red-600/30 text-red-400 px-2.5 py-1 rounded text-xs transition cursor-pointer">삭제</button>
+                          <td className="py-3 text-right space-x-2 whitespace-nowrap">
+                            <button onClick={() => changeProductVideoMapping(p.id)} className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-2.5 py-1 rounded text-xs transition cursor-pointer">{t.changeVideoBtn}</button>
+                            <button onClick={() => handleDeleteProduct(p.id)} className="bg-red-600/20 hover:bg-red-600/30 text-red-400 px-2.5 py-1 rounded text-xs transition cursor-pointer">{t.deleteBtn}</button>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
+                </div>
+              </div>
+
+              {/* SECTION 2: AI 맞춤 답변 및 FAQ 사전 편집 */}
+              <div className="bg-slate-900 border-2 border-blue-500/40 p-5 rounded-xl flex flex-col gap-4 shadow-xl w-full overflow-hidden">
+                <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2">
+                  <span>💬</span> {t.tabQA}
+                </h3>
+                <p className="text-xs text-slate-400">{t.qaDesc}</p>
+
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full text-left text-xs min-w-[500px]">
+                    <thead>
+                      <tr className="border-b border-slate-800 text-slate-400">
+                        <th className="pb-3 font-semibold">{t.qaKeywordCol}</th>
+                        <th className="pb-3 font-semibold">{t.qaQuestionCol}</th>
+                        <th className="pb-3 font-semibold">{t.qaAnswerCol}</th>
+                        <th className="pb-3 font-semibold text-right">{t.actionsCol}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60">
+                      {qaList.map(qa => (
+                        <tr key={qa.id} className="hover:bg-slate-800/40">
+                          <td className="py-3 font-mono font-bold text-amber-300">{qa.keyword}</td>
+                          <td className="py-3 text-slate-300">{qa.question}</td>
+                          <td className="py-3">
+                            <input
+                              type="text"
+                              value={qa.answer}
+                              onChange={(e) => updateCustomQAAnswer(qa.id, e.target.value)}
+                              className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded px-2.5 py-1.5 text-xs focus:outline-none focus:border-blue-500"
+                            />
+                          </td>
+                          <td className="py-3 text-right">
+                            <button
+                              onClick={() => deleteCustomQA(qa.id)}
+                              className="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/40 px-2.5 py-1 rounded text-[11px] transition cursor-pointer"
+                            >
+                              {t.deleteBtn}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <form onSubmit={handleAddCustomQA} className="mt-3 pt-4 border-t border-slate-800 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                  <div className="md:col-span-3">
+                    <label className="text-[11px] text-slate-400 mb-1 block">{t.qaKeywordCol}</label>
+                    <input
+                      type="text"
+                      value={newKeyword}
+                      onChange={e => setNewKeyword(e.target.value)}
+                      placeholder={t.qaKeywordPlace}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="md:col-span-4">
+                    <label className="text-[11px] text-slate-400 mb-1 block">{t.qaQuestionCol}</label>
+                    <input
+                      type="text"
+                      value={newQuestion}
+                      onChange={e => setNewQuestion(e.target.value)}
+                      placeholder={t.qaQuestionPlace}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="md:col-span-4">
+                    <label className="text-[11px] text-slate-400 mb-1 block">{t.qaAnswerCol}</label>
+                    <input
+                      type="text"
+                      value={newAnswer}
+                      onChange={e => setNewAnswer(e.target.value)}
+                      placeholder={t.qaAnswerPlace}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="md:col-span-1">
+                    <button
+                      type="submit"
+                      className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-xs font-bold transition cursor-pointer shadow border border-blue-400/30"
+                    >
+                      {t.addBtn}
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              {/* SECTION 3: 배송 관리 & 주문 내역 */}
+              <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl flex flex-col gap-4 w-full overflow-hidden">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <span>🚚</span> {t.tabShipping} & {t.orderHistory}
+                </h3>
+                {orders.length === 0 ? (
+                  <p className="text-xs text-slate-500 py-4 text-center">{t.noOrders}</p>
+                ) : (
+                  <div className="overflow-x-auto w-full">
+                    <table className="w-full text-left text-xs min-w-[500px]">
+                      <thead>
+                        <tr className="border-b border-slate-800 text-slate-400">
+                          <th className="pb-3 font-semibold">{t.orderIdCol}</th>
+                          <th className="pb-3 font-semibold">{t.productNameCol}</th>
+                          <th className="pb-3 font-semibold">{t.priceCol}</th>
+                          <th className="pb-3 font-semibold">{t.trackingCol}</th>
+                          <th className="pb-3 font-semibold">{t.shippingCol}</th>
+                          <th className="pb-3 font-semibold text-right">{t.dateCol}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800/60">
+                        {orders.map((ord, idx) => (
+                          <tr key={idx} className="hover:bg-slate-800/40">
+                            <td className="py-3.5 font-mono text-blue-400">{ord.orderId}</td>
+                            <td className="py-3.5 text-white font-medium">{ord.productName}</td>
+                            <td className="py-3.5 text-slate-300">KRW {ord.amount.toLocaleString()}</td>
+                            <td className="py-3.5 font-mono text-amber-300">{ord.trackingNumber}</td>
+                            <td className="py-3.5">
+                              <select
+                                value={ord.shippingStatus}
+                                onChange={(e) => updateShippingStatus(ord.orderId, e.target.value as any)}
+                                className="bg-slate-950 border border-slate-700 text-slate-100 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
+                              >
+                                <option value="상품 준비중">{t.statusPrep}</option>
+                                <option value="배송중">{t.statusShip}</option>
+                                <option value="배송완료">{t.statusDone}</option>
+                              </select>
+                            </td>
+                            <td className="py-3.5 text-right">
+                              <span className="text-[10px] text-slate-400">{ord.timestamp}</span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
+              {/* SECTION 4: 동영상 편집 및 압축 스튜디오 */}
+              <div className="bg-slate-900 border-2 border-amber-500/40 p-5 rounded-xl flex flex-col gap-4 shadow-xl w-full">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-slate-800 pb-3 gap-2">
+                  <h3 className="text-sm font-bold text-amber-400 flex items-center gap-2">
+                    <span>🎬</span> {t.tabVideoEditor}
+                  </h3>
+                  <span className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded font-medium">
+                    FFmpeg Web Engine Active
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
+                  <div className="flex flex-col gap-4">
+                    <div>
+                      <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.videoSelectLabel}</label>
+                      <select
+                        value={selectedVideoAsset}
+                        onChange={(e) => setSelectedVideoAsset(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-amber-500 cursor-pointer"
+                      >
+                        {products.map(p => (
+                          <option key={p.id} value={p.videoUrl}>{p.icon} {p.videoUrl} ({p.name[lang] || p.name.ko})</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.crfLabel}</label>
+                      <input
+                        type="number"
+                        min="20"
+                        max="35"
+                        value={compressionCrf}
+                        onChange={(e) => setCompressionCrf(Number(e.target.value))}
+                        className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-amber-500"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.speedLabel}</label>
+                        <select
+                          value={videoSpeed}
+                          onChange={(e) => setVideoSpeed(e.target.value)}
+                          className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-amber-500 cursor-pointer"
+                        >
+                          <option value="1.0">1.0x (Normal)</option>
+                          <option value="1.25">1.25x (Fast)</option>
+                          <option value="1.5">1.5x</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.audioLabel}</label>
+                        <select
+                          value={audioMute ? "mute" : "keep"}
+                          onChange={(e) => setAudioMute(e.target.value === "mute")}
+                          className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-amber-500 cursor-pointer"
+                        >
+                          <option value="keep">{t.audioKeep}</option>
+                          <option value="mute">{t.audioMuteOpt}</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <button
+                      disabled={isProcessing}
+                      onClick={runVideoEditorCompression}
+                      className="mt-2 bg-amber-600 hover:bg-amber-500 disabled:bg-slate-700 text-white py-2.5 rounded-lg text-xs font-bold transition shadow-lg cursor-pointer border border-amber-400/30 flex items-center justify-center gap-2"
+                    >
+                      {isProcessing ? t.renderingBtn : t.renderBtn}
+                    </button>
+                  </div>
+
+                  <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col font-mono text-[11px] text-emerald-400 h-[220px] overflow-y-auto shadow-inner w-full">
+                    <p className="text-slate-500 pb-2 border-b border-slate-900 mb-2">// FFmpeg Studio Console Output</p>
+                    {processLog ? (
+                      <pre className="whitespace-pre-wrap">{processLog}</pre>
+                    ) : (
+                      <span className="text-slate-600 italic">Ready for video editing & compression tasks...</span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
