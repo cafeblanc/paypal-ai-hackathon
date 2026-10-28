@@ -684,7 +684,6 @@ export const LiveStreamView: React.FC = () => {
   const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true); // 모바일 브라우저 자동재생(Autoplay) 정책 준수를 위해 기본 음소거 활성화
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isAutoplayBlocked, setIsAutoplayBlocked] = useState<boolean>(false);
-  const [mobileLayoutMode, setMobileLayoutMode] = useState<"split" | "overlay">("split");
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -1463,24 +1462,6 @@ export const LiveStreamView: React.FC = () => {
           <span className="truncate">{t.title}</span>
         </h1>
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* 모바일 동적 화면 전환 토글 (분할 뷰 vs 풀라이브 모드) */}
-          <div className="flex md:hidden bg-slate-950 border border-slate-700 rounded-lg p-0.5 text-xs">
-            <button
-              type="button"
-              onClick={() => setMobileLayoutMode("split")}
-              className={`px-1.5 py-0.5 rounded text-[10px] font-semibold transition cursor-pointer ${mobileLayoutMode === "split" ? "bg-blue-600 text-white font-bold" : "text-slate-400"}`}
-            >
-              {t.viewSplit || "📱 분할"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setMobileLayoutMode("overlay")}
-              className={`px-1.5 py-0.5 rounded text-[10px] font-semibold transition cursor-pointer ${mobileLayoutMode === "overlay" ? "bg-red-600 text-white font-bold" : "text-slate-400"}`}
-            >
-              {t.viewOverlay || "🎬 풀라이브"}
-            </button>
-          </div>
-
           <button onClick={() => setIsAdminRoute(true)} className="bg-slate-800 text-amber-400 border border-amber-500/40 px-2 sm:px-2.5 py-1 rounded text-[10px] sm:text-[11px] font-semibold cursor-pointer shrink-0">
             {t.adminPortalBtn}
           </button>
@@ -1497,7 +1478,7 @@ export const LiveStreamView: React.FC = () => {
       <div className="relative flex-1 flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3 p-1.5 sm:p-4 w-full max-w-full box-border items-stretch overflow-hidden" style={{ height: "calc(100dvh - 52px)", maxHeight: "calc(100dvh - 52px)" }}>
         
         {/* Section 1: Video Player (동영상 구간 대폭 확대 및 페이팔 결제 버튼 상시 표시) */}
-        <div className={`${mobileLayoutMode === "overlay" ? "absolute inset-0 md:relative md:inset-auto z-0" : isCheckingOut ? "h-[68%] sm:h-[65%] md:h-full shrink-0 md:shrink" : "h-[58%] sm:h-[60%] md:h-full shrink-0 md:shrink"} md:col-span-7 relative bg-slate-900/40 border border-slate-700/80 rounded-xl sm:rounded-2xl p-1.5 sm:p-2.5 shadow-xl flex flex-col justify-between w-full max-w-full overflow-hidden box-border`}>
+        <div className={`${isCheckingOut ? "h-[68%] sm:h-[65%] md:h-full shrink-0 md:shrink" : "h-[58%] sm:h-[60%] md:h-full shrink-0 md:shrink"} md:col-span-7 relative bg-slate-900/40 border border-slate-700/80 rounded-xl sm:rounded-2xl p-1.5 sm:p-2.5 shadow-xl flex flex-col justify-between w-full max-w-full overflow-hidden box-border`}>
           <div 
             onClick={handleTogglePlayOrUnmute}
             className={`relative w-full bg-black rounded-lg sm:rounded-xl overflow-hidden border border-slate-700 shadow-lg cursor-pointer select-none transition-all ${isCheckingOut ? "h-20 sm:h-24 shrink-0" : "flex-1 min-h-0"}`}
@@ -1657,7 +1638,7 @@ export const LiveStreamView: React.FC = () => {
         </div>
 
         {/* Section 2: AI Shopping Agent & Live Chat (채팅창 상단 제목 줄 삭제하여 동영상 공간 최대 확보) */}
-        <div className={`${mobileLayoutMode === "overlay" ? "absolute bottom-0 left-0 right-0 h-[42%] md:relative md:inset-auto md:h-full z-20 bg-slate-950/90 md:bg-slate-900/80 backdrop-blur-md md:backdrop-blur-none" : "flex-1 min-h-0 md:h-full"} md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-xl sm:rounded-2xl flex flex-col shadow-xl w-full max-w-full overflow-hidden box-border`}>
+        <div className="flex-1 min-h-0 md:h-full md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-xl sm:rounded-2xl flex flex-col shadow-xl w-full max-w-full overflow-hidden box-border">
           {/* 채팅창 내부 스크롤 영역: 제목 줄 없이 바로 대화 내용이 시원하게 위로 올라감 */}
           <div 
             ref={chatMessagesRef}
