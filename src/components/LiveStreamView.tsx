@@ -827,30 +827,65 @@ export const LiveStreamView: React.FC = () => {
       timestamp: new Date().toLocaleTimeString()
     };
 
-    let aiReplyText = "문의하신 내용에 대해 AI 에이전트가 확인 중입니다.";
+    let aiReplyText: Record<Language, string> = {
+      ko: `🤖 "${inputText}" 문의가 접수되었습니다.`,
+      en: `🤖 "${inputText}" inquiry received.`,
+      ja: `🤖 「${inputText}」のお問い合わせを受け付けました。`,
+      zh: `🤖 已收到“${inputText}”相关咨询。`,
+      es: `🤖 Consulta "${inputText}" recibida.`,
+      fr: `🤖 Demande "${inputText}" reçue.`
+    };
     let suggestedProd: Product | undefined = undefined;
 
     if (matchedQA) {
-      aiReplyText = matchedQA.answer;
+      aiReplyText = {
+        ko: `🤖 ${matchedQA.answer}`,
+        en: `🤖 ${matchedQA.answer}`,
+        ja: `🤖 ${matchedQA.answer}`,
+        zh: `🤖 ${matchedQA.answer}`,
+        es: `🤖 ${matchedQA.answer}`,
+        fr: `🤖 ${matchedQA.answer}`
+      };
     } else if (matchedProd) {
       setActiveProduct(matchedProd);
-      aiReplyText = ""; // 상단 설명란 없이 결제열기란 카드만 표시
+      aiReplyText = { ko: "", en: "", ja: "", zh: "", es: "", fr: "" }; // 상단 설명란 없이 결제열기란 카드만 표시
       suggestedProd = matchedProd;
     } else if (query.includes("pay") || query.includes("결제") || query.includes("checkout")) {
       if (!activeProduct || activeProduct.stock <= 0) {
-        aiReplyText = "죄송합니다. 현재 선택하신 상품은 품절되었습니다.";
+        aiReplyText = {
+          ko: "🤖 죄송합니다. 선택하신 상품은 품절되었습니다.",
+          en: "🤖 Sorry, the selected item is sold out.",
+          ja: "🤖 申し訳ありません。商品は売り切れです。",
+          zh: "🤖 抱歉，该商品已售罄。",
+          es: "🤖 Lo sentimos, el producto está agotado.",
+          fr: "🤖 Désolé, le produit est épuisé."
+        };
       } else {
         setIsCheckingOut(true);
-        aiReplyText = "페이팔 안전 결제창을 열어드렸습니다.";
+        aiReplyText = {
+          ko: "🤖 페이팔 안전 결제창이 열렸습니다.",
+          en: "🤖 PayPal secure checkout opened.",
+          ja: "🤖 PayPal決済画面を開きました。",
+          zh: "🤖 已打开 PayPal 安全支付。",
+          es: "🤖 Ventana de pago PayPal abierta.",
+          fr: "🤖 Fenêtre de paiement PayPal ouverte."
+        };
       }
     } else {
-      aiReplyText = `[AI 에이전트 답변] "${inputText}" 문의가 접수되었습니다.`;
+      aiReplyText = {
+        ko: `🤖 "${inputText}" 문의가 접수되었습니다.`,
+        en: `🤖 "${inputText}" inquiry received.`,
+        ja: `🤖 「${inputText}」のお問い合わせを受け付けました。`,
+        zh: `🤖 已收到“${inputText}”相关咨询。`,
+        es: `🤖 Consulta "${inputText}" recibida.`,
+        fr: `🤖 Demande "${inputText}" reçue.`
+      };
     }
 
     const aiMsg: ChatMessage = {
       id: (Date.now() + 1).toString() + "-ai",
       sender: "ai",
-      text: { ko: aiReplyText, en: aiReplyText, ja: aiReplyText, zh: aiReplyText, es: aiReplyText, fr: aiReplyText },
+      text: aiReplyText,
       timestamp: new Date().toLocaleTimeString(),
       suggestedProduct: suggestedProd
     };
@@ -1632,9 +1667,9 @@ export const LiveStreamView: React.FC = () => {
             {messages.map(msg => (
               <div key={msg.id} className={msg.sender === "user" ? "flex flex-col items-end w-full" : "flex flex-col items-start w-full"}>
                 {/* 1. 위에 있는 설명란 제거: 상품 카드가 없고 텍스트가 있을 때만 말풍선 표시 */}
-                {!msg.suggestedProduct && ((typeof msg.text === "string" ? msg.text : msg.text[lang])?.trim()) ? (
+                {!msg.suggestedProduct && ((typeof msg.text === "string" ? msg.text : (msg.text[lang] || msg.text.ko || msg.text.en))?.trim()) ? (
                   <div className={msg.sender === "user" ? "max-w-[85%] p-2 sm:p-2.5 rounded-xl text-xs sm:text-sm bg-blue-600 text-white shadow break-words whitespace-pre-line" : "max-w-[85%] p-2 sm:p-2.5 rounded-xl text-xs sm:text-sm bg-slate-800 text-slate-200 border border-slate-700 shadow break-words whitespace-pre-line"}>
-                    {typeof msg.text === "string" ? msg.text : msg.text[lang]}
+                    {typeof msg.text === "string" ? msg.text : (msg.text[lang] || msg.text.ko || msg.text.en)}
                   </div>
                 ) : null}
                 {/* 2. 아래에 있는 결제열기란만 남김: 상품 정보 및 결제 열기 버튼 카드 */}
