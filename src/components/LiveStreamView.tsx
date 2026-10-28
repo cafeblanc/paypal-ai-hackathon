@@ -1027,13 +1027,12 @@ export const LiveStreamView: React.FC = () => {
         </div>
       </header>
 
-      <div className="flex-1 flex flex-col md:grid md:grid-cols-12 gap-3 p-2 sm:p-4 w-full max-w-full overflow-x-hidden box-border items-stretch md:overflow-hidden overflow-y-auto" style={{ height: "calc(100vh - 52px)" }}>
+      <div className="flex-1 flex flex-col md:grid md:grid-cols-12 gap-3 p-2 sm:p-4 w-full max-w-full box-border items-stretch overflow-hidden" style={{ height: "calc(100vh - 52px)", maxHeight: "calc(100vh - 52px)" }}>
         
-        {/* Section 1: Video Player */}
-        <div className="md:col-span-7 relative h-[calc(100vh-68px)] md:h-full bg-slate-900/40 border border-slate-700/80 rounded-2xl p-2.5 sm:p-3 shadow-xl flex flex-col justify-between w-full max-w-full overflow-x-hidden box-border shrink-0">
+        {/* Section 1: Video Player (최초 화면 크기로 완전 고정되어 채팅 증가에도 늘어나지 않음) */}
+        <div className="md:col-span-7 relative h-full max-h-full min-h-0 bg-slate-900/40 border border-slate-700/80 rounded-2xl p-2.5 sm:p-3 shadow-xl flex flex-col justify-between w-full max-w-full overflow-hidden box-border">
           <div 
-            className="relative w-full bg-black rounded-xl overflow-hidden border border-slate-700 shadow-lg shrink-0"
-            style={{ height: isCheckingOut || latestOrder ? "calc(100% - 210px)" : "calc(100% - 96px)" }}
+            className="relative w-full bg-black rounded-xl overflow-hidden border border-slate-700 shadow-lg flex-1 min-h-0"
           >
             {currentProd && (
               <video
@@ -1112,8 +1111,8 @@ export const LiveStreamView: React.FC = () => {
           </div>
         </div>
 
-        {/* Section 2: AI Shopping Agent & Live Chat (채팅창 크기 고정 및 스크롤바 없는 자연스러운 위로 밀림 구현) */}
-        <div className="md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-2xl flex flex-col h-[calc(100vh-68px)] md:h-full shadow-xl w-full max-w-full overflow-hidden box-border shrink-0">
+        {/* Section 2: AI Shopping Agent & Live Chat (채팅창 높이 완전 고정: min-h-0 max-h-full 로 자식 메시지가 늘어나도 절대 늘어나지 않음) */}
+        <div className="md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-2xl flex flex-col h-full max-h-full min-h-0 shadow-xl w-full max-w-full overflow-hidden box-border">
           <div className="p-3 border-b border-slate-700 font-semibold text-xs sm:text-sm flex justify-between items-center bg-slate-900/90 shrink-0">
             <span>{t.chatTitle}</span>
             <span className="text-[11px] text-emerald-400 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> {t.online}</span>
