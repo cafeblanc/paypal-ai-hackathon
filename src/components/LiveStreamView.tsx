@@ -125,7 +125,11 @@ const TRANSLATIONS: Record<Language, any> = {
     lowStockWarning: "⚠️ [긴급] 재고 임박!",
     stockLeft: "남은 재고: ",
     unit: "개",
-    orderUnit: "건"
+    orderUnit: "건",
+    tapToPlay: "▶ 터치하여 라이브 영상 재생",
+    tapToUnmute: "소리 켜기",
+    viewSplit: "📱 분할 뷰",
+    viewOverlay: "🎬 풀 라이브"
   },
   en: {
     marketName: "Yangpyeong Open Festival",
@@ -220,7 +224,11 @@ const TRANSLATIONS: Record<Language, any> = {
     lowStockWarning: "⚠️ Low Stock!",
     stockLeft: "Stock: ",
     unit: "pcs",
-    orderUnit: "orders"
+    orderUnit: "orders",
+    tapToPlay: "▶ Tap to Play Live Video",
+    tapToUnmute: "Sound On",
+    viewSplit: "📱 Split",
+    viewOverlay: "🎬 Full Live"
   },
   ja: {
     marketName: "楊平オープンフェスティバル",
@@ -315,7 +323,11 @@ const TRANSLATIONS: Record<Language, any> = {
     lowStockWarning: "⚠️ 残りわずか！",
     stockLeft: "残り在庫: ",
     unit: "個",
-    orderUnit: "件"
+    orderUnit: "件",
+    tapToPlay: "▶ タップしてライブ映像を再生",
+    tapToUnmute: "音声オン",
+    viewSplit: "📱 分割",
+    viewOverlay: "🎬 フル画面"
   },
   zh: {
     marketName: "杨平开放节",
@@ -410,7 +422,11 @@ const TRANSLATIONS: Record<Language, any> = {
     lowStockWarning: "⚠️ 库存告急！",
     stockLeft: "剩余库存: ",
     unit: "个",
-    orderUnit: "单"
+    orderUnit: "单",
+    tapToPlay: "▶ 点击播放直播视频",
+    tapToUnmute: "开启声音",
+    viewSplit: "📱 分屏",
+    viewOverlay: "🎬 全屏直播"
   },
   es: {
     marketName: "Festival de Yangpyeong",
@@ -505,7 +521,11 @@ const TRANSLATIONS: Record<Language, any> = {
     lowStockWarning: "⚠️ ¡Stock Bajo!",
     stockLeft: "Stock: ",
     unit: "pcs",
-    orderUnit: "pedidos"
+    orderUnit: "pedidos",
+    tapToPlay: "▶ Toca para ver en vivo",
+    tapToUnmute: "Activar sonido",
+    viewSplit: "📱 Dividida",
+    viewOverlay: "🎬 En Vivo"
   },
   fr: {
     marketName: "Festival de Yangpyeong",
@@ -600,7 +620,11 @@ const TRANSLATIONS: Record<Language, any> = {
     lowStockWarning: "⚠️ Stock Limité !",
     stockLeft: "Stock : ",
     unit: "pcs",
-    orderUnit: "commandes"
+    orderUnit: "commandes",
+    tapToPlay: "▶ Touchez pour lancer le direct",
+    tapToUnmute: "Activer son",
+    viewSplit: "📱 Divisée",
+    viewOverlay: "🎬 Plein Écran"
   }
 };
 
@@ -644,6 +668,8 @@ export const LiveStreamView: React.FC = () => {
   const [isStartVideo, setIsStartVideo] = useState<boolean>(false);
   const [defaultProductId, setDefaultProductId] = useState<string | null>(null);
 
+  const currentProd = activeProduct || products.find(p => p.id === defaultProductId) || products[0] || null;
+
   const [newKeyword, setNewKeyword] = useState<string>("");
   const [newQuestion, setNewQuestion] = useState<string>("");
   const [newAnswer, setNewAnswer] = useState<string>("");
@@ -655,7 +681,10 @@ export const LiveStreamView: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [processLog, setProcessLog] = useState<string>("");
 
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(false);
+  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true); // 모바일 브라우저 자동재생(Autoplay) 정책 준수를 위해 기본 음소거 활성화
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isAutoplayBlocked, setIsAutoplayBlocked] = useState<boolean>(false);
+  const [mobileLayoutMode, setMobileLayoutMode] = useState<"split" | "overlay">("split");
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -718,10 +747,41 @@ export const LiveStreamView: React.FC = () => {
 
   useEffect(() => {
     if (videoRef.current) {
+      videoRef.current.defaultMuted = isAudioMuted;
       videoRef.current.muted = isAudioMuted;
-      videoRef.current.play().catch(err => console.warn("Video autoplay prevented:", err));
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true);
+            setIsAutoplayBlocked(false);
+          })
+          .catch(err => {
+            console.warn("Video autoplay prevented by browser policy:", err);
+            setIsAutoplayBlocked(true);
+          });
+      }
     }
-  }, [activeProduct, isAudioMuted]);
+  }, [activeProduct, isAudioMuted, currentProd?.videoUrl]);
+
+  const handleTogglePlayOrUnmute = () => {
+    if (!videoRef.current) return;
+    if (!isPlaying || isAutoplayBlocked) {
+      videoRef.current.muted = isAudioMuted;
+      videoRef.current.play().then(() => {
+        setIsPlaying(true);
+        setIsAutoplayBlocked(false);
+      }).catch(err => {
+        console.warn("User interaction play error:", err);
+      });
+    } else {
+      const nextMuted = !isAudioMuted;
+      setIsAudioMuted(nextMuted);
+      if (videoRef.current) {
+        videoRef.current.muted = nextMuted;
+      }
+    }
+  };
 
   useEffect(() => {
     if (activeProduct) {
@@ -905,6 +965,17 @@ export const LiveStreamView: React.FC = () => {
     }
   };
 
+  const handleResetToDefaultProducts = async () => {
+    if (!confirm("기본 라이브 데모 상품(유기농 꿀, 전통차)으로 목록을 초기화하시겠습니까?")) return;
+    const updated = await productService.resetToDefaultProducts();
+    setProducts(updated);
+    const newDefId = await productService.getDefaultProductId();
+    setDefaultProductId(newDefId);
+    const target = updated.find(p => p.id === newDefId) || updated[0] || null;
+    setActiveProduct(target);
+    alert("기본 라이브 상품으로 초기화되었습니다!");
+  };
+
   const handleAddCustomQA = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newKeyword.trim() || !newAnswer.trim()) return;
@@ -931,8 +1002,6 @@ export const LiveStreamView: React.FC = () => {
       setIsProcessing(false);
     }, 1500);
   };
-
-  const currentProd = activeProduct || products.find(p => p.id === defaultProductId) || products[0] || null;
 
   if (isAdminRoute) {
     return (
@@ -1051,11 +1120,20 @@ export const LiveStreamView: React.FC = () => {
 
               {/* SECTION 1: 상품 및 재고/동영상 관리 */}
               <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl flex flex-col gap-4">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center flex-wrap gap-2">
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
                     <span>📦</span> {t.tabInventory} ({products.length}{t.registeredCount})
                   </h3>
-                  <span className="text-xs text-slate-400">오로지 관리자 등록 상품만 노출</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleResetToDefaultProducts}
+                      className="bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded text-xs transition cursor-pointer"
+                    >
+                      🔄 기본 데모 상품 세트로 초기화
+                    </button>
+                    <span className="text-xs text-slate-400 hidden sm:inline">실시간 DB/스토리지 연동</span>
+                  </div>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs min-w-[650px]">
@@ -1341,21 +1419,39 @@ export const LiveStreamView: React.FC = () => {
     );
   }
 
-  // Main Live Commerce Store View (채팅창 길이 고정 및 내부 스크롤 완벽 적용)
+  // Main Live Commerce Store View (채팅창 길이 고정 및 내부 스크롤 완벽 적용 + 모바일 반응형 동적 뷰)
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col w-full max-w-full overflow-x-hidden box-border">
-      <header className="border-b border-slate-700 px-3 py-2 flex justify-between items-center bg-slate-900/90 backdrop-blur shadow-md w-full shrink-0">
-        <h1 className="text-xs sm:text-sm font-bold flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-          <span>{t.title}</span>
+    <div className="h-[100dvh] max-h-[100dvh] bg-slate-950 text-slate-100 flex flex-col w-full max-w-full overflow-hidden box-border">
+      <header className="border-b border-slate-700 px-2.5 sm:px-3 py-2 flex justify-between items-center bg-slate-900/90 backdrop-blur shadow-md w-full shrink-0 z-30">
+        <h1 className="text-xs sm:text-sm font-bold flex items-center gap-1.5 truncate">
+          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0"></span>
+          <span className="truncate">{t.title}</span>
         </h1>
-        <div className="flex items-center gap-2">
-          <button onClick={() => setIsAdminRoute(true)} className="bg-slate-800 text-amber-400 border border-amber-500/40 px-2.5 py-1 rounded text-[11px] font-semibold cursor-pointer">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* 모바일 동적 화면 전환 토글 (분할 뷰 vs 풀라이브 모드) */}
+          <div className="flex md:hidden bg-slate-950 border border-slate-700 rounded-lg p-0.5 text-xs">
+            <button
+              type="button"
+              onClick={() => setMobileLayoutMode("split")}
+              className={`px-1.5 py-0.5 rounded text-[10px] font-semibold transition cursor-pointer ${mobileLayoutMode === "split" ? "bg-blue-600 text-white font-bold" : "text-slate-400"}`}
+            >
+              {t.viewSplit || "📱 분할"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileLayoutMode("overlay")}
+              className={`px-1.5 py-0.5 rounded text-[10px] font-semibold transition cursor-pointer ${mobileLayoutMode === "overlay" ? "bg-red-600 text-white font-bold" : "text-slate-400"}`}
+            >
+              {t.viewOverlay || "🎬 풀라이브"}
+            </button>
+          </div>
+
+          <button onClick={() => setIsAdminRoute(true)} className="bg-slate-800 text-amber-400 border border-amber-500/40 px-2 sm:px-2.5 py-1 rounded text-[10px] sm:text-[11px] font-semibold cursor-pointer shrink-0">
             {t.adminPortalBtn}
           </button>
-          <div className="flex bg-slate-950 border border-slate-700 rounded p-0.5 text-xs">
+          <div className="flex bg-slate-950 border border-slate-700 rounded p-0.5 text-xs shrink-0">
             {(["ko", "en", "ja", "zh", "es", "fr"] as Language[]).map(l => (
-              <button key={l} onClick={() => setLang(l)} className={`px-2 py-0.5 rounded uppercase text-[10px] ${lang === l ? "bg-blue-600 text-white" : "text-slate-400"}`}>
+              <button key={l} onClick={() => setLang(l)} className={`px-1.5 sm:px-2 py-0.5 rounded uppercase text-[9px] sm:text-[10px] ${lang === l ? "bg-blue-600 text-white" : "text-slate-400"}`}>
                 {l}
               </button>
             ))}
@@ -1363,35 +1459,89 @@ export const LiveStreamView: React.FC = () => {
         </div>
       </header>
 
-      <div className="flex-1 flex flex-col md:grid md:grid-cols-12 gap-3 p-2 sm:p-4 w-full max-w-full box-border items-stretch overflow-hidden" style={{ height: "calc(100vh - 52px)", maxHeight: "calc(100vh - 52px)" }}>
+      <div className="relative flex-1 flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3 p-1.5 sm:p-4 w-full max-w-full box-border items-stretch overflow-hidden" style={{ height: "calc(100dvh - 52px)", maxHeight: "calc(100dvh - 52px)" }}>
         
-        {/* Section 1: Video Player (최초 화면 크기로 완전 고정되어 채팅 증가에도 늘어나지 않음) */}
-        <div className="md:col-span-7 relative h-full max-h-full min-h-0 bg-slate-900/40 border border-slate-700/80 rounded-2xl p-2.5 sm:p-3 shadow-xl flex flex-col justify-between w-full max-w-full overflow-hidden box-border">
+        {/* Section 1: Video Player (모바일 동적 레이아웃 지원: 분할뷰에서는 상단 고정, 풀라이브에서는 전체 배경) */}
+        <div className={`${mobileLayoutMode === "overlay" ? "absolute inset-0 md:relative md:inset-auto z-0" : "h-[48%] sm:h-[50%] md:h-full shrink-0 md:shrink"} md:col-span-7 relative bg-slate-900/40 border border-slate-700/80 rounded-xl sm:rounded-2xl p-1.5 sm:p-3 shadow-xl flex flex-col justify-between w-full max-w-full overflow-hidden box-border`}>
           <div 
-            className="relative w-full bg-black rounded-xl overflow-hidden border border-slate-700 shadow-lg flex-1 min-h-0"
+            onClick={handleTogglePlayOrUnmute}
+            className="relative w-full bg-black rounded-lg sm:rounded-xl overflow-hidden border border-slate-700 shadow-lg flex-1 min-h-0 cursor-pointer select-none"
           >
             {currentProd ? (
-              <video
-                ref={videoRef}
-                key={currentProd.id + "-" + currentProd.videoUrl}
-                autoPlay
-                loop
-                muted={isAudioMuted}
-                playsInline
-                style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 35%", display: "block" }}
-                className="absolute inset-0 w-full h-full object-cover bg-black"
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  if (target.src !== currentProd.fallbackVideoUrl) {
-                    target.src = currentProd.fallbackVideoUrl;
-                    target.load();
-                    target.play().catch(err => console.error("Fallback play error:", err));
-                  }
-                }}
-              >
-                <source src={currentProd.videoUrl} type="video/mp4" />
-                <source src={currentProd.fallbackVideoUrl} type="video/mp4" />
-              </video>
+              <>
+                <video
+                  ref={videoRef}
+                  key={currentProd.id + "-" + currentProd.videoUrl}
+                  autoPlay
+                  loop
+                  muted={isAudioMuted}
+                  playsInline
+                  // @ts-ignore
+                  webkit-playsinline="true"
+                  x5-playsinline="true"
+                  preload="auto"
+                  onPlay={() => {
+                    setIsPlaying(true);
+                    setIsAutoplayBlocked(false);
+                  }}
+                  onPause={() => setIsPlaying(false)}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 35%", display: "block" }}
+                  className="absolute inset-0 w-full h-full object-cover bg-black"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (target.src !== currentProd.fallbackVideoUrl) {
+                      target.src = currentProd.fallbackVideoUrl;
+                      target.load();
+                      target.play().then(() => {
+                        setIsPlaying(true);
+                        setIsAutoplayBlocked(false);
+                      }).catch(err => {
+                        console.error("Fallback play error:", err);
+                        setIsAutoplayBlocked(true);
+                      });
+                    }
+                  }}
+                >
+                  <source src={currentProd.videoUrl} type="video/mp4" />
+                  <source src={currentProd.fallbackVideoUrl} type="video/mp4" />
+                </video>
+
+                {/* 모바일 브라우저 자동재생 차단 또는 정지 상태 감지 시 중앙 탭-투-플레이 오버레이 */}
+                {(!isPlaying || isAutoplayBlocked) && (
+                  <div 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleTogglePlayOrUnmute();
+                    }}
+                    className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/60 backdrop-blur-xs cursor-pointer p-4 text-center transition-all select-none"
+                  >
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-red-600/90 text-white flex items-center justify-center text-2xl sm:text-3xl shadow-xl ring-4 ring-red-500/40 animate-pulse mb-2.5">
+                      ▶
+                    </div>
+                    <span className="text-white text-xs sm:text-sm font-bold bg-slate-900/90 px-3.5 py-1.5 rounded-full border border-slate-700 shadow">
+                      {t.tapToPlay || "▶ 터치하여 라이브 영상 재생"}
+                    </span>
+                  </div>
+                )}
+
+                {/* 영상 재생 중 무음일 때 사용자 소리켜기 플로팅 알림 버튼 */}
+                {isPlaying && isAudioMuted && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsAudioMuted(false);
+                      if (videoRef.current) {
+                        videoRef.current.muted = false;
+                      }
+                    }}
+                    className="absolute bottom-3 left-3 z-20 bg-amber-500 hover:bg-amber-400 text-slate-950 text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full shadow flex items-center gap-1 cursor-pointer transition animate-bounce"
+                  >
+                    <span>🔇</span>
+                    <span>{t.tapToUnmute || "소리 켜기"}</span>
+                  </button>
+                )}
+              </>
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-slate-950">
                 <span className="text-4xl mb-3">🎬</span>
@@ -1407,54 +1557,64 @@ export const LiveStreamView: React.FC = () => {
               </div>
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none"></div>
-            <div className="absolute top-3 left-3 z-20 flex flex-col items-start gap-1">
-              <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md animate-pulse uppercase">● {t.liveStream}</span>
-              <span className="bg-black/70 text-slate-200 text-[11px] px-2 py-0.5 rounded-md border border-slate-600">{t.marketName}</span>
+            <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-20 flex flex-col items-start gap-1">
+              <span className="bg-red-600 text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-md animate-pulse uppercase">● {t.liveStream}</span>
+              <span className="bg-black/70 text-slate-200 text-[10px] sm:text-[11px] px-2 py-0.5 rounded-md border border-slate-600">{t.marketName}</span>
             </div>
-            <div className="absolute top-3 right-3 z-20 flex flex-col items-end gap-1.5">
-              <button onClick={() => setIsAudioMuted(!isAudioMuted)} className="bg-black/80 text-white text-[11px] px-2.5 py-1 rounded border border-slate-600">
-                {isAudioMuted ? t.soundOff : t.soundOn}
+            <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-20 flex flex-col items-end gap-1.5">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const nextMuted = !isAudioMuted;
+                  setIsAudioMuted(nextMuted);
+                  if (videoRef.current) {
+                    videoRef.current.muted = nextMuted;
+                  }
+                }} 
+                className={`text-[10px] sm:text-[11px] px-2 sm:px-2.5 py-1 rounded border transition font-semibold cursor-pointer ${isAudioMuted ? "bg-amber-500/20 text-amber-300 border-amber-500/50 hover:bg-amber-500/30" : "bg-black/80 text-white border-slate-600"}`}
+              >
+                {isAudioMuted ? t.soundOn : t.soundOff}
               </button>
               {currentProd && (
-                <span className={`text-[11px] font-bold px-2.5 py-1 rounded border ${currentProd.stock <= 0 ? "bg-red-600 text-white" : "bg-black/80 text-amber-300"}`}>
+                <span className={`text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-1 rounded border ${currentProd.stock <= 0 ? "bg-red-600 text-white" : "bg-black/80 text-amber-300"}`}>
                   {currentProd.stock <= 0 ? t.soldOut : `${t.stockLeft}${currentProd.stock}${t.unit}`}
                 </span>
               )}
             </div>
           </div>
 
-          <div className="mt-2.5 shrink-0 w-full box-border">
+          <div className="mt-2 shrink-0 w-full box-border">
             {currentProd && !isCheckingOut && !latestOrder ? (
-              <div className="bg-slate-900/95 p-3 rounded-xl border border-slate-700 flex items-center justify-between gap-2.5 shadow-xl w-full h-[86px] box-border overflow-hidden">
-                <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                  <div className="w-11 h-11 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-xl shrink-0">{currentProd.icon}</div>
+              <div className="bg-slate-900/95 p-2 sm:p-3 rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-between gap-2 shadow-xl w-full h-[68px] sm:h-[86px] box-border overflow-hidden">
+                <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
+                  <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-lg sm:text-xl shrink-0">{currentProd.icon}</div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-white truncate">{currentProd.name[lang] || currentProd.name.ko}</p>
-                    <p className="text-[11px] text-amber-300 font-semibold truncate">
+                    <p className="text-[11px] sm:text-xs font-bold text-white truncate">{currentProd.name[lang] || currentProd.name.ko}</p>
+                    <p className="text-[10px] sm:text-[11px] text-amber-300 font-semibold truncate">
                       KRW {currentProd.price.toLocaleString()} · <span className="text-slate-400 font-normal">{currentProd.description[lang] || currentProd.description.ko}</span>
                     </p>
                   </div>
                 </div>
                 {currentProd.stock > 0 ? (
-                  <button onClick={() => setIsCheckingOut(true)} className="bg-blue-600 text-white px-4 py-2.5 rounded-lg text-xs font-semibold shrink-0 cursor-pointer">
+                  <button onClick={() => setIsCheckingOut(true)} className="bg-blue-600 hover:bg-blue-500 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-[11px] sm:text-xs font-semibold shrink-0 cursor-pointer shadow transition">
                     {t.payWithPayPal}
                   </button>
                 ) : (
-                  <button disabled className="bg-slate-800 text-slate-500 px-4 py-2.5 rounded-lg text-xs font-bold shrink-0">{t.soldOut}</button>
+                  <button disabled className="bg-slate-800 text-slate-500 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-[11px] sm:text-xs font-bold shrink-0">{t.soldOut}</button>
                 )}
               </div>
             ) : !currentProd ? (
-              <div className="bg-slate-900/95 p-3 rounded-xl border border-slate-700 flex items-center justify-between shadow-xl w-full h-[86px] box-border px-4">
-                <p className="text-xs text-slate-400">관리자 화면에서 등록된 판매 상품이 없습니다.</p>
-                <button onClick={() => setIsAdminRoute(true)} className="bg-amber-600/30 hover:bg-amber-600/40 text-amber-300 border border-amber-500/50 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+              <div className="bg-slate-900/95 p-2 sm:p-3 rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-between shadow-xl w-full h-[68px] sm:h-[86px] box-border px-3 sm:px-4">
+                <p className="text-[11px] sm:text-xs text-slate-400">관리자 화면에서 등록된 판매 상품이 없습니다.</p>
+                <button onClick={() => setIsAdminRoute(true)} className="bg-amber-600/30 hover:bg-amber-600/40 text-amber-300 border border-amber-500/50 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold cursor-pointer">
                   상품 등록하기
                 </button>
               </div>
             ) : isCheckingOut && currentProd ? (
-              <div className="bg-slate-900 border border-blue-500 p-3 rounded-xl shadow-xl">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs font-bold text-blue-400">{t.secureCheckout}</span>
-                  <button onClick={() => setIsCheckingOut(false)} className="text-[11px] text-slate-400 underline">{t.cancelBack}</button>
+              <div className="bg-slate-900 border border-blue-500 p-2 sm:p-3 rounded-lg sm:rounded-xl shadow-xl">
+                <div className="flex justify-between items-center mb-1.5">
+                  <span className="text-[11px] sm:text-xs font-bold text-blue-400">{t.secureCheckout}</span>
+                  <button onClick={() => setIsCheckingOut(false)} className="text-[10px] sm:text-[11px] text-slate-400 underline">{t.cancelBack}</button>
                 </div>
                 <PayPalCheckoutButton 
                   amount={Math.round(currentProd.price / 1350)} 
@@ -1464,58 +1624,58 @@ export const LiveStreamView: React.FC = () => {
                 />
               </div>
             ) : latestOrder ? (
-              <div className="bg-slate-900 border border-emerald-500 p-3 rounded-xl shadow-xl flex flex-col gap-2">
+              <div className="bg-slate-900 border border-emerald-500 p-2 sm:p-3 rounded-lg sm:rounded-xl shadow-xl flex flex-col gap-1.5">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-bold text-emerald-400">{t.trackingViewTitle}</span>
-                  <button onClick={() => { setLatestOrder(null); setCheckoutStatus(null); }} className="text-[11px] text-slate-400 hover:text-white cursor-pointer">{t.closeBtn || "닫기"}</button>
+                  <span className="text-[11px] sm:text-xs font-bold text-emerald-400">{t.trackingViewTitle}</span>
+                  <button onClick={() => { setLatestOrder(null); setCheckoutStatus(null); }} className="text-[10px] sm:text-[11px] text-slate-400 hover:text-white cursor-pointer">{t.closeBtn || "닫기"}</button>
                 </div>
-                <p className="text-xs text-slate-300 font-mono">{latestOrder.orderId} / {latestOrder.shippingStatus}</p>
+                <p className="text-[11px] sm:text-xs text-slate-300 font-mono">{latestOrder.orderId} / {latestOrder.shippingStatus}</p>
               </div>
             ) : null}
           </div>
         </div>
 
-        {/* Section 2: AI Shopping Agent & Live Chat (채팅창 높이 완전 고정: min-h-0 max-h-full 로 자식 메시지가 늘어나도 절대 늘어나지 않음) */}
-        <div className="md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-2xl flex flex-col h-full max-h-full min-h-0 shadow-xl w-full max-w-full overflow-hidden box-border">
-          <div className="p-3 border-b border-slate-700 font-semibold text-xs sm:text-sm flex justify-between items-center bg-slate-900/90 shrink-0">
+        {/* Section 2: AI Shopping Agent & Live Chat (모바일 분할 및 풀라이브 오버레이 모드 완벽 지원) */}
+        <div className={`${mobileLayoutMode === "overlay" ? "absolute bottom-0 left-0 right-0 h-[48%] md:relative md:inset-auto md:h-full z-20 bg-slate-950/90 md:bg-slate-900/80 backdrop-blur-md md:backdrop-blur-none" : "flex-1 min-h-0 md:h-full"} md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-xl sm:rounded-2xl flex flex-col shadow-xl w-full max-w-full overflow-hidden box-border`}>
+          <div className="p-2 sm:p-3 border-b border-slate-700 font-semibold text-[11px] sm:text-sm flex justify-between items-center bg-slate-900/90 shrink-0">
             <span>{t.chatTitle}</span>
-            <span className="text-[11px] text-emerald-400 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> {t.online}</span>
+            <span className="text-[10px] sm:text-[11px] text-emerald-400 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> {t.online}</span>
           </div>
           
           {/* 채팅창 내부 스크롤 영역: 크기는 고정되고 스크롤바 없이 새 메시지가 오면 위로 밀려 올라감 */}
           <div 
             ref={chatMessagesRef}
-            className="flex-1 min-h-0 p-3 overflow-y-auto no-scrollbar flex flex-col gap-2.5 w-full box-border"
+            className="flex-1 min-h-0 p-2 sm:p-3 overflow-y-auto no-scrollbar flex flex-col gap-2 sm:gap-2.5 w-full box-border"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {messages.map(msg => (
               <div key={msg.id} className={msg.sender === "user" ? "flex flex-col items-end w-full" : "flex flex-col items-start w-full"}>
                 {/* 1. 위에 있는 설명란 제거: 상품 카드가 없고 텍스트가 있을 때만 말풍선 표시 */}
                 {!msg.suggestedProduct && ((typeof msg.text === "string" ? msg.text : msg.text[lang])?.trim()) ? (
-                  <div className={msg.sender === "user" ? "max-w-[85%] p-2.5 rounded-xl text-xs sm:text-sm bg-blue-600 text-white shadow break-words whitespace-pre-line" : "max-w-[85%] p-2.5 rounded-xl text-xs sm:text-sm bg-slate-800 text-slate-200 border border-slate-700 shadow break-words whitespace-pre-line"}>
+                  <div className={msg.sender === "user" ? "max-w-[85%] p-2 sm:p-2.5 rounded-xl text-xs sm:text-sm bg-blue-600 text-white shadow break-words whitespace-pre-line" : "max-w-[85%] p-2 sm:p-2.5 rounded-xl text-xs sm:text-sm bg-slate-800 text-slate-200 border border-slate-700 shadow break-words whitespace-pre-line"}>
                     {typeof msg.text === "string" ? msg.text : msg.text[lang]}
                   </div>
                 ) : null}
                 {/* 2. 아래에 있는 결제열기란만 남김: 상품 정보 및 결제 열기 버튼 카드 */}
                 {msg.suggestedProduct && (
-                  <div className="w-full max-w-full bg-slate-900 border border-slate-700 p-2.5 rounded-xl flex flex-col gap-2 shadow-md box-border">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-lg shrink-0">{msg.suggestedProduct.icon}</div>
+                  <div className="w-full max-w-full bg-slate-900 border border-slate-700 p-2 sm:p-2.5 rounded-xl flex flex-col gap-1.5 sm:gap-2 shadow-md box-border">
+                    <div className="flex items-center gap-2 sm:gap-2.5">
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-base sm:text-lg shrink-0">{msg.suggestedProduct.icon}</div>
                       <div className="text-xs min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <p className="font-bold text-white truncate">{msg.suggestedProduct.name[lang] || msg.suggestedProduct.name.ko}</p>
-                          <span className="text-[10px] text-amber-400 font-bold shrink-0">{t.stockLeft}{msg.suggestedProduct.stock}{t.unit}</span>
+                          <p className="font-bold text-white truncate text-[11px] sm:text-xs">{msg.suggestedProduct.name[lang] || msg.suggestedProduct.name.ko}</p>
+                          <span className="text-[9px] sm:text-[10px] text-amber-400 font-bold shrink-0">{t.stockLeft}{msg.suggestedProduct.stock}{t.unit}</span>
                         </div>
-                        <p className="text-[11px] text-slate-300 mt-0.5">{msg.suggestedProduct.description[lang] || msg.suggestedProduct.description.ko}</p>
-                        <p className="text-amber-300 font-semibold mt-0.5">KRW {msg.suggestedProduct.price.toLocaleString()}</p>
+                        <p className="text-[10px] sm:text-[11px] text-slate-300 mt-0.5">{msg.suggestedProduct.description[lang] || msg.suggestedProduct.description.ko}</p>
+                        <p className="text-amber-300 font-semibold mt-0.5 text-[10px] sm:text-xs">KRW {msg.suggestedProduct.price.toLocaleString()}</p>
                       </div>
                     </div>
                     {msg.suggestedProduct.stock > 0 ? (
-                      <button onClick={() => { setActiveProduct(msg.suggestedProduct!); setIsCheckingOut(true); }} className="w-full bg-[#0070BA] hover:bg-[#005ea6] text-white py-2 rounded-lg text-xs font-bold cursor-pointer transition-colors shadow">
+                      <button onClick={() => { setActiveProduct(msg.suggestedProduct!); setIsCheckingOut(true); }} className="w-full bg-[#0070BA] hover:bg-[#005ea6] text-white py-1.5 sm:py-2 rounded-lg text-xs font-bold cursor-pointer transition-colors shadow">
                         {t.openCheckout}
                       </button>
                     ) : (
-                      <button disabled className="w-full bg-slate-800 text-slate-500 py-2 rounded-lg text-xs font-bold">{t.soldOut}</button>
+                      <button disabled className="w-full bg-slate-800 text-slate-500 py-1.5 sm:py-2 rounded-lg text-xs font-bold">{t.soldOut}</button>
                     )}
                   </div>
                 )}
@@ -1526,9 +1686,9 @@ export const LiveStreamView: React.FC = () => {
             <div ref={messagesEndRef} className="h-0 w-0" />
           </div>
 
-          <div className="px-2.5 pt-2 pb-2 flex gap-1.5 flex-wrap border-t border-slate-700 bg-slate-900/60 shrink-0 w-full box-border">
+          <div className="px-2 sm:px-2.5 pt-1.5 pb-1.5 flex gap-1 sm:gap-1.5 flex-wrap border-t border-slate-700 bg-slate-900/60 shrink-0 w-full box-border">
             {products.length === 0 ? (
-              <div className="flex items-center justify-between w-full text-[11px] text-slate-400 px-1 py-0.5">
+              <div className="flex items-center justify-between w-full text-[10px] sm:text-[11px] text-slate-400 px-1 py-0.5">
                 <span>등록된 상품 버튼이 없습니다.</span>
                 <button type="button" onClick={() => setIsAdminRoute(true)} className="text-amber-400 hover:text-amber-300 underline font-semibold cursor-pointer">
                   + 관리자에서 상품 등록
@@ -1539,24 +1699,24 @@ export const LiveStreamView: React.FC = () => {
                 key={prod.id}
                 type="button"
                 onClick={() => handleSelectProductFromChat(prod)}
-                className={`text-[11px] px-2.5 py-1 rounded-full cursor-pointer shadow-sm flex items-center gap-1 border ${currentProd && currentProd.id === prod.id ? "bg-amber-600 text-white border-amber-400 font-bold" : "bg-slate-800 text-blue-300 border-slate-600"}`}
+                className={`text-[10px] sm:text-[11px] px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full cursor-pointer shadow-sm flex items-center gap-1 border transition ${currentProd && currentProd.id === prod.id ? "bg-amber-600 text-white border-amber-400 font-bold" : "bg-slate-800 text-blue-300 border-slate-600 hover:bg-slate-700"}`}
               >
                 <span>{prod.icon}</span>
-                <span className="truncate max-w-[140px]">{prod.name[lang] || prod.name.ko}</span>
+                <span className="truncate max-w-[120px] sm:max-w-[140px]">{prod.name[lang] || prod.name.ko}</span>
                 {prod.id === defaultProductId && <span className="text-[9px] text-amber-300 font-bold ml-0.5">★</span>}
               </button>
             ))}
           </div>
 
-          <form onSubmit={handleSendMessage} className="p-2.5 border-t border-slate-700 flex gap-2 bg-slate-900/80 shrink-0 w-full box-border">
+          <form onSubmit={handleSendMessage} className="p-2 sm:p-2.5 border-t border-slate-700 flex gap-2 bg-slate-900/80 shrink-0 w-full box-border">
             <input
               type="text"
               value={inputText}
               onChange={e => setInputText(e.target.value)}
               placeholder={t.inputPlaceholder}
-              className="flex-1 min-w-0 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs sm:text-sm text-slate-100 focus:outline-none"
+              className="flex-1 min-w-0 bg-slate-950 border border-slate-700 rounded-lg px-2 sm:px-2.5 py-1.5 text-xs sm:text-sm text-slate-100 focus:outline-none"
             />
-            <button type="submit" className="bg-blue-600 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-white shrink-0 cursor-pointer">
+            <button type="submit" className="bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-white shrink-0 cursor-pointer transition">
               {t.send}
             </button>
           </form>

@@ -16,19 +16,78 @@ export interface ProductEntity {
 const STORAGE_KEY_PRODUCTS = "paypal_live_custom_products_v1";
 const STORAGE_KEY_DEFAULT_PROD = "paypal_live_default_product_id_v1";
 
+export const INITIAL_DEFAULT_PRODUCTS: ProductEntity[] = [
+  {
+    id: "prod-honey",
+    name: {
+      ko: "양평 친환경 아카시아 벌꿀 (500g)",
+      en: "Yangpyeong Organic Acacia Honey (500g)",
+      ja: "楊平 有機栽培アカシア蜂蜜 (500g)",
+      zh: "杨平有机洋槐蜂蜜 (500g)",
+      es: "Miel Orgánica de Acacia de Yangpyeong (500g)",
+      fr: "Miel d'Acacia Biologique de Yangpyeong (500g)"
+    },
+    price: 32000,
+    currency: "KRW",
+    stock: 24,
+    icon: "🍯",
+    videoUrl: "/videos/honey_demo.mp4",
+    fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    description: {
+      ko: "맑은 물 양평 청정 자연에서 채밀한 100% 순수 천연 아카시아 벌꿀입니다.",
+      en: "100% Pure natural organic acacia honey harvested from Yangpyeong pristine mountains.",
+      ja: "楊平の清らかな自然の中で採取された100%純粋な天然アカシア蜂蜜です。",
+      zh: "采自杨平纯净山野的100%纯天然洋槐蜂蜜。",
+      es: "Miel de acacia 100% pura y natural recolectada en las montañas vírgenes de Yangpyeong.",
+      fr: "Miel d'acacia 100% pur et naturel récolté dans la nature préservée de Yangpyeong."
+    },
+    createdAt: new Date("2026-10-27T00:00:00Z").toISOString()
+  },
+  {
+    id: "prod-tea",
+    name: {
+      ko: "핸드메이드 전통차 선물 세트",
+      en: "Handmade Traditional Herbal Tea Set",
+      ja: "ハンドメイド伝統茶ギフトセット",
+      zh: "手工传统茶礼盒",
+      es: "Set de Té Herbal Tradicional Hecho a Mano",
+      fr: "Coffret de Thé Traditionnel Fait Main"
+    },
+    price: 48000,
+    currency: "KRW",
+    stock: 15,
+    icon: "🍵",
+    videoUrl: "/videos/tea_demo.mp4",
+    fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+    description: {
+      ko: "엄선된 전통 원료를 정성껏 덖아 만든 수제 전통차 선물 세트입니다.",
+      en: "Handmade traditional herbal tea set crafted with carefully selected ingredients.",
+      ja: "厳選された伝統原料を丁寧に焙煎して作った手作り伝統茶ギフトセットです。",
+      zh: "精选传统原料精心烘焙的手工传统茶礼盒。",
+      es: "Set de té tradicional hecho a mano con ingredientes seleccionados.",
+      fr: "Coffret de thé traditionnel fait main préparé avec soin."
+    },
+    createdAt: new Date("2026-10-27T00:00:00Z").toISOString()
+  }
+];
+
 const loadProductsFromStorage = (): ProductEntity[] => {
-  if (typeof window === "undefined") return [];
+  if (typeof window === "undefined") return INITIAL_DEFAULT_PRODUCTS;
   try {
     const raw = localStorage.getItem(STORAGE_KEY_PRODUCTS);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
     }
   } catch (e) {
     console.error("Failed to load products from localStorage", e);
   }
-  // 하드코딩된 더미 상품 완전 삭제: 오로지 관리자화면에서 등록한 상품만 사용
-  return [];
+  // 신규 접속 또는 모바일 접속 시 기본 라이브 데모 상품을 자동 시딩하여 비디오 재생을 즉시 보장
+  saveProductsToStorage(INITIAL_DEFAULT_PRODUCTS);
+  if (!localStorage.getItem(STORAGE_KEY_DEFAULT_PROD)) {
+    localStorage.setItem(STORAGE_KEY_DEFAULT_PROD, INITIAL_DEFAULT_PRODUCTS[0].id);
+  }
+  return INITIAL_DEFAULT_PRODUCTS;
 };
 
 const saveProductsToStorage = (products: ProductEntity[]) => {
@@ -98,6 +157,13 @@ export const productService = {
         localStorage.removeItem(STORAGE_KEY_DEFAULT_PROD);
       }
     }
+    return cachedProducts;
+  },
+
+  async resetToDefaultProducts(): Promise<ProductEntity[]> {
+    cachedProducts = [...INITIAL_DEFAULT_PRODUCTS];
+    saveProductsToStorage(cachedProducts);
+    await this.setDefaultProductId(cachedProducts[0].id);
     return cachedProducts;
   }
 };
