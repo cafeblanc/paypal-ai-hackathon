@@ -1461,11 +1461,11 @@ export const LiveStreamView: React.FC = () => {
 
       <div className="relative flex-1 flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3 p-1.5 sm:p-4 w-full max-w-full box-border items-stretch overflow-hidden" style={{ height: "calc(100dvh - 52px)", maxHeight: "calc(100dvh - 52px)" }}>
         
-        {/* Section 1: Video Player (모바일 동적 레이아웃 지원: 결제 시 높이 자동 최적화) */}
-        <div className={`${mobileLayoutMode === "overlay" ? "absolute inset-0 md:relative md:inset-auto z-0" : isCheckingOut ? "h-[62%] sm:h-[58%] md:h-full shrink-0 md:shrink" : "h-[48%] sm:h-[50%] md:h-full shrink-0 md:shrink"} md:col-span-7 relative bg-slate-900/40 border border-slate-700/80 rounded-xl sm:rounded-2xl p-1.5 sm:p-2.5 shadow-xl flex flex-col justify-between w-full max-w-full overflow-hidden box-border`}>
+        {/* Section 1: Video Player (동영상 구간 대폭 확대 및 페이팔 결제 버튼 상시 표시) */}
+        <div className={`${mobileLayoutMode === "overlay" ? "absolute inset-0 md:relative md:inset-auto z-0" : isCheckingOut ? "h-[68%] sm:h-[65%] md:h-full shrink-0 md:shrink" : "h-[58%] sm:h-[60%] md:h-full shrink-0 md:shrink"} md:col-span-7 relative bg-slate-900/40 border border-slate-700/80 rounded-xl sm:rounded-2xl p-1.5 sm:p-2.5 shadow-xl flex flex-col justify-between w-full max-w-full overflow-hidden box-border`}>
           <div 
             onClick={handleTogglePlayOrUnmute}
-            className={`relative w-full bg-black rounded-lg sm:rounded-xl overflow-hidden border border-slate-700 shadow-lg cursor-pointer select-none transition-all ${isCheckingOut ? "h-24 sm:h-32 shrink-0" : "flex-1 min-h-0"}`}
+            className={`relative w-full bg-black rounded-lg sm:rounded-xl overflow-hidden border border-slate-700 shadow-lg cursor-pointer select-none transition-all ${isCheckingOut ? "h-20 sm:h-24 shrink-0" : "flex-1 min-h-0"}`}
           >
             {currentProd ? (
               <>
@@ -1568,7 +1568,7 @@ export const LiveStreamView: React.FC = () => {
 
           <div className="mt-1.5 sm:mt-2 shrink-0 w-full box-border">
             {currentProd && !isCheckingOut && !latestOrder ? (
-              <div className="bg-slate-900/95 p-2 sm:p-2.5 rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-between gap-2 shadow-xl w-full h-[64px] sm:h-[80px] box-border overflow-hidden">
+              <div className="bg-slate-900/95 p-2 sm:p-2.5 rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-between gap-2 shadow-xl w-full h-[64px] sm:h-[76px] box-border overflow-hidden">
                 <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-base sm:text-xl shrink-0">{currentProd.icon}</div>
                   <div className="min-w-0 flex-1">
@@ -1579,15 +1579,16 @@ export const LiveStreamView: React.FC = () => {
                   </div>
                 </div>
                 {currentProd.stock > 0 ? (
-                  <button onClick={() => setIsCheckingOut(true)} className="bg-blue-600 hover:bg-blue-500 text-white px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-lg text-[11px] sm:text-xs font-semibold shrink-0 cursor-pointer shadow transition">
-                    {t.payWithPayPal}
+                  <button onClick={() => setIsCheckingOut(true)} className="bg-[#0070BA] hover:bg-[#005ea6] active:scale-95 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs font-bold shrink-0 cursor-pointer shadow-lg transition flex items-center gap-1 border border-blue-400/40">
+                    <span>💳</span>
+                    <span>{t.payWithPayPal}</span>
                   </button>
                 ) : (
-                  <button disabled className="bg-slate-800 text-slate-500 px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-lg text-[11px] sm:text-xs font-bold shrink-0">{t.soldOut}</button>
+                  <button disabled className="bg-slate-800 text-slate-500 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs font-bold shrink-0">{t.soldOut}</button>
                 )}
               </div>
             ) : !currentProd ? (
-              <div className="bg-slate-900/95 p-2 sm:p-2.5 rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-between shadow-xl w-full h-[64px] sm:h-[80px] box-border px-3 sm:px-4">
+              <div className="bg-slate-900/95 p-2 sm:p-2.5 rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-between shadow-xl w-full h-[64px] sm:h-[76px] box-border px-3 sm:px-4">
                 <p className="text-[11px] sm:text-xs text-slate-400">관리자 화면에서 등록된 판매 상품이 없습니다.</p>
                 <button onClick={() => setIsAdminRoute(true)} className="bg-amber-600/30 hover:bg-amber-600/40 text-amber-300 border border-amber-500/50 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold cursor-pointer">
                   상품 등록하기
@@ -1596,8 +1597,10 @@ export const LiveStreamView: React.FC = () => {
             ) : isCheckingOut && currentProd ? (
               <div className="bg-slate-900 border border-blue-500 p-2 sm:p-2.5 rounded-lg sm:rounded-xl shadow-xl w-full box-border">
                 <div className="flex justify-between items-center mb-1">
-                  <span className="text-[11px] sm:text-xs font-bold text-blue-400">{t.secureCheckout}</span>
-                  <button onClick={() => setIsCheckingOut(false)} className="text-[10px] sm:text-[11px] text-slate-400 hover:text-white underline">{t.cancelBack}</button>
+                  <span className="text-[11px] sm:text-xs font-bold text-blue-400 flex items-center gap-1">
+                    <span>🔒</span> {t.secureCheckout}
+                  </span>
+                  <button onClick={() => setIsCheckingOut(false)} className="text-[10px] sm:text-[11px] text-slate-400 hover:text-white underline cursor-pointer">{t.cancelBack}</button>
                 </div>
                 <PayPalCheckoutButton 
                   amount={Math.round(currentProd.price / 1350)} 
@@ -1618,14 +1621,9 @@ export const LiveStreamView: React.FC = () => {
           </div>
         </div>
 
-        {/* Section 2: AI Shopping Agent & Live Chat (모바일 분할 및 풀라이브 오버레이 모드 완벽 지원) */}
-        <div className={`${mobileLayoutMode === "overlay" ? "absolute bottom-0 left-0 right-0 h-[48%] md:relative md:inset-auto md:h-full z-20 bg-slate-950/90 md:bg-slate-900/80 backdrop-blur-md md:backdrop-blur-none" : "flex-1 min-h-0 md:h-full"} md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-xl sm:rounded-2xl flex flex-col shadow-xl w-full max-w-full overflow-hidden box-border`}>
-          <div className="p-2 sm:p-3 border-b border-slate-700 font-semibold text-[11px] sm:text-sm flex justify-between items-center bg-slate-900/90 shrink-0">
-            <span>{t.chatTitle}</span>
-            <span className="text-[10px] sm:text-[11px] text-emerald-400 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> {t.online}</span>
-          </div>
-          
-          {/* 채팅창 내부 스크롤 영역: 크기는 고정되고 스크롤바 없이 새 메시지가 오면 위로 밀려 올라감 */}
+        {/* Section 2: AI Shopping Agent & Live Chat (채팅창 상단 제목 줄 삭제하여 동영상 공간 최대 확보) */}
+        <div className={`${mobileLayoutMode === "overlay" ? "absolute bottom-0 left-0 right-0 h-[42%] md:relative md:inset-auto md:h-full z-20 bg-slate-950/90 md:bg-slate-900/80 backdrop-blur-md md:backdrop-blur-none" : "flex-1 min-h-0 md:h-full"} md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-xl sm:rounded-2xl flex flex-col shadow-xl w-full max-w-full overflow-hidden box-border`}>
+          {/* 채팅창 내부 스크롤 영역: 제목 줄 없이 바로 대화 내용이 시원하게 위로 올라감 */}
           <div 
             ref={chatMessagesRef}
             className="flex-1 min-h-0 p-2 sm:p-3 overflow-y-auto no-scrollbar flex flex-col gap-2 sm:gap-2.5 w-full box-border"
