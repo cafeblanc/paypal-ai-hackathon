@@ -73,34 +73,38 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({ amou
   };
 
   return (
-    <div className="max-h-[480px] overflow-y-auto pr-1.5 flex flex-col gap-3 text-xs text-slate-200 custom-scrollbar">
-      <div className="bg-slate-950 border border-slate-800 p-3.5 rounded-xl flex flex-col gap-2">
-        <p className="text-xs font-bold text-blue-400 flex items-center gap-1.5">
-          <span>🔒</span> PayPal Sandbox Secure Gateway
+    <div className="w-full flex flex-col gap-1.5 sm:gap-2 text-xs text-slate-200">
+      <div className="bg-slate-950 border border-slate-800 px-2.5 py-1.5 rounded-lg flex items-center justify-between">
+        <p className="text-[11px] font-bold text-blue-400 flex items-center gap-1">
+          <span>🔒</span> PayPal Sandbox
         </p>
-        <p className="text-[11px] text-slate-300">
-          Selected Amount: <strong className="text-white">${amount}.00 {currency}</strong>
+        <p className="text-[11px] text-amber-300 font-bold">
+          ${amount}.00 <span className="text-[10px] text-slate-400 font-normal">{currency}</span>
         </p>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <label className="text-[11px] text-slate-400 font-medium">{t.shippingLabel}</label>
-        <div className="grid grid-cols-2 gap-2">
-          <input type="text" value={t.country} className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100" readOnly />
-          <input type="text" value={t.city} className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100" readOnly />
+      <div className="flex flex-col gap-1">
+        <div className="flex justify-between items-center">
+          <label className="text-[10px] text-slate-400 font-medium">{t.shippingLabel}</label>
+          <span className="text-[9px] text-emerald-400">● 확인 완료</span>
         </div>
-        <input type="text" value={t.address} className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100" readOnly />
-        <input type="text" defaultValue="010-1234-5678 / opener@cafeblanc.kr" className="bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100" readOnly />
+        <div className="grid grid-cols-2 gap-1.5">
+          <input type="text" value={t.country} className="bg-slate-950 border border-slate-800 rounded px-2 py-1 text-[11px] text-slate-200" readOnly />
+          <input type="text" value={t.city} className="bg-slate-950 border border-slate-800 rounded px-2 py-1 text-[11px] text-slate-200" readOnly />
+        </div>
+        <input type="text" value={t.address} className="bg-slate-950 border border-slate-800 rounded px-2 py-1 text-[11px] text-slate-200" readOnly />
+        <input type="text" defaultValue="010-1234-5678 / opener@cafeblanc.kr" className="bg-slate-950 border border-slate-800 rounded px-2 py-1 text-[11px] text-slate-400" readOnly />
       </div>
 
-      <div className="pt-2 border-t border-slate-800">
-        <div className="bg-[#0070BA] hover:bg-[#003087] text-white p-3 rounded-xl text-center font-bold text-sm cursor-pointer shadow-lg transition flex items-center justify-center gap-2"
-             onClick={() => handleApprove({ id: 'SIMULATED' })}>
+      <div className="pt-1 border-t border-slate-800/80">
+        <button
+          type="button"
+          onClick={() => handleApprove({ id: 'SIMULATED' })}
+          className="w-full bg-[#0070BA] hover:bg-[#003087] active:scale-[0.99] text-white py-2 sm:py-2.5 px-3 rounded-lg text-center font-bold text-xs sm:text-sm cursor-pointer shadow-lg transition flex items-center justify-center gap-1.5"
+        >
+          <span>💳</span>
           <span>{t.payBtn(amount)}</span>
-        </div>
-        <p className="text-[10px] text-center text-slate-400 mt-2">
-          Powered by PayPal Sandbox Simulated API v2.0
-        </p>
+        </button>
       </div>
     </div>
   );

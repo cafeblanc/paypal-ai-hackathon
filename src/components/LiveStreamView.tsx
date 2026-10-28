@@ -1461,11 +1461,11 @@ export const LiveStreamView: React.FC = () => {
 
       <div className="relative flex-1 flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3 p-1.5 sm:p-4 w-full max-w-full box-border items-stretch overflow-hidden" style={{ height: "calc(100dvh - 52px)", maxHeight: "calc(100dvh - 52px)" }}>
         
-        {/* Section 1: Video Player (모바일 동적 레이아웃 지원: 분할뷰에서는 상단 고정, 풀라이브에서는 전체 배경) */}
-        <div className={`${mobileLayoutMode === "overlay" ? "absolute inset-0 md:relative md:inset-auto z-0" : "h-[48%] sm:h-[50%] md:h-full shrink-0 md:shrink"} md:col-span-7 relative bg-slate-900/40 border border-slate-700/80 rounded-xl sm:rounded-2xl p-1.5 sm:p-3 shadow-xl flex flex-col justify-between w-full max-w-full overflow-hidden box-border`}>
+        {/* Section 1: Video Player (모바일 동적 레이아웃 지원: 결제 시 높이 자동 최적화) */}
+        <div className={`${mobileLayoutMode === "overlay" ? "absolute inset-0 md:relative md:inset-auto z-0" : isCheckingOut ? "h-[62%] sm:h-[58%] md:h-full shrink-0 md:shrink" : "h-[48%] sm:h-[50%] md:h-full shrink-0 md:shrink"} md:col-span-7 relative bg-slate-900/40 border border-slate-700/80 rounded-xl sm:rounded-2xl p-1.5 sm:p-2.5 shadow-xl flex flex-col justify-between w-full max-w-full overflow-hidden box-border`}>
           <div 
             onClick={handleTogglePlayOrUnmute}
-            className="relative w-full bg-black rounded-lg sm:rounded-xl overflow-hidden border border-slate-700 shadow-lg flex-1 min-h-0 cursor-pointer select-none"
+            className={`relative w-full bg-black rounded-lg sm:rounded-xl overflow-hidden border border-slate-700 shadow-lg cursor-pointer select-none transition-all ${isCheckingOut ? "h-24 sm:h-32 shrink-0" : "flex-1 min-h-0"}`}
           >
             {currentProd ? (
               <>
@@ -1523,24 +1523,6 @@ export const LiveStreamView: React.FC = () => {
                     </span>
                   </div>
                 )}
-
-                {/* 영상 재생 중 무음일 때 사용자 소리켜기 플로팅 알림 버튼 */}
-                {isPlaying && isAudioMuted && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsAudioMuted(false);
-                      if (videoRef.current) {
-                        videoRef.current.muted = false;
-                      }
-                    }}
-                    className="absolute bottom-3 left-3 z-20 bg-amber-500 hover:bg-amber-400 text-slate-950 text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full shadow flex items-center gap-1 cursor-pointer transition animate-bounce"
-                  >
-                    <span>🔇</span>
-                    <span>{t.tapToUnmute || "소리 켜기"}</span>
-                  </button>
-                )}
               </>
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-slate-950">
@@ -1561,6 +1543,7 @@ export const LiveStreamView: React.FC = () => {
               <span className="bg-red-600 text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-md animate-pulse uppercase">● {t.liveStream}</span>
               <span className="bg-black/70 text-slate-200 text-[10px] sm:text-[11px] px-2 py-0.5 rounded-md border border-slate-600">{t.marketName}</span>
             </div>
+            {/* 우측 상단 단일 통합 사운드 토글 버튼 (음소거 / 소리켜기) */}
             <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-20 flex flex-col items-end gap-1.5">
               <button 
                 onClick={(e) => {
@@ -1571,7 +1554,7 @@ export const LiveStreamView: React.FC = () => {
                     videoRef.current.muted = nextMuted;
                   }
                 }} 
-                className={`text-[10px] sm:text-[11px] px-2 sm:px-2.5 py-1 rounded border transition font-semibold cursor-pointer ${isAudioMuted ? "bg-amber-500/20 text-amber-300 border-amber-500/50 hover:bg-amber-500/30" : "bg-black/80 text-white border-slate-600"}`}
+                className={`text-[10px] sm:text-[11px] px-2.5 py-1 rounded border transition font-semibold cursor-pointer shadow-md ${isAudioMuted ? "bg-amber-500 hover:bg-amber-400 text-slate-950 border-amber-400 font-bold" : "bg-black/80 hover:bg-black/90 text-white border-slate-600"}`}
               >
                 {isAudioMuted ? t.soundOn : t.soundOff}
               </button>
@@ -1583,11 +1566,11 @@ export const LiveStreamView: React.FC = () => {
             </div>
           </div>
 
-          <div className="mt-2 shrink-0 w-full box-border">
+          <div className="mt-1.5 sm:mt-2 shrink-0 w-full box-border">
             {currentProd && !isCheckingOut && !latestOrder ? (
-              <div className="bg-slate-900/95 p-2 sm:p-3 rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-between gap-2 shadow-xl w-full h-[68px] sm:h-[86px] box-border overflow-hidden">
+              <div className="bg-slate-900/95 p-2 sm:p-2.5 rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-between gap-2 shadow-xl w-full h-[64px] sm:h-[80px] box-border overflow-hidden">
                 <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                  <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-lg sm:text-xl shrink-0">{currentProd.icon}</div>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-base sm:text-xl shrink-0">{currentProd.icon}</div>
                   <div className="min-w-0 flex-1">
                     <p className="text-[11px] sm:text-xs font-bold text-white truncate">{currentProd.name[lang] || currentProd.name.ko}</p>
                     <p className="text-[10px] sm:text-[11px] text-amber-300 font-semibold truncate">
@@ -1596,25 +1579,25 @@ export const LiveStreamView: React.FC = () => {
                   </div>
                 </div>
                 {currentProd.stock > 0 ? (
-                  <button onClick={() => setIsCheckingOut(true)} className="bg-blue-600 hover:bg-blue-500 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-[11px] sm:text-xs font-semibold shrink-0 cursor-pointer shadow transition">
+                  <button onClick={() => setIsCheckingOut(true)} className="bg-blue-600 hover:bg-blue-500 text-white px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-lg text-[11px] sm:text-xs font-semibold shrink-0 cursor-pointer shadow transition">
                     {t.payWithPayPal}
                   </button>
                 ) : (
-                  <button disabled className="bg-slate-800 text-slate-500 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-[11px] sm:text-xs font-bold shrink-0">{t.soldOut}</button>
+                  <button disabled className="bg-slate-800 text-slate-500 px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-lg text-[11px] sm:text-xs font-bold shrink-0">{t.soldOut}</button>
                 )}
               </div>
             ) : !currentProd ? (
-              <div className="bg-slate-900/95 p-2 sm:p-3 rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-between shadow-xl w-full h-[68px] sm:h-[86px] box-border px-3 sm:px-4">
+              <div className="bg-slate-900/95 p-2 sm:p-2.5 rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-between shadow-xl w-full h-[64px] sm:h-[80px] box-border px-3 sm:px-4">
                 <p className="text-[11px] sm:text-xs text-slate-400">관리자 화면에서 등록된 판매 상품이 없습니다.</p>
                 <button onClick={() => setIsAdminRoute(true)} className="bg-amber-600/30 hover:bg-amber-600/40 text-amber-300 border border-amber-500/50 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-semibold cursor-pointer">
                   상품 등록하기
                 </button>
               </div>
             ) : isCheckingOut && currentProd ? (
-              <div className="bg-slate-900 border border-blue-500 p-2 sm:p-3 rounded-lg sm:rounded-xl shadow-xl">
-                <div className="flex justify-between items-center mb-1.5">
+              <div className="bg-slate-900 border border-blue-500 p-2 sm:p-2.5 rounded-lg sm:rounded-xl shadow-xl w-full box-border">
+                <div className="flex justify-between items-center mb-1">
                   <span className="text-[11px] sm:text-xs font-bold text-blue-400">{t.secureCheckout}</span>
-                  <button onClick={() => setIsCheckingOut(false)} className="text-[10px] sm:text-[11px] text-slate-400 underline">{t.cancelBack}</button>
+                  <button onClick={() => setIsCheckingOut(false)} className="text-[10px] sm:text-[11px] text-slate-400 hover:text-white underline">{t.cancelBack}</button>
                 </div>
                 <PayPalCheckoutButton 
                   amount={Math.round(currentProd.price / 1350)} 
@@ -1624,7 +1607,7 @@ export const LiveStreamView: React.FC = () => {
                 />
               </div>
             ) : latestOrder ? (
-              <div className="bg-slate-900 border border-emerald-500 p-2 sm:p-3 rounded-lg sm:rounded-xl shadow-xl flex flex-col gap-1.5">
+              <div className="bg-slate-900 border border-emerald-500 p-2 sm:p-2.5 rounded-lg sm:rounded-xl shadow-xl flex flex-col gap-1">
                 <div className="flex justify-between items-center">
                   <span className="text-[11px] sm:text-xs font-bold text-emerald-400">{t.trackingViewTitle}</span>
                   <button onClick={() => { setLatestOrder(null); setCheckoutStatus(null); }} className="text-[10px] sm:text-[11px] text-slate-400 hover:text-white cursor-pointer">{t.closeBtn || "닫기"}</button>
