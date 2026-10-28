@@ -13,84 +13,91 @@ export interface ProductEntity {
   createdAt: string;
 }
 
-let mockProductDatabase: ProductEntity[] = [
-  {
-    id: "prod-001",
-    name: {
-      ko: "프리미엄 유기농 꿀 (100% 천연)",
-      en: "Premium Organic Honey (100% Natural)",
-      ja: "プレミアム有機ハチミツ (100%天然)",
-      zh: "优质有机蜂蜜 (100%天然)",
-      es: "Miel Orgánica Premium (100% Natural)",
-      fr: "Miel Bio Premium (100% Naturel)"
-    },
-    price: 35000,
-    currency: "KRW",
-    stock: 4,
-    icon: "🍯",
-    videoUrl: "/videos/honey_demo.mp4",
-    fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-    description: {
-      ko: "청정 자연에서 채취한 100% 순수 천연 유기농 꿀 제품입니다.",
-      en: "100% pure natural organic honey harvested from clean nature.",
-      ja: "清らかな自然で採取した100%純粋な有機ハチミツ製品です。",
-      zh: "在纯净自然中采集的100%纯天然有机蜂蜜产品。",
-      es: "Miel orgánica 100% pura y natural cosechada en la naturaleza.",
-      fr: "Miel bio 100% pur et naturel récolté dans une nature pure."
-    },
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "prod-002",
-    name: {
-      ko: "핸드메이드 전통차 선물 세트",
-      en: "Handmade Traditional Herbal Tea Set",
-      ja: "ハンドメイド伝統茶ギフトセット",
-      zh: "手工传统茶礼盒",
-      es: "Set de Té Herbal Tradicional Hecho a Mano",
-      fr: "Coffret de Thé Traditionnel Fait Main"
-    },
-    price: 48000,
-    currency: "KRW",
-    stock: 15,
-    icon: "🍵",
-    videoUrl: "/videos/tea_demo.mp4",
-    fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-    description: {
-      ko: "엄선된 전통 원료를 정성껏 덖아 만든 수제 전통차 선물 세트입니다.",
-      en: "Handmade traditional herbal tea set crafted with carefully selected ingredients.",
-      ja: "厳選された伝統原料を丁寧に焙煎して作った手作り伝統茶ギフトセットです。",
-      zh: "精选传统原料精心烘焙的手工传统茶礼盒。",
-      es: "Set de té tradicional hecho a mano con ingredientes seleccionados.",
-      fr: "Coffret de thé traditionnel fait main préparé avec soin."
-    },
-    createdAt: new Date().toISOString()
+const STORAGE_KEY_PRODUCTS = "paypal_live_custom_products_v1";
+const STORAGE_KEY_DEFAULT_PROD = "paypal_live_default_product_id_v1";
+
+const loadProductsFromStorage = (): ProductEntity[] => {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_PRODUCTS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch (e) {
+    console.error("Failed to load products from localStorage", e);
   }
-];
+  // 하드코딩된 더미 상품 완전 삭제: 오로지 관리자화면에서 등록한 상품만 사용
+  return [];
+};
+
+const saveProductsToStorage = (products: ProductEntity[]) => {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(products));
+  } catch (e) {
+    console.error("Failed to save products to localStorage", e);
+  }
+};
+
+let cachedProducts: ProductEntity[] = loadProductsFromStorage();
 
 export const productService = {
   async getProducts(): Promise<ProductEntity[]> {
-    return mockProductDatabase;
+    cachedProducts = loadProductsFromStorage();
+    return cachedProducts;
   },
-  async addProduct(newProd: Omit<ProductEntity, "id" | "createdAt">): Promise<ProductEntity[]> {
+
+  async getDefaultProductId(): Promise<string | null> {
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem(STORAGE_KEY_DEFAULT_PROD);
+  },
+
+  async setDefaultProductId(id: string): Promise<void> {
+    if (typeof window === "undefined") return;
+    localStorage.setItem(STORAGE_KEY_DEFAULT_PROD, id);
+  },
+
+  async addProduct(newProd: Omit<ProductEntity, "id" | "createdAt">, isDefault: boolean = false): Promise<ProductEntity[]> {
     const created: ProductEntity = {
       ...newProd,
       id: "prod-" + Date.now(),
       createdAt: new Date().toISOString()
     };
-    mockProductDatabase = [created, ...mockProductDatabase];
-    return mockProductDatabase;
+    cachedProducts = [created, ...cachedProducts];
+    saveProductsToStorage(cachedProducts);
+    
+    // 만약 첫 상품이거나 시작 동영상으로 지정된 경우 기본 상품으로 설정
+    if (isDefault || cachedProducts.length === 1) {
+      await this.setDefaultProductId(created.id);
+    }
+    return cachedProducts;
   },
+
   async updateStock(id: string, stock: number): Promise<ProductEntity[]> {
-    mockProductDatabase = mockProductDatabase.map(p => p.id === id ? { ...p, stock: Math.max(0, stock) } : p);
-    return mockProductDatabase;
+    cachedProducts = cachedProducts.map(p => p.id === id ? { ...p, stock: Math.max(0, stock) } : p);
+    saveProductsToStorage(cachedProducts);
+    return cachedProducts;
   },
+
   async updateVideoMapping(id: string, videoUrl: string): Promise<ProductEntity[]> {
-    mockProductDatabase = mockProductDatabase.map(p => p.id === id ? { ...p, videoUrl } : p);
-    return mockProductDatabase;
+    cachedProducts = cachedProducts.map(p => p.id === id ? { ...p, videoUrl } : p);
+    saveProductsToStorage(cachedProducts);
+    return cachedProducts;
   },
+
   async deleteProduct(id: string): Promise<ProductEntity[]> {
-    mockProductDatabase = mockProductDatabase.filter(p => p.id !== id);
-    return mockProductDatabase;
+    cachedProducts = cachedProducts.filter(p => p.id !== id);
+    saveProductsToStorage(cachedProducts);
+    const defId = await this.getDefaultProductId();
+    if (defId === id) {
+      const nextDef = cachedProducts[0]?.id || "";
+      if (nextDef) {
+        await this.setDefaultProductId(nextDef);
+      } else {
+        localStorage.removeItem(STORAGE_KEY_DEFAULT_PROD);
+      }
+    }
+    return cachedProducts;
   }
 };

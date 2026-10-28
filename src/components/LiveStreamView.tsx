@@ -641,6 +641,8 @@ export const LiveStreamView: React.FC = () => {
   const [newProdIcon, setNewProdIcon] = useState<string>("🎁");
   const [newProdVideo, setNewProdVideo] = useState<string>("/videos/honey_demo.mp4");
   const [newProdDesc, setNewProdDesc] = useState<string>("");
+  const [isStartVideo, setIsStartVideo] = useState<boolean>(false);
+  const [defaultProductId, setDefaultProductId] = useState<string | null>(null);
 
   const [newKeyword, setNewKeyword] = useState<string>("");
   const [newQuestion, setNewQuestion] = useState<string>("");
@@ -698,9 +700,11 @@ export const LiveStreamView: React.FC = () => {
   }, [messages]);
 
   useEffect(() => {
-    productService.getProducts().then((list) => {
+    Promise.all([productService.getProducts(), productService.getDefaultProductId()]).then(([list, defId]) => {
       setProducts(list);
-      if (list.length > 0) setActiveProduct(list[0]);
+      setDefaultProductId(defId);
+      const target = list.find(p => p.id === defId) || list[0] || null;
+      setActiveProduct(target);
     });
   }, []);
 
@@ -844,11 +848,29 @@ export const LiveStreamView: React.FC = () => {
       videoUrl: newProdVideo || "/videos/honey_demo.mp4",
       fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
       description: { ko: descText, en: descText, ja: descText, zh: descText, es: descText, fr: descText }
-    });
+    }, isStartVideo);
+
     setProducts(updated);
+    const newDefId = await productService.getDefaultProductId();
+    setDefaultProductId(newDefId);
+    
+    if (isStartVideo || updated.length === 1) {
+      const created = updated[0];
+      if (created) setActiveProduct(created);
+    }
+
     setNewProdName("");
     setNewProdDesc("");
+    setIsStartVideo(false);
     alert("새로운 상품이 등록되었습니다!");
+  };
+
+  const handleSetDefaultProduct = async (productId: string) => {
+    await productService.setDefaultProductId(productId);
+    setDefaultProductId(productId);
+    const target = products.find(p => p.id === productId);
+    if (target) setActiveProduct(target);
+    alert("선택하신 상품이 시작 동영상 상품으로 지정되었습니다!");
   };
 
   const updateShippingStatus = (orderId: string, newStatus: "상품 준비중" | "배송중" | "배송완료") => {
@@ -872,10 +894,15 @@ export const LiveStreamView: React.FC = () => {
   };
 
   const handleDeleteProduct = async (productId: string) => {
-    if (products.length <= 1) return;
+    if (!confirm("정말 이 상품을 삭제하시겠습니까?")) return;
     const updated = await productService.deleteProduct(productId);
     setProducts(updated);
-    if (activeProduct && activeProduct.id === productId) setActiveProduct(updated[0]);
+    const newDefId = await productService.getDefaultProductId();
+    setDefaultProductId(newDefId);
+    if (activeProduct && activeProduct.id === productId) {
+      const nextTarget = updated.find(p => p.id === newDefId) || updated[0] || null;
+      setActiveProduct(nextTarget);
+    }
   };
 
   const handleAddCustomQA = (e: React.FormEvent) => {
@@ -895,7 +922,7 @@ export const LiveStreamView: React.FC = () => {
     setQaList(prev => prev.filter(q => q.id !== id));
   };
 
-  const currentProd = activeProduct || products[0];
+  const currentProd = activeProduct || products.find(p => p.id === defaultProductId) || products[0] || null;
 
   if (isAdminRoute) {
     return (
@@ -971,43 +998,88 @@ export const LiveStreamView: React.FC = () => {
                   <div className="md:col-span-1">
                     <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-xs font-bold cursor-pointer">등록</button>
                   </div>
-                  <div className="md:col-span-12">
+                  <div className="md:col-span-8">
                     <label className="text-xs text-slate-300 mb-1 block">상세설명</label>
                     <input type="text" value={newProdDesc} onChange={e => setNewProdDesc(e.target.value)} placeholder="상품 상세 설명 입력" className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" />
+                  </div>
+                  <div className="md:col-span-4 flex items-center gap-2 pb-2">
+                    <input 
+                      type="checkbox" 
+                      id="isStartVideoCheck" 
+                      checked={isStartVideo} 
+                      onChange={e => setIsStartVideo(e.target.checked)} 
+                      className="w-4 h-4 rounded text-amber-500 bg-slate-950 border-slate-700 cursor-pointer"
+                    />
+                    <label htmlFor="isStartVideoCheck" className="text-xs text-amber-300 font-semibold cursor-pointer">
+                      ⭐ 등록 즉시 시작 동영상 상품으로 지정
+                    </label>
                   </div>
                 </form>
               </div>
 
               {/* 상품 목록 관리 */}
               <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl flex flex-col gap-4">
-                <h3 className="text-sm font-bold text-white">📦 상품 및 재고/동영상 관리</h3>
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-slate-800 text-slate-400">
-                      <th className="pb-3">상품명 / 설명</th>
-                      <th className="pb-3">가격</th>
-                      <th className="pb-3">재고</th>
-                      <th className="pb-3">동영상 경로</th>
-                      <th className="pb-3 text-right">관리</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800/60">
-                    {products.map(p => (
-                      <tr key={p.id}>
-                        <td className="py-3 font-bold text-white">{p.icon} {p.name[lang] || p.name.ko}</td>
-                        <td className="py-3 text-slate-300">KRW {p.price.toLocaleString()}</td>
-                        <td className="py-3">
-                          <input type="number" value={p.stock} onChange={e => updateProductStock(p.id, Number(e.target.value))} className="w-16 bg-slate-950 border border-slate-700 text-amber-400 font-bold rounded p-1 text-xs" />
-                        </td>
-                        <td className="py-3 font-mono text-amber-300">{p.videoUrl}</td>
-                        <td className="py-3 text-right space-x-2">
-                          <button onClick={() => changeVideoMapping(p.id)} className="bg-blue-600/20 text-blue-400 px-2.5 py-1 rounded text-xs">동영상 변경</button>
-                          <button onClick={() => handleDeleteProduct(p.id)} className="bg-red-600/20 text-red-400 px-2.5 py-1 rounded text-xs">삭제</button>
-                        </td>
+                <div className="flex justify-between items-center">
+                  <h3 className="text-sm font-bold text-white">📦 등록된 상품 목록 (오로지 관리자 등록 상품만 표시)</h3>
+                  <span className="text-xs text-slate-400">총 {products.length}개 상품</span>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-slate-800 text-slate-400">
+                        <th className="pb-3">상품명 / 설명</th>
+                        <th className="pb-3">가격</th>
+                        <th className="pb-3">재고</th>
+                        <th className="pb-3">동영상 경로</th>
+                        <th className="pb-3">시작 동영상</th>
+                        <th className="pb-3 text-right">관리</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60">
+                      {products.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="py-8 text-center text-slate-400">
+                            등록된 상품이 없습니다. 상단 양식에서 상품과 동영상을 등록해 주세요.
+                          </td>
+                        </tr>
+                      ) : products.map(p => (
+                        <tr key={p.id}>
+                          <td className="py-3 font-bold text-white">
+                            <div className="flex items-center gap-1.5">
+                              <span>{p.icon}</span>
+                              <span>{p.name[lang] || p.name.ko}</span>
+                            </div>
+                            <p className="text-[11px] text-slate-400 font-normal mt-0.5">{p.description[lang] || p.description.ko}</p>
+                          </td>
+                          <td className="py-3 text-slate-300">KRW {p.price.toLocaleString()}</td>
+                          <td className="py-3">
+                            <input type="number" value={p.stock} onChange={e => updateProductStock(p.id, Number(e.target.value))} className="w-16 bg-slate-950 border border-slate-700 text-amber-400 font-bold rounded p-1 text-xs" />
+                          </td>
+                          <td className="py-3 font-mono text-amber-300 truncate max-w-[150px]">{p.videoUrl}</td>
+                          <td className="py-3">
+                            {p.id === defaultProductId ? (
+                              <span className="bg-amber-500/20 text-amber-300 border border-amber-500/50 px-2.5 py-1 rounded-full text-[11px] font-bold inline-flex items-center gap-1">
+                                ⭐ 시작 동영상
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => handleSetDefaultProduct(p.id)}
+                                className="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-600 px-2 py-1 rounded text-[11px] cursor-pointer transition"
+                              >
+                                대표로 지정
+                              </button>
+                            )}
+                          </td>
+                          <td className="py-3 text-right space-x-2">
+                            <button onClick={() => changeVideoMapping(p.id)} className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-2.5 py-1 rounded text-xs transition cursor-pointer">동영상 변경</button>
+                            <button onClick={() => handleDeleteProduct(p.id)} className="bg-red-600/20 hover:bg-red-600/30 text-red-400 px-2.5 py-1 rounded text-xs transition cursor-pointer">삭제</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
@@ -1045,7 +1117,7 @@ export const LiveStreamView: React.FC = () => {
           <div 
             className="relative w-full bg-black rounded-xl overflow-hidden border border-slate-700 shadow-lg flex-1 min-h-0"
           >
-            {currentProd && (
+            {currentProd ? (
               <video
                 ref={videoRef}
                 key={currentProd.id + "-" + currentProd.videoUrl}
@@ -1067,6 +1139,19 @@ export const LiveStreamView: React.FC = () => {
                 <source src={currentProd.videoUrl} type="video/mp4" />
                 <source src={currentProd.fallbackVideoUrl} type="video/mp4" />
               </video>
+            ) : (
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-slate-950">
+                <span className="text-4xl mb-3">🎬</span>
+                <p className="text-sm font-bold text-white mb-1">등록된 라이브 동영상 상품이 없습니다.</p>
+                <p className="text-xs text-slate-400 mb-4">관리자 화면에서 판매 상품과 동영상을 등록해 주세요.</p>
+                <button
+                  type="button"
+                  onClick={() => setIsAdminRoute(true)}
+                  className="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition shadow cursor-pointer"
+                >
+                  🔒 관리자 화면에서 상품 등록하기
+                </button>
+              </div>
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none"></div>
             <div className="absolute top-3 left-3 z-20 flex flex-col items-start gap-1">
@@ -1104,6 +1189,13 @@ export const LiveStreamView: React.FC = () => {
                 ) : (
                   <button disabled className="bg-slate-800 text-slate-500 px-4 py-2.5 rounded-lg text-xs font-bold shrink-0">{t.soldOut}</button>
                 )}
+              </div>
+            ) : !currentProd ? (
+              <div className="bg-slate-900/95 p-3 rounded-xl border border-slate-700 flex items-center justify-between shadow-xl w-full h-[86px] box-border px-4">
+                <p className="text-xs text-slate-400">관리자 화면에서 등록된 판매 상품이 없습니다.</p>
+                <button onClick={() => setIsAdminRoute(true)} className="bg-amber-600/30 hover:bg-amber-600/40 text-amber-300 border border-amber-500/50 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">
+                  상품 등록하기
+                </button>
               </div>
             ) : isCheckingOut && currentProd ? (
               <div className="bg-slate-900 border border-blue-500 p-3 rounded-xl shadow-xl">
@@ -1182,7 +1274,14 @@ export const LiveStreamView: React.FC = () => {
           </div>
 
           <div className="px-2.5 pt-2 pb-2 flex gap-1.5 flex-wrap border-t border-slate-700 bg-slate-900/60 shrink-0 w-full box-border">
-            {products.map((prod) => (
+            {products.length === 0 ? (
+              <div className="flex items-center justify-between w-full text-[11px] text-slate-400 px-1 py-0.5">
+                <span>등록된 상품 버튼이 없습니다.</span>
+                <button type="button" onClick={() => setIsAdminRoute(true)} className="text-amber-400 hover:text-amber-300 underline font-semibold cursor-pointer">
+                  + 관리자에서 상품 등록
+                </button>
+              </div>
+            ) : products.map((prod) => (
               <button
                 key={prod.id}
                 type="button"
@@ -1191,6 +1290,7 @@ export const LiveStreamView: React.FC = () => {
               >
                 <span>{prod.icon}</span>
                 <span className="truncate max-w-[140px]">{prod.name[lang] || prod.name.ko}</span>
+                {prod.id === defaultProductId && <span className="text-[9px] text-amber-300 font-bold ml-0.5">★</span>}
               </button>
             ))}
           </div>
