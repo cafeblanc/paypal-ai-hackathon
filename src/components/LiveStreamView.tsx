@@ -675,6 +675,16 @@ export const LiveStreamView: React.FC = () => {
   const [latestOrder, setLatestOrder] = useState<OrderRecord | null>(null);
   const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const chatMessagesRef = useRef<HTMLDivElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  // 채팅 메시지 추가 시 스크롤바 노출 없이 최신 목록이 항상 밑에 보이고, 기존 대화는 위로 밀려 올라가 사라지도록 자동 스크롤
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (chatMessagesRef.current) {
+      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   useEffect(() => {
     productService.getProducts().then((list) => {
@@ -705,38 +715,21 @@ export const LiveStreamView: React.FC = () => {
     }
   }, [products]);
 
-  // [채팅창 정제] 상품 선택 시 동영상 경로 및 불필요한 수식어 제거, 오직 순수 상품명과 상세설명만 출력
+  // 상품란 클릭 시: 위에 있는 설명란을 완전히 없애고 오직 아래의 결제열기란 카드만 남김
   const handleSelectProductFromChat = (product: Product) => {
     setActiveProduct(product);
     setIsCheckingOut(false);
 
-    const prodTitle = product.name[lang] || product.name.ko;
-    const prodDesc = product.description[lang] || product.description.ko;
-
-    const userMsg: ChatMessage = {
-      id: Date.now().toString() + "-u",
-      sender: "user",
-      text: {
-        ko: `${product.icon} ${prodTitle} 보여줘`,
-        en: `Show me ${product.icon} ${prodTitle}`,
-        ja: `${product.icon} ${prodTitle} を見せて`,
-        zh: `展示 ${product.icon} ${prodTitle}`,
-        es: `Mostrar ${product.icon} ${prodTitle}`,
-        fr: `Montrer ${product.icon} ${prodTitle}`
-      },
-      timestamp: new Date().toLocaleTimeString()
-    };
-
-    const aiReplyText = `✨ [${product.icon} ${prodTitle}]\n📋 ${prodDesc}`;
-    const aiMsg: ChatMessage = {
-      id: Date.now().toString() + "-ai",
+    // 상단 설명란 없이 하단 결제열기란 카드만 단독 추가
+    const productCardMsg: ChatMessage = {
+      id: Date.now().toString() + "-prod",
       sender: "ai",
-      text: { ko: aiReplyText, en: aiReplyText, ja: aiReplyText, zh: aiReplyText, es: aiReplyText, fr: aiReplyText },
+      text: { ko: "", en: "", ja: "", zh: "", es: "", fr: "" },
       timestamp: new Date().toLocaleTimeString(),
       suggestedProduct: product
     };
 
-    setMessages(prev => [...prev, userMsg, aiMsg]);
+    setMessages(prev => [...prev, productCardMsg]);
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
@@ -766,9 +759,7 @@ export const LiveStreamView: React.FC = () => {
       aiReplyText = matchedQA.answer;
     } else if (matchedProd) {
       setActiveProduct(matchedProd);
-      const prodTitle = matchedProd.name[lang] || matchedProd.name.ko;
-      const desc = matchedProd.description[lang] || matchedProd.description.ko;
-      aiReplyText = `✨ [${matchedProd.icon} ${prodTitle}]\n📋 ${desc}`;
+      aiReplyText = ""; // 상단 설명란 없이 결제열기란 카드만 표시
       suggestedProd = matchedProd;
     } else if (query.includes("pay") || query.includes("결제") || query.includes("checkout")) {
       if (!activeProduct || activeProduct.stock <= 0) {
@@ -1121,22 +1112,30 @@ export const LiveStreamView: React.FC = () => {
           </div>
         </div>
 
-        {/* Section 2: AI Shopping Agent & Live Chat (채팅창 길이 고정 및 내부 스크롤 완벽 적용) */}
-        <div className="md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-2xl flex flex-col h-[calc(100vh-68px)] md:h-full shadow-xl w-full max-w-full overflow-x-hidden box-border shrink-0">
+        {/* Section 2: AI Shopping Agent & Live Chat (채팅창 크기 고정 및 스크롤바 없는 자연스러운 위로 밀림 구현) */}
+        <div className="md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-2xl flex flex-col h-[calc(100vh-68px)] md:h-full shadow-xl w-full max-w-full overflow-hidden box-border shrink-0">
           <div className="p-3 border-b border-slate-700 font-semibold text-xs sm:text-sm flex justify-between items-center bg-slate-900/90 shrink-0">
             <span>{t.chatTitle}</span>
             <span className="text-[11px] text-emerald-400 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> {t.online}</span>
           </div>
           
-          {/* 채팅창 내부 스크롤 영역: flex-1 min-h-0 overflow-y-auto 로 박스 길이는 고정되고 내용만 위로 밀려 올라감 */}
-          <div className="flex-1 min-h-0 p-3 overflow-y-auto flex flex-col gap-2.5 w-full box-border">
+          {/* 채팅창 내부 스크롤 영역: 크기는 고정되고 스크롤바 없이 새 메시지가 오면 위로 밀려 올라감 */}
+          <div 
+            ref={chatMessagesRef}
+            className="flex-1 min-h-0 p-3 overflow-y-auto no-scrollbar flex flex-col gap-2.5 w-full box-border"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
             {messages.map(msg => (
               <div key={msg.id} className={msg.sender === "user" ? "flex flex-col items-end w-full" : "flex flex-col items-start w-full"}>
-                <div className={msg.sender === "user" ? "max-w-[85%] p-2.5 rounded-xl text-xs sm:text-sm bg-blue-600 text-white shadow break-words whitespace-pre-line" : "max-w-[85%] p-2.5 rounded-xl text-xs sm:text-sm bg-slate-800 text-slate-200 border border-slate-700 shadow break-words whitespace-pre-line"}>
-                  {typeof msg.text === "string" ? msg.text : msg.text[lang]}
-                </div>
+                {/* 1. 위에 있는 설명란 제거: 상품 카드가 없고 텍스트가 있을 때만 말풍선 표시 */}
+                {!msg.suggestedProduct && ((typeof msg.text === "string" ? msg.text : msg.text[lang])?.trim()) ? (
+                  <div className={msg.sender === "user" ? "max-w-[85%] p-2.5 rounded-xl text-xs sm:text-sm bg-blue-600 text-white shadow break-words whitespace-pre-line" : "max-w-[85%] p-2.5 rounded-xl text-xs sm:text-sm bg-slate-800 text-slate-200 border border-slate-700 shadow break-words whitespace-pre-line"}>
+                    {typeof msg.text === "string" ? msg.text : msg.text[lang]}
+                  </div>
+                ) : null}
+                {/* 2. 아래에 있는 결제열기란만 남김: 상품 정보 및 결제 열기 버튼 카드 */}
                 {msg.suggestedProduct && (
-                  <div className="mt-2 w-full max-w-full bg-slate-900 border border-slate-700 p-2.5 rounded-xl flex flex-col gap-2 shadow-md box-border">
+                  <div className="w-full max-w-full bg-slate-900 border border-slate-700 p-2.5 rounded-xl flex flex-col gap-2 shadow-md box-border">
                     <div className="flex items-center gap-2.5">
                       <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-lg shrink-0">{msg.suggestedProduct.icon}</div>
                       <div className="text-xs min-w-0 flex-1">
@@ -1149,17 +1148,19 @@ export const LiveStreamView: React.FC = () => {
                       </div>
                     </div>
                     {msg.suggestedProduct.stock > 0 ? (
-                      <button onClick={() => { setActiveProduct(msg.suggestedProduct!); setIsCheckingOut(true); }} className="w-full bg-[#0070BA] text-white py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+                      <button onClick={() => { setActiveProduct(msg.suggestedProduct!); setIsCheckingOut(true); }} className="w-full bg-[#0070BA] hover:bg-[#005ea6] text-white py-2 rounded-lg text-xs font-bold cursor-pointer transition-colors shadow">
                         {t.openCheckout}
                       </button>
                     ) : (
-                      <button disabled className="w-full bg-slate-800 text-slate-500 py-1.5 rounded-lg text-xs font-bold">{t.soldOut}</button>
+                      <button disabled className="w-full bg-slate-800 text-slate-500 py-2 rounded-lg text-xs font-bold">{t.soldOut}</button>
                     )}
                   </div>
                 )}
                 <span className="text-[9px] text-slate-500 mt-0.5">{msg.timestamp}</span>
               </div>
             ))}
+            {/* 최신 대화로 자동 스크롤 타겟 */}
+            <div ref={messagesEndRef} className="h-0 w-0" />
           </div>
 
           <div className="px-2.5 pt-2 pb-2 flex gap-1.5 flex-wrap border-t border-slate-700 bg-slate-900/60 shrink-0 w-full box-border">
