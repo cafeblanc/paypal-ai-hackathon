@@ -678,6 +678,17 @@ export const LiveStreamView: React.FC = () => {
   const chatMessagesRef = useRef<HTMLDivElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+  // 결제 완료 창 (주문 및 배송 추적) 3초 후 자동 닫힘
+  useEffect(() => {
+    if (latestOrder) {
+      const timer = setTimeout(() => {
+        setLatestOrder(null);
+        setCheckoutStatus(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [latestOrder]);
+
   // 채팅 메시지 추가 시 스크롤바 노출 없이 최신 목록이 항상 밑에 보이고, 기존 대화는 위로 밀려 올라가 사라지도록 자동 스크롤
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -1104,7 +1115,10 @@ export const LiveStreamView: React.FC = () => {
               </div>
             ) : latestOrder ? (
               <div className="bg-slate-900 border border-emerald-500 p-3 rounded-xl shadow-xl flex flex-col gap-2">
-                <span className="text-xs font-bold text-emerald-400">{t.trackingViewTitle}</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-bold text-emerald-400">{t.trackingViewTitle}</span>
+                  <button onClick={() => { setLatestOrder(null); setCheckoutStatus(null); }} className="text-[11px] text-slate-400 hover:text-white cursor-pointer">{t.closeBtn || "닫기"}</button>
+                </div>
                 <p className="text-xs text-slate-300 font-mono">{latestOrder.orderId} / {latestOrder.shippingStatus}</p>
               </div>
             ) : null}
