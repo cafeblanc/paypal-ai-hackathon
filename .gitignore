@@ -25,3 +25,7 @@ dist-ssr
 
 .vercel
 .env*
+PayPal-BackendAi.txt
+*.bak
+* - 복사본.*
+*-copy.*
