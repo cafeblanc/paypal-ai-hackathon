@@ -129,7 +129,25 @@ const TRANSLATIONS: Record<Language, any> = {
     tapToPlay: "▶ 터치하여 라이브 영상 재생",
     tapToUnmute: "소리 켜기",
     viewSplit: "📱 분할 뷰",
-    viewOverlay: "🎬 풀 라이브"
+    viewOverlay: "🎬 풀 라이브",
+    adminNewProdTitle: "✨ 신규 상품 및 동영상 매핑 등록",
+    prodNameRequired: "상품명 *",
+    prodNamePlaceholderShort: "예: 유기농 산딸기",
+    prodPriceRequired: "가격 (KRW) *",
+    prodStockRequired: "재고 *",
+    prodVideoRequired: "동영상 경로 *",
+    prodVideoPlaceholder: "/videos/파일명.mp4",
+    prodIconOptional: "아이콘",
+    prodDescOptional: "상세설명",
+    prodDescPlaceholderShort: "상품 상세 설명 입력",
+    registerBtnShort: "등록",
+    setAsStartupVideo: "⭐ 등록 즉시 시작 동영상 상품으로 지정",
+    resetDemoProducts: "🔄 기본 데모 상품 세트로 초기화",
+    realtimeDBSync: "실시간 DB/스토리지 연동",
+    startupVideoCol: "시작 동영상",
+    startupVideoBadge: "⭐ 시작 동영상",
+    setAsDefaultBtn: "대표로 지정",
+    noProductsNotice: "등록된 상품이 없습니다. 상단 양식에서 상품과 동영상을 등록해 주세요."
   },
   en: {
     marketName: "Yangpyeong Open Festival",
@@ -228,7 +246,25 @@ const TRANSLATIONS: Record<Language, any> = {
     tapToPlay: "▶ Tap to Play Live Video",
     tapToUnmute: "Sound On",
     viewSplit: "📱 Split",
-    viewOverlay: "🎬 Full Live"
+    viewOverlay: "🎬 Full Live",
+    adminNewProdTitle: "✨ Register New Product & Video Mapping",
+    prodNameRequired: "Product Name *",
+    prodNamePlaceholderShort: "e.g., Organic Raspberries",
+    prodPriceRequired: "Price (KRW) *",
+    prodStockRequired: "Stock *",
+    prodVideoRequired: "Video Path *",
+    prodVideoPlaceholder: "/videos/filename.mp4",
+    prodIconOptional: "Icon",
+    prodDescOptional: "Description",
+    prodDescPlaceholderShort: "Enter product description",
+    registerBtnShort: "Register",
+    setAsStartupVideo: "⭐ Set as startup video product upon registration",
+    resetDemoProducts: "🔄 Reset to Default Demo Products",
+    realtimeDBSync: "Real-time DB / Storage Sync",
+    startupVideoCol: "Startup Video",
+    startupVideoBadge: "⭐ Startup Video",
+    setAsDefaultBtn: "Set as Default",
+    noProductsNotice: "No products registered. Please register a product and video using the form above."
   },
   ja: {
     marketName: "楊平オープンフェスティバル",
@@ -327,7 +363,25 @@ const TRANSLATIONS: Record<Language, any> = {
     tapToPlay: "▶ タップしてライブ映像を再生",
     tapToUnmute: "音声オン",
     viewSplit: "📱 分割",
-    viewOverlay: "🎬 フル画面"
+    viewOverlay: "🎬 フル画面",
+    adminNewProdTitle: "✨ 新規商品および動画マッピング登録",
+    prodNameRequired: "商品名 *",
+    prodNamePlaceholderShort: "例：有機栽培キイチゴ",
+    prodPriceRequired: "価格 (KRW) *",
+    prodStockRequired: "在庫 *",
+    prodVideoRequired: "動画パス *",
+    prodVideoPlaceholder: "/videos/ファイル名.mp4",
+    prodIconOptional: "アイコン",
+    prodDescOptional: "詳細説明",
+    prodDescPlaceholderShort: "商品の詳細説明を入力",
+    registerBtnShort: "登録",
+    setAsStartupVideo: "⭐ 登録時に開始動画商品として指定",
+    resetDemoProducts: "🔄 デフォルトデモ商品セットに初期化",
+    realtimeDBSync: "リアルタイムDB/ストレージ同期",
+    startupVideoCol: "開始動画",
+    startupVideoBadge: "⭐ 開始動画",
+    setAsDefaultBtn: "代表に指定",
+    noProductsNotice: "登録された商品はありません。上部フォームから商品と動画を登録してください。"
   },
   zh: {
     marketName: "杨平开放节",
@@ -426,7 +480,25 @@ const TRANSLATIONS: Record<Language, any> = {
     tapToPlay: "▶ 点击播放直播视频",
     tapToUnmute: "开启声音",
     viewSplit: "📱 分屏",
-    viewOverlay: "🎬 全屏直播"
+    viewOverlay: "🎬 全屏直播",
+    adminNewProdTitle: "✨ 注册新商品与视频映射",
+    prodNameRequired: "商品名称 *",
+    prodNamePlaceholderShort: "例：有机树莓",
+    prodPriceRequired: "价格 (KRW) *",
+    prodStockRequired: "库存 *",
+    prodVideoRequired: "视频路径 *",
+    prodVideoPlaceholder: "/videos/文件名.mp4",
+    prodIconOptional: "图标",
+    prodDescOptional: "详细描述",
+    prodDescPlaceholderShort: "输入商品详细描述",
+    registerBtnShort: "注册",
+    setAsStartupVideo: "⭐ 注册后立即设为初始播放视频",
+    resetDemoProducts: "🔄 重置为默认演示商品集",
+    realtimeDBSync: "实时数据库/存储同步",
+    startupVideoCol: "初始视频",
+    startupVideoBadge: "⭐ 初始视频",
+    setAsDefaultBtn: "设为默认",
+    noProductsNotice: "暂无注册商品。请使用上方表单添加商品与视频。"
   },
   es: {
     marketName: "Festival de Yangpyeong",
@@ -525,7 +597,25 @@ const TRANSLATIONS: Record<Language, any> = {
     tapToPlay: "▶ Toca para ver en vivo",
     tapToUnmute: "Activar sonido",
     viewSplit: "📱 Dividida",
-    viewOverlay: "🎬 En Vivo"
+    viewOverlay: "🎬 En Vivo",
+    adminNewProdTitle: "✨ Registrar Nuevo Producto y Video",
+    prodNameRequired: "Nombre del Producto *",
+    prodNamePlaceholderShort: "ej., Frambuesas Orgánicas",
+    prodPriceRequired: "Precio (KRW) *",
+    prodStockRequired: "Stock *",
+    prodVideoRequired: "Ruta del Video *",
+    prodVideoPlaceholder: "/videos/archivo.mp4",
+    prodIconOptional: "Icono",
+    prodDescOptional: "Descripción",
+    prodDescPlaceholderShort: "Ingrese descripción detallada",
+    registerBtnShort: "Registrar",
+    setAsStartupVideo: "⭐ Establecer como video inicial al registrar",
+    resetDemoProducts: "🔄 Restablecer a Productos Demo",
+    realtimeDBSync: "Sincronización BD / Almacenamiento en Vivo",
+    startupVideoCol: "Video Inicial",
+    startupVideoBadge: "⭐ Video Inicial",
+    setAsDefaultBtn: "Fijar Principal",
+    noProductsNotice: "No hay productos registrados. Por favor registre un producto y video arriba."
   },
   fr: {
     marketName: "Festival de Yangpyeong",
@@ -624,7 +714,25 @@ const TRANSLATIONS: Record<Language, any> = {
     tapToPlay: "▶ Touchez pour lancer le direct",
     tapToUnmute: "Activer son",
     viewSplit: "📱 Divisée",
-    viewOverlay: "🎬 Plein Écran"
+    viewOverlay: "🎬 Plein Écran",
+    adminNewProdTitle: "✨ Enregistrer un Nouveau Produit et Vidéo",
+    prodNameRequired: "Nom du Produit *",
+    prodNamePlaceholderShort: "ex., Framboises Bio",
+    prodPriceRequired: "Prix (KRW) *",
+    prodStockRequired: "Stock *",
+    prodVideoRequired: "Chemin Vidéo *",
+    prodVideoPlaceholder: "/videos/fichier.mp4",
+    prodIconOptional: "Icône",
+    prodDescOptional: "Description",
+    prodDescPlaceholderShort: "Entrez la description du produit",
+    registerBtnShort: "Enregistrer",
+    setAsStartupVideo: "⭐ Définir comme vidéo de démarrage dès l'enregistrement",
+    resetDemoProducts: "🔄 Réinitialiser aux Produits de Démo",
+    realtimeDBSync: "Synchronisation DB / Stockage en direct",
+    startupVideoCol: "Vidéo Initiale",
+    startupVideoBadge: "⭐ Vidéo Initiale",
+    setAsDefaultBtn: "Définir par défaut",
+    noProductsNotice: "Aucun produit enregistré. Veuillez enregistrer un produit et une vidéo ci-dessus."
   }
 };
 
@@ -1108,34 +1216,34 @@ export const LiveStreamView: React.FC = () => {
 
               {/* 신규 상품 및 동영상 매핑 등록 */}
               <div className="bg-slate-900 border-2 border-amber-500 p-6 rounded-2xl shadow-2xl flex flex-col gap-4">
-                <h3 className="text-base font-bold text-amber-400">✨ 신규 상품 및 동영상 매핑 등록</h3>
+                <h3 className="text-base font-bold text-amber-400">{t.adminNewProdTitle}</h3>
                 <form onSubmit={handleRegisterNewProduct} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                   <div className="md:col-span-3">
-                    <label className="text-xs text-slate-300 mb-1 block">상품명 *</label>
-                    <input type="text" value={newProdName} onChange={e => setNewProdName(e.target.value)} placeholder="예: 유기농 산딸기" className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" required />
+                    <label className="text-xs text-slate-300 mb-1 block">{t.prodNameRequired}</label>
+                    <input type="text" value={newProdName} onChange={e => setNewProdName(e.target.value)} placeholder={t.prodNamePlaceholderShort} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" required />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="text-xs text-slate-300 mb-1 block">가격 (KRW) *</label>
+                    <label className="text-xs text-slate-300 mb-1 block">{t.prodPriceRequired}</label>
                     <input type="number" value={newProdPrice} onChange={e => setNewProdPrice(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="text-xs text-slate-300 mb-1 block">재고 *</label>
+                    <label className="text-xs text-slate-300 mb-1 block">{t.prodStockRequired}</label>
                     <input type="number" value={newProdStock} onChange={e => setNewProdStock(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" />
                   </div>
                   <div className="md:col-span-3">
-                    <label className="text-xs text-slate-300 mb-1 block">동영상 경로 *</label>
-                    <input type="text" value={newProdVideo} onChange={e => setNewProdVideo(e.target.value)} placeholder="/videos/파일명.mp4" className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-amber-300 font-mono" />
+                    <label className="text-xs text-slate-300 mb-1 block">{t.prodVideoRequired}</label>
+                    <input type="text" value={newProdVideo} onChange={e => setNewProdVideo(e.target.value)} placeholder={t.prodVideoPlaceholder} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-amber-300 font-mono" />
                   </div>
                   <div className="md:col-span-1">
-                    <label className="text-xs text-slate-300 mb-1 block">아이콘</label>
+                    <label className="text-xs text-slate-300 mb-1 block">{t.prodIconOptional}</label>
                     <input type="text" value={newProdIcon} onChange={e => setNewProdIcon(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-center text-white" />
                   </div>
                   <div className="md:col-span-1">
-                    <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-xs font-bold cursor-pointer transition">등록</button>
+                    <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-xs font-bold cursor-pointer transition">{t.registerBtnShort}</button>
                   </div>
                   <div className="md:col-span-8">
-                    <label className="text-xs text-slate-300 mb-1 block">상세설명</label>
-                    <input type="text" value={newProdDesc} onChange={e => setNewProdDesc(e.target.value)} placeholder="상품 상세 설명 입력" className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" />
+                    <label className="text-xs text-slate-300 mb-1 block">{t.prodDescOptional}</label>
+                    <input type="text" value={newProdDesc} onChange={e => setNewProdDesc(e.target.value)} placeholder={t.prodDescPlaceholderShort} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" />
                   </div>
                   <div className="md:col-span-4 flex items-center gap-2 pb-2">
                     <input 
@@ -1146,7 +1254,7 @@ export const LiveStreamView: React.FC = () => {
                       className="w-4 h-4 rounded text-amber-500 bg-slate-950 border-slate-700 cursor-pointer"
                     />
                     <label htmlFor="isStartVideoCheck" className="text-xs text-amber-300 font-semibold cursor-pointer">
-                      ⭐ 등록 즉시 시작 동영상 상품으로 지정
+                      {t.setAsStartupVideo}
                     </label>
                   </div>
                 </form>
@@ -1164,9 +1272,9 @@ export const LiveStreamView: React.FC = () => {
                       onClick={handleResetToDefaultProducts}
                       className="bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded text-xs transition cursor-pointer"
                     >
-                      🔄 기본 데모 상품 세트로 초기화
+                      {t.resetDemoProducts}
                     </button>
-                    <span className="text-xs text-slate-400 hidden sm:inline">실시간 DB/스토리지 연동</span>
+                    <span className="text-xs text-slate-400 hidden sm:inline">{t.realtimeDBSync}</span>
                   </div>
                 </div>
                 <div className="overflow-x-auto">
@@ -1177,7 +1285,7 @@ export const LiveStreamView: React.FC = () => {
                         <th className="pb-3">{t.priceCol}</th>
                         <th className="pb-3">{t.stockCol}</th>
                         <th className="pb-3">{t.videoAssetCol}</th>
-                        <th className="pb-3">시작 동영상</th>
+                        <th className="pb-3">{t.startupVideoCol}</th>
                         <th className="pb-3 text-right">{t.actionsCol}</th>
                       </tr>
                     </thead>
@@ -1185,7 +1293,7 @@ export const LiveStreamView: React.FC = () => {
                       {products.length === 0 ? (
                         <tr>
                           <td colSpan={6} className="py-8 text-center text-slate-400">
-                            등록된 상품이 없습니다. 상단 양식에서 상품과 동영상을 등록해 주세요.
+                            {t.noProductsNotice}
                           </td>
                         </tr>
                       ) : products.map(p => (
@@ -1205,7 +1313,7 @@ export const LiveStreamView: React.FC = () => {
                           <td className="py-3">
                             {p.id === defaultProductId ? (
                               <span className="bg-amber-500/20 text-amber-300 border border-amber-500/50 px-2.5 py-1 rounded-full text-[11px] font-bold inline-flex items-center gap-1">
-                                ⭐ 시작 동영상
+                                {t.startupVideoBadge}
                               </span>
                             ) : (
                               <button
@@ -1213,7 +1321,7 @@ export const LiveStreamView: React.FC = () => {
                                 onClick={() => handleSetDefaultProduct(p.id)}
                                 className="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-600 px-2 py-1 rounded text-[11px] cursor-pointer transition"
                               >
-                                대표로 지정
+                                {t.setAsDefaultBtn}
                               </button>
                             )}
                           </td>
