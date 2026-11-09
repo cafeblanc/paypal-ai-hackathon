@@ -109,9 +109,9 @@ const TRANSLATIONS: Record<Language, any> = {
     statusPrep: "📦 상품 준비중",
     statusShip: "🚚 배송중",
     statusDone: "✅ 배송완료",
-    tabVideoEditor: "동영상 편집 및 압축 스튜디오",
-    videoSelectLabel: "편집할 동영상 파일 선택",
-    uploadVideoBtn: "📁 PC에서 동영상 파일 선택 (1개씩 public/demo_video/로 업로드)",
+    tabVideoEditor: "2단계: 동영상 스튜디오 & 상품 완성 등록",
+    videoSelectLabel: "편집할 동영상 파일",
+    uploadVideoBtn: "📁 PC에서 동영상 파일 선택 (public/demo_video/로 업로드)",
     uploadingVideo: "⏳ 동영상 업로드 및 public/demo_video/ 저장 중...",
     uploadSuccess: "✅ 업로드 성공: ",
     uploadHint: "※ PC의 동영상 파일(.mp4, .webm 등)을 선택하면 E:\\gem\\paypal-ai-hackathon\\public\\demo_video\\ 폴더로 직접 저장됩니다.",
@@ -145,7 +145,7 @@ const TRANSLATIONS: Record<Language, any> = {
     audioLabel: "오디오 트랙",
     audioKeep: "🔊 원본 오디오 유지 (권장)",
     audioMuteOpt: "🔇 무음 (Mute)",
-    renderBtn: "🚀 동영상 편집 및 압축 실행 (Render)",
+    renderBtn: "🚀 동영상 렌더링 & 상품 완성 등록 (Render & Register)",
     renderingBtn: "⏳ 동영상 압축 및 렌더링 중...",
     trackingViewTitle: "📦 주문 및 배송 추적 (3초 후 자동 닫힘)",
     closeBtn: "닫기",
@@ -161,7 +161,7 @@ const TRANSLATIONS: Record<Language, any> = {
     tapToUnmute: "소리 켜기",
     viewSplit: "📱 분할 뷰",
     viewOverlay: "🎬 풀 라이브",
-    adminNewProdTitle: "✨ 신규 상품 및 동영상 매핑 등록",
+    adminNewProdTitle: "✨ 1단계: 상품 기본 정보 입력 (Step 1: Product Information)",
     prodNameRequired: "상품명 *",
     prodNamePlaceholderShort: "예: 유기농 산딸기",
     prodPriceRequired: "가격 (KRW) *",
@@ -255,8 +255,8 @@ const TRANSLATIONS: Record<Language, any> = {
     statusPrep: "📦 Preparing",
     statusShip: "🚚 In Transit",
     statusDone: "✅ Delivered",
-    tabVideoEditor: "Video Editor & Compressor Studio",
-    videoSelectLabel: "Select Video Asset to Edit",
+    tabVideoEditor: "Step 2: Video Studio & Product Registration",
+    videoSelectLabel: "Video Asset",
     uploadVideoBtn: "📁 Browse Video File from PC (Upload to public/demo_video/)",
     uploadingVideo: "⏳ Uploading & Saving to public/demo_video/...",
     uploadSuccess: "✅ Upload Success: ",
@@ -291,7 +291,7 @@ const TRANSLATIONS: Record<Language, any> = {
     audioLabel: "Audio Track",
     audioKeep: "🔊 Keep Original Audio",
     audioMuteOpt: "🔇 Mute Audio",
-    renderBtn: "🚀 Run Video Edit & Compression (Render)",
+    renderBtn: "🚀 Run Video Render & Register Product",
     renderingBtn: "⏳ Compressing & Rendering...",
     trackingViewTitle: "📦 Order & Tracking (Auto-closes in 3s)",
     closeBtn: "Close",
@@ -307,7 +307,7 @@ const TRANSLATIONS: Record<Language, any> = {
     tapToUnmute: "Sound On",
     viewSplit: "📱 Split",
     viewOverlay: "🎬 Full Live",
-    adminNewProdTitle: "✨ Register New Product & Video Mapping",
+    adminNewProdTitle: "✨ Step 1: Product Information Input",
     prodNameRequired: "Product Name *",
     prodNamePlaceholderShort: "e.g., Organic Raspberries",
     prodPriceRequired: "Price (KRW) *",
@@ -1433,11 +1433,6 @@ export const LiveStreamView: React.FC = () => {
     if (videoRef.current) {
       videoRef.current.defaultMuted = isAudioMuted;
       videoRef.current.muted = isAudioMuted;
-      try {
-        videoRef.current.load();
-      } catch (e) {
-        // ignore load error
-      }
       const playPromise = videoRef.current.play();
       if (playPromise !== undefined) {
         playPromise
@@ -1446,6 +1441,22 @@ export const LiveStreamView: React.FC = () => {
             setIsAutoplayBlocked(false);
           })
           .catch(err => {
+            if (err.name === "AbortError") {
+              return; // React render cycle interruption, safely ignore
+            }
+            if (err.name === "NotAllowedError" && !videoRef.current?.muted) {
+              if (videoRef.current) {
+                videoRef.current.muted = true;
+                setIsAudioMuted(true);
+                videoRef.current.play().then(() => {
+                  setIsPlaying(true);
+                  setIsAutoplayBlocked(false);
+                }).catch(() => {
+                  setIsAutoplayBlocked(true);
+                });
+              }
+              return;
+            }
             console.warn("Video autoplay prevented by browser policy:", err);
             setIsAutoplayBlocked(true);
           });
@@ -1718,21 +1729,27 @@ export const LiveStreamView: React.FC = () => {
   };
 
   const runVideoEditorCompression = () => {
+    if (!newProdName.trim()) {
+      alert("1단계에서 상품명을 입력해 주세요.");
+      return;
+    }
+    if (!selectedVideoAsset) {
+      alert("동영상 파일을 업로드하거나 선택해 주세요.");
+      return;
+    }
     setIsProcessing(true);
     const personaLabel = voicePersona === "male_c" 
-      ? "👨 Male C (40s-50s Prestigious Deep Narrator)" 
-      : "👩 Female D (40s Warm & Professional Global Host)";
+      ? "👨 Male C (60s Prestigious Elder Master Narrator)" 
+      : "👩 Female D (60s Warm & Elegant Senior Host)";
     const modeLabel = dubbingMode === "voice_over" 
       ? "🎧 15% Ducked Original + AI English Voice-Over" 
       : "🌐 Full AI Voice Replace (Mute Original)";
 
-    const rawFileName = selectedVideoAsset.split("/").pop() || "Demo_Product.mp4";
-    const cleanBaseName = rawFileName.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
-    const autoProdName = cleanBaseName
-      ? cleanBaseName.charAt(0).toUpperCase() + cleanBaseName.slice(1)
-      : "AI Live Special Product";
+    const registeredName = newProdName.trim();
+    const currentPrice = Number(newProdPrice) || 35000;
 
     setProcessLog(
+      `[Video Engine] Binding to Step 1 Product: "${registeredName}" (Price: KRW ${currentPrice.toLocaleString()})\n` +
       `[Video Engine] Loading asset: ${selectedVideoAsset} ...\n` +
       `[Video Engine] Settings: CRF ${compressionCrf}, Speed ${videoSpeed}x\n` +
       `[Whisper-AI] Extracting vocal track & transcribing Korean speech to ${lang.toUpperCase()} text...\n` +
@@ -1741,18 +1758,45 @@ export const LiveStreamView: React.FC = () => {
       `[Gemini Voice Engine] Synthesizing studio-grade native voice stream (${lang.toUpperCase()})...\n` +
       `[FFmpeg Audio Mixer] Sidechain ducking Korean audio by -16dB & blending Native Voice-Over...\n` +
       `[FFmpeg Web Stream] Re-encoding video stream (H.264 / AAC) with faststart moov atom...\n` +
-      `[Auto Product Register] Registering clean product record for editing...`
+      `[Complete Registration] Finalizing product & video bundle registration...`
     );
 
     setTimeout(async () => {
-      const created = await handleQuickAutoRegister(selectedVideoAsset);
+      const descText = newProdDesc.trim() || `${registeredName} 등록 상품`;
+      const updated = await productService.addProduct({
+        name: { ko: registeredName, en: registeredName, ja: registeredName, zh: registeredName, es: registeredName, fr: registeredName },
+        price: currentPrice,
+        currency: "KRW",
+        stock: Number(newProdStock) || 10,
+        icon: newProdIcon || "🎁",
+        videoUrl: selectedVideoAsset,
+        fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        description: { ko: descText, en: descText, ja: descText, zh: descText, es: descText, fr: descText }
+      }, isStartVideo);
+
+      setProducts(updated);
+      const newDefId = await productService.getDefaultProductId();
+      setDefaultProductId(newDefId);
+      
+      if (isStartVideo || updated.length === 1) {
+        const created = updated.find(p => p.name.ko === registeredName) || updated[0];
+        if (created) setActiveProduct(created);
+      }
+
+      // Step 1 입력 필드 초기화
+      setNewProdName("");
+      setNewProdDesc("");
+      setNewProdPrice("");
+      setNewProdStock("10");
+      setIsStartVideo(false);
+
       setProcessLog(prev => prev + 
         `\n\n[Success] ✅ Processed dubbed video rendered & saved to public/demo_video/!\n` +
-        `[Auto Register] 🛍️ New product successfully registered (ID: ${created.id})!\n` +
-        `[Auto Register] ✏️ Product name, price, and description are blank for your clean input below!\n` +
+        `[Success] 🛍️ "${registeredName}" 상품이 동영상과 함께 성공적으로 등록되었습니다!\n` +
         `[Status] Ready for Live Streaming with AI Native Voice Dubbing & Instant PayPal Checkout Demo.`
       );
       setIsProcessing(false);
+      alert(`"${registeredName}" 상품이 동영상과 함께 성공적으로 등록되었습니다!`);
     }, 1800);
   };
 
@@ -1828,12 +1872,12 @@ export const LiveStreamView: React.FC = () => {
               {/* 신규 상품 및 동영상 매핑 등록 */}
               <div className="bg-slate-900 border-2 border-amber-500 p-6 rounded-2xl shadow-2xl flex flex-col gap-4">
                 <h3 className="text-base font-bold text-amber-400">{t.adminNewProdTitle}</h3>
-                <form onSubmit={handleRegisterNewProduct} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
                   <div className="md:col-span-5">
                     <label className="text-xs text-slate-300 mb-1 block">{t.prodNameRequired}</label>
                     <input type="text" value={newProdName} onChange={e => setNewProdName(e.target.value)} placeholder={t.prodNamePlaceholderShort} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" required />
                   </div>
-                  <div className="md:col-span-2">
+                  <div className="md:col-span-3">
                     <label className="text-xs text-slate-300 mb-1 block">{t.prodPriceRequired}</label>
                     <input type="number" value={newProdPrice} onChange={e => setNewProdPrice(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" />
                   </div>
@@ -1841,12 +1885,9 @@ export const LiveStreamView: React.FC = () => {
                     <label className="text-xs text-slate-300 mb-1 block">{t.prodStockRequired}</label>
                     <input type="number" value={newProdStock} onChange={e => setNewProdStock(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" />
                   </div>
-                  <div className="md:col-span-1">
+                  <div className="md:col-span-2">
                     <label className="text-xs text-slate-300 mb-1 block">{t.prodIconOptional}</label>
                     <IconPicker value={newProdIcon} onChange={setNewProdIcon} />
-                  </div>
-                  <div className="md:col-span-2">
-                    <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-xs font-bold cursor-pointer transition shadow-md">{t.registerBtnShort}</button>
                   </div>
                   <div className="md:col-span-8">
                     <label className="text-xs text-slate-300 mb-1 block">{t.prodDescOptional}</label>
@@ -1864,7 +1905,11 @@ export const LiveStreamView: React.FC = () => {
                       {t.setAsStartupVideo}
                     </label>
                   </div>
-                </form>
+                </div>
+                <div className="text-xs text-amber-300/90 bg-amber-500/10 border border-amber-500/20 px-3.5 py-2.5 rounded-lg flex items-center gap-2">
+                  <span className="text-base">💡</span>
+                  <span>{lang === "ko" ? "1단계에서 상품 정보를 입력하신 후, 아래 2단계 동영상 스튜디오에서 동영상 업로드 후 [🚀 Run video 음성번역 & compression & Register] 버튼을 누르면 하나의 완성된 상품으로 묶여 등록됩니다." : "Enter product details in Step 1, upload video in Step 2, and click [🚀 Run video 음성번역 & compression & Register] to complete registration."}</span>
+                </div>
               </div>
 
               {/* SECTION 1: 동영상 편집 및 압축 스튜디오 */}
@@ -1885,32 +1930,22 @@ export const LiveStreamView: React.FC = () => {
 
                 {/* 1. PC 동영상 파일 선택 및 public/demo_video/ 업로드 컨트롤 */}
                 <div className="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col gap-3">
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleFileUpload}
-                      accept="video/mp4,video/webm,video/quicktime,video/*"
-                      className="hidden"
-                    />
-                    <button
-                      type="button"
-                      disabled={isUploadingVideo}
-                      onClick={() => fileInputRef.current?.click()}
-                      className="flex-1 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 text-white font-bold py-2.5 px-4 rounded-lg text-xs flex items-center justify-center gap-2 border border-amber-400/50 shadow-lg transition cursor-pointer disabled:opacity-50"
-                    >
-                      <span className="text-sm">📁</span>
-                      <span>{isUploadingVideo ? t.uploadingVideo : t.uploadVideoBtn}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={fetchDemoVideos}
-                      className="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-2 rounded-lg text-xs flex items-center justify-center gap-1.5 transition cursor-pointer shrink-0"
-                    >
-                      <span>🔄</span>
-                      <span>{t.refreshListBtn}</span>
-                    </button>
-                  </div>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    accept="video/mp4,video/webm,video/quicktime,video/*"
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    disabled={isUploadingVideo}
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 text-white font-bold py-3 px-4 rounded-lg text-xs flex items-center justify-center gap-2 border border-amber-400/50 shadow-lg transition cursor-pointer disabled:opacity-50"
+                  >
+                    <span className="text-sm">📁</span>
+                    <span>{isUploadingVideo ? t.uploadingVideo : t.uploadVideoBtn}</span>
+                  </button>
 
                   {uploadMessage && (
                     <div className="text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-2 rounded-lg flex items-center gap-2">
@@ -1926,48 +1961,14 @@ export const LiveStreamView: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
                   <div className="flex flex-col gap-4">
-                    {/* 동영상 파일 선택 드롭다운 */}
-                    <div>
-                      <div className="flex justify-between items-center mb-1">
-                        <label className="text-xs text-slate-300 font-semibold">{t.videoSelectLabel}</label>
-                        <span className="text-[10px] text-amber-400 font-mono">
-                          {selectedVideoAsset.split('/').pop()}
-                        </span>
-                      </div>
-                      <select
-                        value={selectedVideoAsset}
-                        onChange={(e) => setSelectedVideoAsset(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-amber-500 cursor-pointer font-mono"
-                      >
-                        {demoVideoFiles.length > 0 && (
-                          <optgroup label={t.demoFolderLabel}>
-                            {demoVideoFiles.map(file => (
-                              <option key={file.path} value={file.path}>
-                                🎬 {file.name} {file.size ? `(${(file.size / (1024 * 1024)).toFixed(1)}MB)` : ''}
-                              </option>
-                            ))}
-                          </optgroup>
-                        )}
-                        <optgroup label="🛍️ Catalog Product Videos">
-                          {products
-                            .filter(p => p.videoUrl && !p.videoUrl.includes("honey_demo") && !p.videoUrl.includes("tea_demo") && !p.videoUrl.startsWith("/videos/"))
-                            .map(p => (
-                            <option key={p.id} value={p.videoUrl}>
-                              {p.icon} {p.videoUrl} ({p.name[lang] || p.name.ko})
-                            </option>
-                          ))}
-                        </optgroup>
-                      </select>
-                    </div>
-
                     {/* 실시간 동영상 미리보기 플레이어 */}
                     <div className="bg-slate-950 border border-slate-800 rounded-xl p-2.5 flex flex-col gap-2">
                       <div className="flex justify-between items-center">
                         <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
                           <span>📺</span> {t.videoPreviewLabel}
                         </span>
-                        <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-mono truncate max-w-[200px]">
-                          {selectedVideoAsset}
+                        <span className="text-[10px] bg-slate-800 text-amber-300 px-2 py-0.5 rounded font-mono truncate max-w-[250px]">
+                          {selectedVideoAsset ? selectedVideoAsset.split('/').pop() : "No video selected"}
                         </span>
                       </div>
                       <div className="rounded-lg overflow-hidden border border-slate-800/80 bg-black aspect-video flex items-center justify-center relative">
@@ -2065,7 +2066,7 @@ export const LiveStreamView: React.FC = () => {
                         onClick={runVideoEditorCompression}
                         className="w-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 disabled:bg-slate-700 text-white py-3 rounded-lg text-xs font-bold transition shadow-xl cursor-pointer border border-amber-400/40 flex items-center justify-center gap-2"
                       >
-                        {isProcessing ? t.renderingBtn : t.renderBtn}
+                        {isProcessing ? t.renderingBtn : "🚀 Run video 음성번역 & compression & Register"}
                       </button>
                     </div>
                   </div>
@@ -2079,120 +2080,15 @@ export const LiveStreamView: React.FC = () => {
                     )}
                   </div>
                 </div>
-
-                {/* 자동 등록 및 즉시 수정 가능한 상품 편집 패널 (단가, 상세설명, 재고, 상품명 수정) */}
-                {editingProduct && (
-                  <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border-2 border-amber-500/70 p-5 rounded-xl shadow-2xl flex flex-col gap-4 mt-2 w-full animate-fadeIn">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-3">
-                      <div>
-                        <h4 className="text-sm font-bold text-amber-300 flex items-center gap-2">
-                          <span>✨</span> {t.autoProductEditTitle}
-                        </h4>
-                        <p className="text-[11px] text-emerald-400 mt-0.5">
-                          {t.autoRegisterSuccess}
-                        </p>
-                      </div>
-                      <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded-full font-bold">
-                        ID: {editingProduct.id}
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-end">
-                      <div className="md:col-span-4">
-                        <label className="text-xs text-slate-300 font-semibold mb-1 block">
-                          {t.prodNameRequired}
-                        </label>
-                        <input
-                          type="text"
-                          value={editFormName}
-                          onChange={(e) => setEditFormName(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-amber-500 font-medium"
-                        />
-                      </div>
-
-                      <div className="md:col-span-3">
-                        <label className="text-xs text-slate-300 font-semibold mb-1 block">
-                          {t.prodPriceRequired}
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="number"
-                            value={editFormPrice}
-                            onChange={(e) => setEditFormPrice(Number(e.target.value))}
-                            className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-amber-300 font-bold focus:outline-none focus:border-amber-500 pl-7"
-                          />
-                          <span className="absolute left-2.5 top-2.5 text-xs text-slate-500 font-bold">₩</span>
-                        </div>
-                      </div>
-
-                      <div className="md:col-span-2">
-                        <label className="text-xs text-slate-300 font-semibold mb-1 block">
-                          {t.prodStockRequired}
-                        </label>
-                        <input
-                          type="number"
-                          value={editFormStock}
-                          onChange={(e) => setEditFormStock(Number(e.target.value))}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500"
-                        />
-                      </div>
-
-                      <div className="md:col-span-1">
-                        <label className="text-xs text-slate-300 font-semibold mb-1 block">
-                          {t.prodIconOptional}
-                        </label>
-                        <IconPicker value={editFormIcon} onChange={setEditFormIcon} />
-                      </div>
-
-                      <div className="md:col-span-2">
-                        <button
-                          type="button"
-                          onClick={handleSaveEditedProduct}
-                          className="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold py-2.5 px-3 rounded-lg text-xs shadow-lg transition cursor-pointer border border-emerald-400/40 flex items-center justify-center gap-1.5"
-                        >
-                          <span>💾</span>
-                          <span>{t.saveChangesBtn}</span>
-                        </button>
-                      </div>
-
-                      <div className="md:col-span-12">
-                        <label className="text-xs text-slate-300 font-semibold mb-1 block">
-                          {t.prodDescOptional}
-                        </label>
-                        <textarea
-                          rows={2}
-                          value={editFormDesc}
-                          onChange={(e) => setEditFormDesc(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500 resize-none leading-relaxed"
-                        />
-                      </div>
-                    </div>
-
-                    {editSuccessMsg && (
-                      <div className="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-2">
-                        <span>✅</span>
-                        <span>{editSuccessMsg}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
-{/* SECTION 2: 등록된 판매 상품 및 재고 목록 */}
+
+              {/* SECTION 2: 등록된 판매 상품 및 재고 목록 */}
               <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl flex flex-col gap-4">
                 <div className="flex justify-between items-center flex-wrap gap-2">
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
                     <span>📦</span> {t.tabInventory} ({products.length}{t.registeredCount})
                   </h3>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={handleResetToDefaultProducts}
-                      className="bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded text-xs transition cursor-pointer"
-                    >
-                      {t.resetDemoProducts}
-                    </button>
-                    <span className="text-xs text-slate-400 hidden sm:inline">{t.realtimeDBSync}</span>
-                  </div>
+                  <span className="text-xs text-slate-400 hidden sm:inline">{t.realtimeDBSync}</span>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs min-w-[650px]">
@@ -2760,6 +2656,14 @@ export const LiveStreamView: React.FC = () => {
                     setIsAutoplayBlocked(false);
                   }}
                   onPause={() => setIsPlaying(false)}
+                  onCanPlay={() => {
+                    if (videoRef.current && videoRef.current.paused) {
+                      videoRef.current.play().then(() => {
+                        setIsPlaying(true);
+                        setIsAutoplayBlocked(false);
+                      }).catch(() => {});
+                    }
+                  }}
                   style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 35%", display: "block" }}
                   className="absolute inset-0 w-full h-full object-cover bg-black"
                   onError={(e) => {
