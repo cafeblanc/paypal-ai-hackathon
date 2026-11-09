@@ -34,6 +34,25 @@ export interface CustomQARecord {
   answer: string;
 }
 
+export const formatPrice = (priceInKrw: number, l: Language = "ko"): string => {
+  if (isNaN(priceInKrw)) return "0";
+  switch (l) {
+    case "en":
+      return `$${(priceInKrw / 1350).toFixed(2)}`;
+    case "ja":
+      return `${Math.round(priceInKrw * 0.11).toLocaleString()}엔`;
+    case "zh":
+      return `${Math.round(priceInKrw * 0.0053).toLocaleString()}위안`;
+    case "es":
+      return `$${(priceInKrw / 1350).toFixed(2)}`;
+    case "fr":
+      return `${(priceInKrw / 1450).toFixed(2)} €`;
+    case "ko":
+    default:
+      return `${priceInKrw.toLocaleString()}원`;
+  }
+};
+
 const TRANSLATIONS: Record<Language, any> = {
   ko: {
     marketName: "양평 오픈축제",
@@ -69,7 +88,7 @@ const TRANSLATIONS: Record<Language, any> = {
     sec0Desc: "상품 정보(상품명, 가격, 재고, 상세설명)와 미리 촬영한 동영상 파일 경로를 짝지어 등록하면, 라이브 채팅창 하단에 상품 버튼으로 즉시 생성됩니다.",
     prodNameLabel: "상품명 *",
     prodNamePlaceholder: "예: 양평 유기농 산딸기 세트",
-    prodPriceLabel: "가격 (KRW) *",
+    prodPriceLabel: "가격 (원) *",
     prodStockLabel: "초기 재고 *",
     prodIconLabel: "아이콘",
     prodVideoLabel: "매핑할 촬영 동영상 경로 *",
@@ -85,7 +104,7 @@ const TRANSLATIONS: Record<Language, any> = {
     tabInventory: "등록된 상품 및 동영상/재고 목록",
     registeredCount: "개 등록됨",
     productNameCol: "상품명 / 상세설명",
-    priceCol: "가격",
+    priceCol: "가격 (원)",
     stockCol: "재고",
     videoAssetCol: "매핑된 동영상",
     actionsCol: "관리",
@@ -165,7 +184,7 @@ const TRANSLATIONS: Record<Language, any> = {
     adminNewProdTitle: "✨ 1단계: 상품 기본 정보 입력 (Step 1: Product Information)",
     prodNameRequired: "상품명 *",
     prodNamePlaceholderShort: "예: 유기농 산딸기",
-    prodPriceRequired: "가격 (KRW) *",
+    prodPriceRequired: "가격 (원) *",
     prodStockRequired: "재고 *",
     prodVideoRequired: "동영상 경로 *",
     prodVideoPlaceholder: "/videos/파일명.mp4",
@@ -215,7 +234,7 @@ const TRANSLATIONS: Record<Language, any> = {
     sec0Desc: "Pair product details with a pre-recorded video path to instantly create a product button in the live chat.",
     prodNameLabel: "Product Name *",
     prodNamePlaceholder: "e.g., Organic Raspberry Set",
-    prodPriceLabel: "Price (KRW) *",
+    prodPriceLabel: "Price ($) *",
     prodStockLabel: "Initial Stock *",
     prodIconLabel: "Icon",
     prodVideoLabel: "Mapped Video Path *",
@@ -231,7 +250,7 @@ const TRANSLATIONS: Record<Language, any> = {
     tabInventory: "Registered Products & Video/Stock List",
     registeredCount: " registered",
     productNameCol: "Product / Description",
-    priceCol: "Price",
+    priceCol: "Price ($)",
     stockCol: "Stock",
     videoAssetCol: "Mapped Video",
     actionsCol: "Action",
@@ -311,7 +330,7 @@ const TRANSLATIONS: Record<Language, any> = {
     adminNewProdTitle: "✨ Step 1: Product Information Input",
     prodNameRequired: "Product Name *",
     prodNamePlaceholderShort: "e.g., Organic Raspberries",
-    prodPriceRequired: "Price (KRW) *",
+    prodPriceRequired: "Price ($) *",
     prodStockRequired: "Stock *",
     prodVideoRequired: "Video Path *",
     prodVideoPlaceholder: "/videos/filename.mp4",
@@ -361,7 +380,7 @@ const TRANSLATIONS: Record<Language, any> = {
     sec0Desc: "商品情報と動画ファイルパスをペアで登録すると、チャット下部に商品ボタンとして即時生成されます。",
     prodNameLabel: "商品名 *",
     prodNamePlaceholder: "例: オーガニックラズベリーセット",
-    prodPriceLabel: "価格 (KRW) *",
+    prodPriceLabel: "価格 (엔) *",
     prodStockLabel: "初期在庫 *",
     prodIconLabel: "アイコン",
     prodVideoLabel: "マッピングする動画パス *",
@@ -377,7 +396,7 @@ const TRANSLATIONS: Record<Language, any> = {
     tabInventory: "登録済み商品および動画・在庫一覧",
     registeredCount: "件登録済み",
     productNameCol: "商品名 / 詳細説明",
-    priceCol: "価格",
+    priceCol: "価格 (엔)",
     stockCol: "在庫",
     videoAssetCol: "マッピング動画",
     actionsCol: "操作",
@@ -457,7 +476,7 @@ const TRANSLATIONS: Record<Language, any> = {
     adminNewProdTitle: "✨ 新規商品および動画マッピング登録",
     prodNameRequired: "商品名 *",
     prodNamePlaceholderShort: "例：有機栽培キイチゴ",
-    prodPriceRequired: "価格 (KRW) *",
+    prodPriceRequired: "価格 (엔) *",
     prodStockRequired: "在庫 *",
     prodVideoRequired: "動画パス *",
     prodVideoPlaceholder: "/videos/ファイル名.mp4",
@@ -507,7 +526,7 @@ const TRANSLATIONS: Record<Language, any> = {
     sec0Desc: "将商品信息与预先拍摄的视频路径配对注册，即可在直播聊天底部即时生成商品按钮。",
     prodNameLabel: "商品名称 *",
     prodNamePlaceholder: "例: 杨平有机树莓礼盒",
-    prodPriceLabel: "价格 (KRW) *",
+    prodPriceLabel: "价格 (위안) *",
     prodStockLabel: "初始库存 *",
     prodIconLabel: "图标",
     prodVideoLabel: "映射视频路径 *",
@@ -523,7 +542,7 @@ const TRANSLATIONS: Record<Language, any> = {
     tabInventory: "已注册商品与视频/库存列表",
     registeredCount: "个已注册",
     productNameCol: "商品名称 / 详细说明",
-    priceCol: "价格",
+    priceCol: "价格 (위안)",
     stockCol: "库存",
     videoAssetCol: "映射视频",
     actionsCol: "操作",
@@ -603,7 +622,7 @@ const TRANSLATIONS: Record<Language, any> = {
     adminNewProdTitle: "✨ 注册新商品与视频映射",
     prodNameRequired: "商品名称 *",
     prodNamePlaceholderShort: "例：有机树莓",
-    prodPriceRequired: "价格 (KRW) *",
+    prodPriceRequired: "价格 (위안) *",
     prodStockRequired: "库存 *",
     prodVideoRequired: "视频路径 *",
     prodVideoPlaceholder: "/videos/文件名.mp4",
@@ -653,7 +672,7 @@ const TRANSLATIONS: Record<Language, any> = {
     sec0Desc: "Registra los datos del producto junto con el archivo de video para crear un botón instantáneo en el chat.",
     prodNameLabel: "Nombre del Producto *",
     prodNamePlaceholder: "ej., Set de Frambuesas Orgánicas",
-    prodPriceLabel: "Precio (KRW) *",
+    prodPriceLabel: "Precio ($) *",
     prodStockLabel: "Stock Inicial *",
     prodIconLabel: "Icono",
     prodVideoLabel: "Ruta del Video *",
@@ -669,7 +688,7 @@ const TRANSLATIONS: Record<Language, any> = {
     tabInventory: "Lista de Productos, Videos y Stock",
     registeredCount: " registrados",
     productNameCol: "Producto / Descripción",
-    priceCol: "Precio",
+    priceCol: "Precio ($)",
     stockCol: "Stock",
     videoAssetCol: "Video Mapeado",
     actionsCol: "Acción",
@@ -749,7 +768,7 @@ const TRANSLATIONS: Record<Language, any> = {
     adminNewProdTitle: "✨ Registrar Nuevo Producto y Video",
     prodNameRequired: "Nombre del Producto *",
     prodNamePlaceholderShort: "ej., Frambuesas Orgánicas",
-    prodPriceRequired: "Precio (KRW) *",
+    prodPriceRequired: "Precio ($) *",
     prodStockRequired: "Stock *",
     prodVideoRequired: "Ruta del Video *",
     prodVideoPlaceholder: "/videos/archivo.mp4",
@@ -799,7 +818,7 @@ const TRANSLATIONS: Record<Language, any> = {
     sec0Desc: "Associez les détails du produit à un fichier vidéo pour créer instantanément un bouton dans le chat en direct.",
     prodNameLabel: "Nom du Produit *",
     prodNamePlaceholder: "ex., Coffret Framboises Bio",
-    prodPriceLabel: "Prix (KRW) *",
+    prodPriceLabel: "Prix (€) *",
     prodStockLabel: "Stock Initial *",
     prodIconLabel: "Icône",
     prodVideoLabel: "Chemin de la Vidéo *",
@@ -815,7 +834,7 @@ const TRANSLATIONS: Record<Language, any> = {
     tabInventory: "Liste des Produits, Vidéos et Stocks",
     registeredCount: " enregistrés",
     productNameCol: "Produit / Description",
-    priceCol: "Prix",
+    priceCol: "Prix (€)",
     stockCol: "Stock",
     videoAssetCol: "Vidéo Mappée",
     actionsCol: "Action",
@@ -895,7 +914,7 @@ const TRANSLATIONS: Record<Language, any> = {
     adminNewProdTitle: "✨ Enregistrer un Nouveau Produit et Vidéo",
     prodNameRequired: "Nom du Produit *",
     prodNamePlaceholderShort: "ex., Framboises Bio",
-    prodPriceRequired: "Prix (KRW) *",
+    prodPriceRequired: "Prix (€) *",
     prodStockRequired: "Stock *",
     prodVideoRequired: "Chemin Vidéo *",
     prodVideoPlaceholder: "/videos/fichier.mp4",
@@ -1748,10 +1767,18 @@ export const LiveStreamView: React.FC = () => {
       : "🌐 Full AI Voice Replace (Mute Original)";
 
     const registeredName = newProdName.trim();
-    const currentPrice = Number(newProdPrice) || 35000;
+    let rawPriceNum = Number(newProdPrice) || 35000;
+    if (rawPriceNum > 0 && rawPriceNum < 1000) {
+      if (lang === "en" || lang === "es") rawPriceNum = Math.round(rawPriceNum * 1350);
+      else if (lang === "fr") rawPriceNum = Math.round(rawPriceNum * 1450);
+      else if (lang === "zh") rawPriceNum = Math.round(rawPriceNum / 0.0053);
+    } else if (rawPriceNum > 0 && lang === "ja" && rawPriceNum < 20000) {
+      rawPriceNum = Math.round(rawPriceNum / 0.11);
+    }
+    const currentPrice = rawPriceNum;
 
     setProcessLog(
-      `[Video Engine] Binding to Step 1 Product: "${registeredName}" (Price: KRW ${currentPrice.toLocaleString()})\n` +
+      `[Video Engine] Binding to Step 1 Product: "${registeredName}" (Price: ${formatPrice(currentPrice, lang)})\n` +
       `[Video Engine] Loading asset: ${selectedVideoAsset} ...\n` +
       `[Video Engine] Settings: CRF ${compressionCrf}, Speed ${videoSpeed}x\n` +
       `[Whisper-AI] Extracting vocal track & transcribing Korean speech to ${lang.toUpperCase()} text...\n` +
@@ -1856,7 +1883,7 @@ export const LiveStreamView: React.FC = () => {
                 <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col gap-1 shadow">
                   <p className="text-xs text-slate-400 font-medium">{t.totalRevenue}</p>
                   <p className="text-xl font-bold text-emerald-400">
-                    KRW {orders.reduce((sum, o) => sum + o.amount, 0).toLocaleString()}
+                    {formatPrice(orders.reduce((sum, o) => sum + o.amount, 0), lang)}
                   </p>
                   <p className="text-[10px] text-slate-500">{t.sandboxSub}</p>
                 </div>
@@ -1882,7 +1909,13 @@ export const LiveStreamView: React.FC = () => {
                   </div>
                   <div className="md:col-span-3">
                     <label className="text-xs text-slate-300 mb-1 block">{t.prodPriceRequired}</label>
-                    <input type="number" value={newProdPrice} onChange={e => setNewProdPrice(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" />
+                    <input 
+                      type="number" 
+                      value={newProdPrice} 
+                      onChange={e => setNewProdPrice(e.target.value)} 
+                      placeholder={lang === "en" || lang === "es" ? "e.g., 25" : lang === "ja" ? "例: 3850" : lang === "zh" ? "例: 185" : lang === "fr" ? "ex: 24" : "예: 35000"} 
+                      className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" 
+                    />
                   </div>
                   <div className="md:col-span-2">
                     <label className="text-xs text-slate-300 mb-1 block">{t.prodStockRequired}</label>
@@ -2121,7 +2154,7 @@ export const LiveStreamView: React.FC = () => {
                             </div>
                             <p className="text-[11px] text-slate-400 font-normal mt-0.5">{p.description[lang] || p.description.ko}</p>
                           </td>
-                          <td className="py-3 text-slate-300 whitespace-nowrap">KRW {p.price.toLocaleString()}</td>
+                          <td className="py-3 text-slate-300 whitespace-nowrap">{formatPrice(p.price, lang)}</td>
                           <td className="py-3">
                             <input type="number" value={p.stock} onChange={e => updateProductStock(p.id, Number(e.target.value))} className="w-16 bg-slate-950 border border-slate-700 text-amber-400 font-bold rounded p-1 text-xs" />
                           </td>
@@ -2279,7 +2312,7 @@ export const LiveStreamView: React.FC = () => {
                           <tr key={idx} className="hover:bg-slate-800/40">
                             <td className="py-3.5 font-mono text-blue-400">{ord.orderId}</td>
                             <td className="py-3.5 text-white font-medium">{ord.productName}</td>
-                            <td className="py-3.5 text-slate-300">KRW {ord.amount.toLocaleString()}</td>
+                            <td className="py-3.5 text-slate-300">{formatPrice(ord.amount, lang)}</td>
                             <td className="py-3.5 font-mono text-amber-300">{ord.trackingNumber}</td>
                             <td className="py-3.5">
                               <select
@@ -2433,7 +2466,7 @@ export const LiveStreamView: React.FC = () => {
                       {t.replaceModalTitle}
                     </h3>
                     <p className="text-[11px] text-slate-400">
-                      {replaceTargetProduct.icon} {replaceTargetProduct.name[lang] || replaceTargetProduct.name.ko} (₩{replaceTargetProduct.price.toLocaleString()} / 재고: {replaceTargetProduct.stock}개)
+                      {replaceTargetProduct.icon} {replaceTargetProduct.name[lang] || replaceTargetProduct.name.ko} ({formatPrice(replaceTargetProduct.price, lang)} / 재고: {replaceTargetProduct.stock}개)
                     </p>
                   </div>
                 </div>
@@ -2811,7 +2844,7 @@ export const LiveStreamView: React.FC = () => {
                   <div className="min-w-0 flex-1">
                     <p className="text-[11px] sm:text-xs font-bold text-white truncate">{currentProd.name[lang] || currentProd.name.ko}</p>
                     <p className="text-[10px] sm:text-[11px] text-amber-300 font-semibold truncate">
-                      KRW {currentProd.price.toLocaleString()} · <span className="text-slate-400 font-normal">{currentProd.description[lang] || currentProd.description.ko}</span>
+                      {formatPrice(currentProd.price, lang)} · <span className="text-slate-400 font-normal">{currentProd.description[lang] || currentProd.description.ko}</span>
                     </p>
                   </div>
                 </div>
@@ -2879,7 +2912,7 @@ export const LiveStreamView: React.FC = () => {
                           <span className="text-[9px] sm:text-[10px] text-amber-400 font-bold shrink-0">{t.stockLeft}{msg.suggestedProduct.stock}{t.unit}</span>
                         </div>
                         <p className="text-[10px] sm:text-[11px] text-slate-300 mt-0.5">{msg.suggestedProduct.description[lang] || msg.suggestedProduct.description.ko}</p>
-                        <p className="text-amber-300 font-semibold mt-0.5 text-[10px] sm:text-xs">KRW {msg.suggestedProduct.price.toLocaleString()}</p>
+                        <p className="text-amber-300 font-semibold mt-0.5 text-[10px] sm:text-xs">{formatPrice(msg.suggestedProduct.price, lang)}</p>
                       </div>
                     </div>
                     {msg.suggestedProduct.stock > 0 ? (
