@@ -753,7 +753,9 @@ const INITIAL_QA_LIST: CustomQARecord[] = [
 ];
 
 export const LiveStreamView: React.FC = () => {
-  const [lang, setLang] = useState<Language>("ko");
+  const [lang, setLang] = useState<Language>(() => {
+    return (localStorage.getItem("preferred_language") as Language) || "en";
+  });
   const t = TRANSLATIONS[lang];
 
   const [isAdminRoute, setIsAdminRoute] = useState<boolean>(
@@ -1005,15 +1007,16 @@ export const LiveStreamView: React.FC = () => {
   const handlePaymentSuccess = async (orderId: string, product: Product) => {
     setCheckoutStatus(t.paymentCompleted);
     
+    const countryPrefix = lang === "en" ? "US-" : lang === "ja" ? "JP-" : lang === "zh" ? "CN-" : lang === "es" ? "ES-" : lang === "fr" ? "FR-" : "KR-";
     const newOrder: OrderRecord = {
       orderId,
-      productName: product.name[lang] || product.name.ko,
+      productName: product.name[lang] || product.name.en || product.name.ko,
       amount: product.price,
       currency: product.currency,
-      timestamp: new Date().toLocaleString(),
+      timestamp: new Date().toLocaleString(lang === "en" ? "en-US" : lang === "ja" ? "ja-JP" : lang === "zh" ? "zh-CN" : lang === "es" ? "es-ES" : lang === "fr" ? "fr-FR" : "ko-KR"),
       status: "Completed (Sandbox)",
-      shippingStatus: "상품 준비중",
-      trackingNumber: "KR-" + Math.floor(100000 + Math.random() * 900000)
+      shippingStatus: t.statusPrep || "Preparing Shipment",
+      trackingNumber: countryPrefix + Math.floor(100000 + Math.random() * 900000)
     };
     setOrders(prev => [newOrder, ...prev]);
     setLatestOrder(newOrder);
@@ -1576,7 +1579,18 @@ export const LiveStreamView: React.FC = () => {
           </button>
           <div className="flex bg-slate-950 border border-slate-700 rounded p-0.5 text-xs shrink-0">
             {(["ko", "en", "ja", "zh", "es", "fr"] as Language[]).map(l => (
-              <button key={l} onClick={() => setLang(l)} className={`px-1.5 sm:px-2 py-0.5 rounded uppercase text-[9px] sm:text-[10px] ${lang === l ? "bg-blue-600 text-white" : "text-slate-400"}`}>
+              <button 
+                key={l} 
+                onClick={() => {
+                  setLang(l);
+                  try {
+                    localStorage.setItem("preferred_language", l);
+                  } catch (e) {
+                    // ignore localStorage failure
+                  }
+                }} 
+                className={`px-1.5 sm:px-2 py-0.5 rounded uppercase text-[9px] sm:text-[10px] font-bold transition cursor-pointer ${lang === l ? "bg-blue-600 text-white shadow" : "text-slate-400 hover:text-white"}`}
+              >
                 {l}
               </button>
             ))}
