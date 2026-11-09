@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
 import ErrorBoundary from "./ErrorBoundary";
 import IconPicker from "./IconPicker";
-import { productService, ProductEntity, Language } from "../services/productService";
+import { productService, ProductEntity, Language, STATIC_DEMO_VIDEOS, DEFAULT_FALLBACK_VIDEO } from "../services/productService";
 import { productTranslationService } from "../services/productTranslationService";
 
 export type { Language };
@@ -1005,7 +1005,6 @@ export const LiveStreamView: React.FC = () => {
           if (!selectedVideoAsset) {
             setSelectedVideoAsset(data.files[0].path);
           }
-          // 서버의 실제 데모 비디오들과 카탈로그 자동 동기화 (새로고침 시 blob: 무효화 복구 및 기본 비디오 즉시 자동 로드)
           const syncedList = await productService.syncWithServerVideos(data.files);
           setProducts(syncedList);
           const defId = await productService.getDefaultProductId();
@@ -1018,7 +1017,17 @@ export const LiveStreamView: React.FC = () => {
     } catch {
       // ignore
     }
-    setDemoVideoFiles([]);
+    // Vercel 정적 배포 또는 API 미지원 시 STATIC_DEMO_VIDEOS로 즉시 동기화하여 검은 화면 방지
+    setDemoVideoFiles(STATIC_DEMO_VIDEOS);
+    if (!selectedVideoAsset) {
+      setSelectedVideoAsset(STATIC_DEMO_VIDEOS[0].path);
+    }
+    const syncedList = await productService.syncWithServerVideos(STATIC_DEMO_VIDEOS);
+    setProducts(syncedList);
+    const defId = await productService.getDefaultProductId();
+    setDefaultProductId(defId);
+    const target = syncedList.find(p => p.id === defId) || syncedList[0] || null;
+    setActiveProduct(target);
   };
 
   useEffect(() => {
@@ -1451,7 +1460,7 @@ export const LiveStreamView: React.FC = () => {
 
   useEffect(() => {
     if (videoRef.current) {
-      videoRef.current.defaultMuted = isAudioMuted;
+      videoRef.current.defaultMuted = true;
       videoRef.current.muted = isAudioMuted;
       const playPromise = videoRef.current.play();
       if (playPromise !== undefined) {
@@ -1464,17 +1473,15 @@ export const LiveStreamView: React.FC = () => {
             if (err.name === "AbortError") {
               return; // React render cycle interruption, safely ignore
             }
-            if (err.name === "NotAllowedError" && !videoRef.current?.muted) {
-              if (videoRef.current) {
-                videoRef.current.muted = true;
-                setIsAudioMuted(true);
-                videoRef.current.play().then(() => {
-                  setIsPlaying(true);
-                  setIsAutoplayBlocked(false);
-                }).catch(() => {
-                  setIsAutoplayBlocked(true);
-                });
-              }
+            if (videoRef.current) {
+              videoRef.current.muted = true;
+              setIsAudioMuted(true);
+              videoRef.current.play().then(() => {
+                setIsPlaying(true);
+                setIsAutoplayBlocked(false);
+              }).catch(() => {
+                setIsAutoplayBlocked(true);
+              });
               return;
             }
             console.warn("Video autoplay prevented by browser policy:", err);
@@ -1799,8 +1806,8 @@ export const LiveStreamView: React.FC = () => {
         currency: "KRW",
         stock: Number(newProdStock) || 10,
         icon: newProdIcon || "🎁",
-        videoUrl: selectedVideoAsset,
-        fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        videoUrl: selectedVideoAsset || DEFAULT_FALLBACK_VIDEO,
+        fallbackVideoUrl: DEFAULT_FALLBACK_VIDEO,
         description: trans.description
       }, isStartVideo);
 
@@ -2677,8 +2684,8 @@ export const LiveStreamView: React.FC = () => {
               <>
                 <video
                   ref={videoRef}
-                  key={(currentProd?.id || "demo-video") + "-" + (currentProd?.videoUrl || demoVideoFiles[0]?.path)}
-                  src={currentProd?.videoUrl || demoVideoFiles[0]?.path}
+                  key={(currentProd?.id || "demo-video") + "-" + (currentProd?.videoUrl || DEFAULT_FALLBACK_VIDEO)}
+                  src={currentProd?.videoUrl || DEFAULT_FALLBACK_VIDEO}
                   autoPlay
                   loop
                   muted={isAudioMuted}
@@ -2692,6 +2699,23 @@ export const LiveStreamView: React.FC = () => {
                     setIsAutoplayBlocked(false);
                   }}
                   onPause={() => setIsPlaying(false)}
+                  onLoadedData={(e) => {
+                    const vid = e.currentTarget;
+                    vid.muted = isAudioMuted;
+                    vid.play().then(() => {
+                      setIsPlaying(true);
+                      setIsAutoplayBlocked(false);
+                    }).catch(() => {
+                      vid.muted = true;
+                      setIsAudioMuted(true);
+                      vid.play().then(() => {
+                        setIsPlaying(true);
+                        setIsAutoplayBlocked(false);
+                      }).catch(() => {
+                        setIsAutoplayBlocked(true);
+                      });
+                    });
+                  }}
                   onCanPlay={() => {
                     if (videoRef.current && videoRef.current.paused) {
                       videoRef.current.play().then(() => {
@@ -2704,10 +2728,11 @@ export const LiveStreamView: React.FC = () => {
                   className="absolute inset-0 w-full h-full object-cover bg-black"
                   onError={(e) => {
                     const target = e.currentTarget;
-                    const fallback = currentProd?.fallbackVideoUrl || (demoVideoFiles.length > 0 ? demoVideoFiles[0]?.path : "");
-                    if (fallback && target.src !== fallback) {
+                    const fallback = currentProd?.fallbackVideoUrl || DEFAULT_FALLBACK_VIDEO;
+                    if (target.src !== fallback && !target.src.endsWith(fallback)) {
                       target.src = fallback;
                       target.load();
+                      target.muted = true;
                       target.play().then(() => {
                         setIsPlaying(true);
                         setIsAutoplayBlocked(false);
@@ -2718,12 +2743,12 @@ export const LiveStreamView: React.FC = () => {
                     }
                   }}
                 >
-                  <source src={currentProd?.videoUrl || (demoVideoFiles.length > 0 ? demoVideoFiles[0]?.path : "")} type="video/mp4" />
-                  {currentProd?.fallbackVideoUrl && <source src={currentProd.fallbackVideoUrl} type="video/mp4" />}
+                  <source src={currentProd?.videoUrl || DEFAULT_FALLBACK_VIDEO} type="video/mp4" />
+                  <source src={currentProd?.fallbackVideoUrl || DEFAULT_FALLBACK_VIDEO} type="video/mp4" />
                 </video>
 
-                {/* 모바일 브라우저 자동재생 차단 또는 정지 상태 감지 시 중앙 탭-투-플레이 오버레이 */}
-                {(!isPlaying || isAutoplayBlocked) && (
+                {/* 모바일 브라우저 정책 등으로 자동재생이 엄격히 차단되었을 때만 탭-투-플레이 오버레이 표시 */}
+                {isAutoplayBlocked && (
                   <div 
                     onClick={(e) => {
                       e.stopPropagation();

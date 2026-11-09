@@ -18,43 +18,137 @@ export interface ProductEntity {
 const STORAGE_KEY_PRODUCTS = "paypal_live_custom_products_v1";
 const STORAGE_KEY_DEFAULT_PROD = "paypal_live_default_product_id_v1";
 
-export const INITIAL_DEFAULT_PRODUCTS: ProductEntity[] = [];
+export const STATIC_DEMO_VIDEOS = [
+  { name: "가평-친환경-포도즙.mp4", path: "/demo_video/gapyeong-grape.mp4" },
+  { name: "문호리-뜨개질공방.mp4", path: "/demo_video/munhori-knitting.mp4" }
+];
+
+export const DEFAULT_FALLBACK_VIDEO = "/demo_video/gapyeong-grape.mp4";
+
+export const createDefaultProducts = (): ProductEntity[] => {
+  return [
+    {
+      id: "prod-gapyeong-grape",
+      name: {
+        ko: "가평 운악산 친환경 포도즙",
+        en: "Gapyeong Unaksan Eco-friendly Grape Juice",
+        ja: "加平 雲岳山 エコブドウジュース",
+        zh: "加平云岳山环保葡萄汁",
+        es: "Jugo de Uva Ecológico Gapyeong Unaksan",
+        fr: "Jus de Raisin Écologique Gapyeong Unaksan"
+      },
+      price: 35000,
+      currency: "KRW",
+      stock: 1000,
+      icon: "🍇",
+      videoUrl: "/demo_video/gapyeong-grape.mp4",
+      fallbackVideoUrl: "/demo_video/gapyeong-grape.mp4",
+      description: {
+        ko: "가평 운악산 청정 지역에서 재배한 고당도 100% 순수 착즙 포도즙입니다. 무설탕, 무색소, 무방부제 건강 음료.",
+        en: "100% pure squeezed grape juice grown in the pristine region of Mt. Unaksan, Gapyeong. Healthy beverage with no added sugar, artificial colors, or preservatives.",
+        ja: "加平の雲岳山清浄地域で栽培された高糖度100%純粋搾りブドウジュースです。無加糖・無着色・保存料不使用の健康飲料。",
+        zh: "产自加平云岳山纯净地区的高糖度100%纯压榨葡萄汁。无添加糖、无色素、无防腐剂的健康饮品。",
+        es: "Jugo de uva 100% puro exprimido cultivado en la región prístina del Monte Unaksan, Gapyeong. Bebida saludable sin azúcar añadida, colorantes ni conservantes.",
+        fr: "Jus de raisin 100% pur pressé cultivé dans la région préservée du mont Unaksan à Gapyeong. Boisson saine sans sucre ajouté, colorants ni conservateurs."
+      },
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: "prod-munhori-knitting",
+      name: {
+        ko: "문호리 리버마켓 핸드메이드 뜨개질 공방",
+        en: "Munhori River Market Handmade Knitting Studio",
+        ja: "文湖里 リバーマーケット ハンドメイド手編み工房",
+        zh: "汶湖里河边市集手工编织工坊",
+        es: "Taller de Tejido Hecho a Mano Munhori River Market",
+        fr: "Atelier de Tricot Fait Main Munhori River Market"
+      },
+      price: 45000,
+      currency: "KRW",
+      stock: 50,
+      icon: "🧶",
+      videoUrl: "/demo_video/munhori-knitting.mp4",
+      fallbackVideoUrl: "/demo_video/munhori-knitting.mp4",
+      description: {
+        ko: "양평 문호리 리버마켓 장인이 한 땀 한 땀 정성스럽게 뜬 친환경 수제 뜨개 소품 컬렉션입니다.",
+        en: "Handmade eco-friendly knitted crafts collection carefully crafted stitch by stitch by Munhori River Market artisans in Yangpyeong.",
+        ja: "楊平文湖里リバーマーケットの職人が一目一目丁寧に編み上げた、環境に優しい手編み小物コレクションです。",
+        zh: "由杨平汶湖里河边市集的工匠一针一线悉心编织的环保手工针织配饰系列。",
+        es: "Colección de artesanías tejidas a mano ecológicas elaboradas puntada a puntada por artesanos de Munhori River Market en Yangpyeong.",
+        fr: "Collection d'artisanat tricoté main écologique soigneusement confectionné maille après maille par les artisans du River Market de Munhori à Yangpyeong."
+      },
+      createdAt: new Date().toISOString()
+    }
+  ];
+};
+
+export const INITIAL_DEFAULT_PRODUCTS: ProductEntity[] = createDefaultProducts();
 
 const loadProductsFromStorage = (): ProductEntity[] => {
-  if (typeof window === "undefined") return [];
+  if (typeof window === "undefined") return createDefaultProducts();
   try {
     const raw = localStorage.getItem(STORAGE_KEY_PRODUCTS);
+    let list: ProductEntity[] = [];
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) {
-        // 사용자가 삭제한 이전 비디오(honey_demo, tea_demo, /videos/ 등)는 완전 제거하고 실제 등록된 비디오만 유지
-        const filtered = parsed.filter(p => 
-          p && p.videoUrl && 
-          !p.videoUrl.includes("honey_demo") && 
-          !p.videoUrl.includes("tea_demo") &&
-          !p.videoUrl.startsWith("/videos/")
-        );
-        // 클린업 및 다국어 번역(EN, JA, ZH, ES, FR) 자동 보강
-        const upgraded = filtered.map(p => {
-          const needsTranslation = !p.name.en || p.name.en === p.name.ko || !p.name.ja || p.name.ja === p.name.ko;
-          if (needsTranslation && p.name && p.name.ko) {
-            const trans = productTranslationService.translateProduct(p.name.ko, p.description?.ko);
-            return {
-              ...p,
-              name: { ...trans.name, ko: p.name.ko },
-              description: { ...trans.description, ko: p.description?.ko || trans.description.ko }
-            };
-          }
-          return p;
-        });
-        saveProductsToStorage(upgraded);
-        return upgraded;
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        list = parsed;
       }
     }
+
+    if (list.length === 0) {
+      const defaults = createDefaultProducts();
+      saveProductsToStorage(defaults);
+      return defaults;
+    }
+
+    // 사용자가 삭제한 이전 비디오(honey_demo, tea_demo, /videos/ 등)는 완전 제거
+    let filtered = list.filter(p => 
+      p && p.videoUrl && 
+      !p.videoUrl.includes("honey_demo") && 
+      !p.videoUrl.includes("tea_demo") &&
+      !p.videoUrl.startsWith("/videos/")
+    );
+
+    if (filtered.length === 0) {
+      filtered = createDefaultProducts();
+    }
+
+    // 새로고침 시 무효화되는 blob: URL 및 깨진 비디오 경로 자동 복구 & 다국어 번역 보강
+    const upgraded = filtered.map((p, idx) => {
+      let finalVideo = p.videoUrl;
+      const isDeadBlob = !finalVideo || finalVideo.startsWith("blob:");
+      if (isDeadBlob) {
+        const matched = STATIC_DEMO_VIDEOS.find(f => 
+          p.name?.ko && (p.name.ko.includes(f.name.replace(/\.[^/.]+$/, "")) || f.name.includes(p.name.ko))
+        ) || STATIC_DEMO_VIDEOS[idx % STATIC_DEMO_VIDEOS.length];
+        finalVideo = matched.path;
+      }
+
+      const needsTranslation = !p.name.en || p.name.en === p.name.ko || !p.name.ja || p.name.ja === p.name.ko;
+      let finalName = p.name;
+      let finalDesc = p.description;
+      if (needsTranslation && p.name && p.name.ko) {
+        const trans = productTranslationService.translateProduct(p.name.ko, p.description?.ko);
+        finalName = { ...trans.name, ko: p.name.ko };
+        finalDesc = { ...trans.description, ko: p.description?.ko || trans.description.ko };
+      }
+
+      return {
+        ...p,
+        name: finalName,
+        description: finalDesc,
+        videoUrl: finalVideo,
+        fallbackVideoUrl: DEFAULT_FALLBACK_VIDEO
+      };
+    });
+
+    saveProductsToStorage(upgraded);
+    return upgraded;
   } catch (e) {
     console.error("Failed to load products from localStorage", e);
+    return createDefaultProducts();
   }
-  return [];
 };
 
 const saveProductsToStorage = (products: ProductEntity[]) => {
@@ -75,9 +169,7 @@ export const productService = {
   },
 
   async syncWithServerVideos(demoFiles: { name: string; path: string }[]): Promise<ProductEntity[]> {
-    if (!Array.isArray(demoFiles) || demoFiles.length === 0) {
-      return this.getProducts();
-    }
+    const files = (Array.isArray(demoFiles) && demoFiles.length > 0) ? demoFiles : STATIC_DEMO_VIDEOS;
 
     let list = await this.getProducts();
     let hasChanges = false;
@@ -87,43 +179,29 @@ export const productService = {
       const isInvalid = !p.videoUrl || p.videoUrl.startsWith("blob:") || p.videoUrl.includes("honey_demo") || p.videoUrl.includes("tea_demo");
       if (isInvalid) {
         hasChanges = true;
-        const matched = demoFiles.find(f => p.name?.ko && (p.name.ko.includes(f.name.replace(/\.[^/.]+$/, "")) || f.name.includes(p.name.ko))) || demoFiles[idx % demoFiles.length];
+        const matched = files.find(f => p.name?.ko && (p.name.ko.includes(f.name.replace(/\.[^/.]+$/, "")) || f.name.includes(p.name.ko))) || files[idx % files.length];
         return {
           ...p,
-          videoUrl: matched.path
+          videoUrl: matched.path,
+          fallbackVideoUrl: DEFAULT_FALLBACK_VIDEO
         };
       }
       return p;
     });
 
-    // 2. 만약 등록된 상품이 아예 없다면 서버의 실제 데모 비디오들로 기본 상품 자동 로드 및 등록
+    // 2. 만약 등록된 상품이 아예 없다면 기본 상품 자동 로드 및 등록
     if (list.length === 0) {
-      list = demoFiles.map((file, idx) => {
-        const baseName = file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
-        const trans = productTranslationService.translateProduct(baseName);
-        return {
-          id: "prod-" + Date.now() + "-" + idx,
-          name: trans.name,
-          price: 35000 + (idx * 15000),
-          currency: "KRW",
-          stock: 10 + (idx * 5),
-          icon: idx === 0 ? "🍇" : "🧶",
-          videoUrl: file.path,
-          fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-          description: trans.description,
-          createdAt: new Date().toISOString()
-        };
-      });
+      list = createDefaultProducts();
       hasChanges = true;
     }
 
     if (hasChanges) {
       cachedProducts = list;
       saveProductsToStorage(list);
-      const curDef = await this.getDefaultProductId();
-      if (!curDef || !list.some(p => p.id === curDef)) {
-        await this.setDefaultProductId(list[0].id);
-      }
+    }
+    const curDef = await this.getDefaultProductId();
+    if (!curDef || !list.some(p => p.id === curDef)) {
+      await this.setDefaultProductId(list[0].id);
     }
 
     return list;
