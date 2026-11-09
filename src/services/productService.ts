@@ -60,6 +60,74 @@ export const productService = {
     return cachedProducts;
   },
 
+  async syncWithServerVideos(demoFiles: { name: string; path: string }[]): Promise<ProductEntity[]> {
+    if (!Array.isArray(demoFiles) || demoFiles.length === 0) {
+      return this.getProducts();
+    }
+
+    let list = await this.getProducts();
+    let hasChanges = false;
+
+    // 1. 기존 상품 중 blob: URL이거나 유효하지 않은 경로인 경우 실제 서버의 동영상 경로로 자동 복구
+    list = list.map((p, idx) => {
+      const isInvalid = !p.videoUrl || p.videoUrl.startsWith("blob:") || p.videoUrl.includes("honey_demo") || p.videoUrl.includes("tea_demo");
+      if (isInvalid) {
+        hasChanges = true;
+        const matched = demoFiles.find(f => p.name?.ko && (p.name.ko.includes(f.name.replace(/\.[^/.]+$/, "")) || f.name.includes(p.name.ko))) || demoFiles[idx % demoFiles.length];
+        return {
+          ...p,
+          videoUrl: matched.path
+        };
+      }
+      return p;
+    });
+
+    // 2. 만약 등록된 상품이 아예 없다면 서버의 실제 데모 비디오들로 기본 상품 자동 로드 및 등록
+    if (list.length === 0) {
+      list = demoFiles.map((file, idx) => {
+        const baseName = file.name.replace(/\.[^/.]+$/, "");
+        return {
+          id: "prod-" + Date.now() + "-" + idx,
+          name: {
+            ko: baseName,
+            en: baseName,
+            ja: baseName,
+            zh: baseName,
+            es: baseName,
+            fr: baseName
+          },
+          price: 35000 + (idx * 15000),
+          currency: "KRW",
+          stock: 10 + (idx * 5),
+          icon: idx === 0 ? "🍇" : "🧶",
+          videoUrl: file.path,
+          fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+          description: {
+            ko: `${baseName} 라이브 특별 상품`,
+            en: `${baseName} Live Special Item`,
+            ja: `${baseName} ライブ限定商品`,
+            zh: `${baseName} 直播精选特产`,
+            es: `${baseName} Producto especial en vivo`,
+            fr: `${baseName} Produit exclusif en direct`
+          },
+          createdAt: new Date().toISOString()
+        };
+      });
+      hasChanges = true;
+    }
+
+    if (hasChanges) {
+      cachedProducts = list;
+      saveProductsToStorage(list);
+      const curDef = await this.getDefaultProductId();
+      if (!curDef || !list.some(p => p.id === curDef)) {
+        await this.setDefaultProductId(list[0].id);
+      }
+    }
+
+    return list;
+  },
+
   async getDefaultProductId(): Promise<string | null> {
     if (typeof window === "undefined") return null;
     return localStorage.getItem(STORAGE_KEY_DEFAULT_PROD);
