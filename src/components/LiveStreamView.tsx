@@ -3,6 +3,7 @@ import PayPalCheckoutButton from "./PayPalCheckoutButton";
 import ErrorBoundary from "./ErrorBoundary";
 import IconPicker from "./IconPicker";
 import { productService, ProductEntity, Language } from "../services/productService";
+import { productTranslationService } from "../services/productTranslationService";
 
 export type { Language };
 export type Product = ProductEntity;
@@ -145,7 +146,7 @@ const TRANSLATIONS: Record<Language, any> = {
     audioLabel: "오디오 트랙",
     audioKeep: "🔊 원본 오디오 유지 (권장)",
     audioMuteOpt: "🔇 무음 (Mute)",
-    renderBtn: "🚀 동영상 렌더링 & 상품 완성 등록 (Render & Register)",
+    renderBtn: "🚀 Run video 음성번역 & compression & Register",
     renderingBtn: "⏳ 동영상 압축 및 렌더링 중...",
     trackingViewTitle: "📦 주문 및 배송 추적 (3초 후 자동 닫힘)",
     closeBtn: "닫기",
@@ -291,7 +292,7 @@ const TRANSLATIONS: Record<Language, any> = {
     audioLabel: "Audio Track",
     audioKeep: "🔊 Keep Original Audio",
     audioMuteOpt: "🔇 Mute Audio",
-    renderBtn: "🚀 Run Video Render & Register Product",
+    renderBtn: "🚀 Run Video Voice Dubbing & Compression & Register",
     renderingBtn: "⏳ Compressing & Rendering...",
     trackingViewTitle: "📦 Order & Tracking (Auto-closes in 3s)",
     closeBtn: "Close",
@@ -437,7 +438,7 @@ const TRANSLATIONS: Record<Language, any> = {
     audioLabel: "オーディオトラック",
     audioKeep: "🔊 元の音声を維持",
     audioMuteOpt: "🔇 ミュート (無音)",
-    renderBtn: "🚀 動画編集・圧縮を実行 (Render)",
+    renderBtn: "🚀 動画音声翻訳＆圧縮＆商品登録 (Voice Dubbing, Compression & Register)",
     renderingBtn: "⏳ 圧縮およびレンダリング中...",
     trackingViewTitle: "📦 注文・配送追跡 (3秒後に自動で閉じます)",
     closeBtn: "閉じる",
@@ -583,7 +584,7 @@ const TRANSLATIONS: Record<Language, any> = {
     audioLabel: "音轨设置",
     audioKeep: "🔊 保留原声",
     audioMuteOpt: "🔇 静音 (Mute)",
-    renderBtn: "🚀 执行视频编辑与压缩 (Render)",
+    renderBtn: "🚀 视频语音翻译 & 压缩 & 商品登记 (Voice Dubbing, Compression & Register)",
     renderingBtn: "⏳ 正在压缩与渲染...",
     trackingViewTitle: "📦 订单与物流追踪 (3秒后自动关闭)",
     closeBtn: "关闭",
@@ -729,7 +730,7 @@ const TRANSLATIONS: Record<Language, any> = {
     audioLabel: "Pista de Audio",
     audioKeep: "🔊 Mantener Audio Original",
     audioMuteOpt: "🔇 Silenciar (Mute)",
-    renderBtn: "🚀 Ejecutar Edición y Compresión (Render)",
+    renderBtn: "🚀 Doblaje de Voz, Compresión y Registro de Video",
     renderingBtn: "⏳ Comprimiendo y Renderizando...",
     trackingViewTitle: "📦 Seguimiento de Pedido (Cierra en 3s)",
     closeBtn: "Cerrar",
@@ -875,7 +876,7 @@ const TRANSLATIONS: Record<Language, any> = {
     audioLabel: "Piste Audio",
     audioKeep: "🔊 Conserver l'Audio Original",
     audioMuteOpt: "🔇 Muet (Mute)",
-    renderBtn: "🚀 Lancer l'Édition et la Compression (Render)",
+    renderBtn: "🚀 Doublage Vocal, Compression et Enregistrement Vidéo",
     renderingBtn: "⏳ Compression et Rendu en cours...",
     trackingViewTitle: "📦 Suivi de Commande (Fermeture dans 3s)",
     closeBtn: "Fermer",
@@ -1635,15 +1636,16 @@ export const LiveStreamView: React.FC = () => {
       return;
     }
     const descText = newProdDesc.trim() || `${newProdName.trim()} 등록 상품`;
+    const trans = productTranslationService.translateProduct(newProdName.trim(), descText);
     const updated = await productService.addProduct({
-      name: { ko: newProdName, en: newProdName, ja: newProdName, zh: newProdName, es: newProdName, fr: newProdName },
+      name: trans.name,
       price: Number(newProdPrice) || 35000,
       currency: "KRW",
       stock: Number(newProdStock) || 10,
       icon: newProdIcon || "🎁",
       videoUrl: selectedVideoAsset || newProdVideo || (demoVideoFiles.length > 0 ? demoVideoFiles[0].path : ""),
       fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-      description: { ko: descText, en: descText, ja: descText, zh: descText, es: descText, fr: descText }
+      description: trans.description
     }, isStartVideo);
 
     setProducts(updated);
@@ -1763,15 +1765,16 @@ export const LiveStreamView: React.FC = () => {
 
     setTimeout(async () => {
       const descText = newProdDesc.trim() || `${registeredName} 등록 상품`;
+      const trans = productTranslationService.translateProduct(registeredName, descText);
       const updated = await productService.addProduct({
-        name: { ko: registeredName, en: registeredName, ja: registeredName, zh: registeredName, es: registeredName, fr: registeredName },
+        name: trans.name,
         price: currentPrice,
         currency: "KRW",
         stock: Number(newProdStock) || 10,
         icon: newProdIcon || "🎁",
         videoUrl: selectedVideoAsset,
         fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-        description: { ko: descText, en: descText, ja: descText, zh: descText, es: descText, fr: descText }
+        description: trans.description
       }, isStartVideo);
 
       setProducts(updated);
@@ -1908,7 +1911,7 @@ export const LiveStreamView: React.FC = () => {
                 </div>
                 <div className="text-xs text-amber-300/90 bg-amber-500/10 border border-amber-500/20 px-3.5 py-2.5 rounded-lg flex items-center gap-2">
                   <span className="text-base">💡</span>
-                  <span>{lang === "ko" ? "1단계에서 상품 정보를 입력하신 후, 아래 2단계 동영상 스튜디오에서 동영상 업로드 후 [🚀 Run video 음성번역 & compression & Register] 버튼을 누르면 하나의 완성된 상품으로 묶여 등록됩니다." : "Enter product details in Step 1, upload video in Step 2, and click [🚀 Run video 음성번역 & compression & Register] to complete registration."}</span>
+                  <span>{lang === "ko" ? `1단계에서 상품 정보를 입력하신 후, 아래 2단계 동영상 스튜디오에서 동영상 업로드 후 [${t.renderBtn}] 버튼을 누르면 하나의 완성된 상품으로 묶여 등록됩니다.` : `Enter product details in Step 1, upload video in Step 2, and click [${t.renderBtn}] to complete registration.`}</span>
                 </div>
               </div>
 
@@ -2066,7 +2069,7 @@ export const LiveStreamView: React.FC = () => {
                         onClick={runVideoEditorCompression}
                         className="w-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 disabled:bg-slate-700 text-white py-3 rounded-lg text-xs font-bold transition shadow-xl cursor-pointer border border-amber-400/40 flex items-center justify-center gap-2"
                       >
-                        {isProcessing ? t.renderingBtn : "🚀 Run video 음성번역 & compression & Register"}
+                        {isProcessing ? t.renderingBtn : t.renderBtn}
                       </button>
                     </div>
                   </div>

@@ -1,3 +1,5 @@
+import { productTranslationService } from "./productTranslationService";
+
 export type Language = "ko" | "en" | "ja" | "zh" | "es" | "fr";
 
 export interface ProductEntity {
@@ -32,9 +34,21 @@ const loadProductsFromStorage = (): ProductEntity[] => {
           !p.videoUrl.includes("tea_demo") &&
           !p.videoUrl.startsWith("/videos/")
         );
-        // 클린업된 데이터를 localStorage에 즉시 반영하여 잔여 찌꺼기 제거
-        saveProductsToStorage(filtered);
-        return filtered;
+        // 클린업 및 다국어 번역(EN, JA, ZH, ES, FR) 자동 보강
+        const upgraded = filtered.map(p => {
+          const needsTranslation = !p.name.en || p.name.en === p.name.ko || !p.name.ja || p.name.ja === p.name.ko;
+          if (needsTranslation && p.name && p.name.ko) {
+            const trans = productTranslationService.translateProduct(p.name.ko, p.description?.ko);
+            return {
+              ...p,
+              name: { ...trans.name, ko: p.name.ko },
+              description: { ...trans.description, ko: p.description?.ko || trans.description.ko }
+            };
+          }
+          return p;
+        });
+        saveProductsToStorage(upgraded);
+        return upgraded;
       }
     }
   } catch (e) {
@@ -85,31 +99,18 @@ export const productService = {
     // 2. 만약 등록된 상품이 아예 없다면 서버의 실제 데모 비디오들로 기본 상품 자동 로드 및 등록
     if (list.length === 0) {
       list = demoFiles.map((file, idx) => {
-        const baseName = file.name.replace(/\.[^/.]+$/, "");
+        const baseName = file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
+        const trans = productTranslationService.translateProduct(baseName);
         return {
           id: "prod-" + Date.now() + "-" + idx,
-          name: {
-            ko: baseName,
-            en: baseName,
-            ja: baseName,
-            zh: baseName,
-            es: baseName,
-            fr: baseName
-          },
+          name: trans.name,
           price: 35000 + (idx * 15000),
           currency: "KRW",
           stock: 10 + (idx * 5),
           icon: idx === 0 ? "🍇" : "🧶",
           videoUrl: file.path,
           fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-          description: {
-            ko: `${baseName} 라이브 특별 상품`,
-            en: `${baseName} Live Special Item`,
-            ja: `${baseName} ライブ限定商品`,
-            zh: `${baseName} 直播精选特产`,
-            es: `${baseName} Producto especial en vivo`,
-            fr: `${baseName} Produit exclusif en direct`
-          },
+          description: trans.description,
           createdAt: new Date().toISOString()
         };
       });
@@ -139,8 +140,20 @@ export const productService = {
   },
 
   async addProduct(newProd: Omit<ProductEntity, "id" | "createdAt">, isDefault: boolean = false): Promise<ProductEntity[]> {
+    let finalName = newProd.name;
+    let finalDesc = newProd.description;
+    
+    // 다국어 번역이 동일한 한국어로 들어온 경우 자동 다국어 번역(EN, JA, ZH, ES, FR) 생성
+    if (finalName.en === finalName.ko || !finalName.en) {
+      const trans = productTranslationService.translateProduct(finalName.ko, finalDesc.ko);
+      finalName = { ...trans.name, ko: finalName.ko };
+      finalDesc = { ...trans.description, ko: finalDesc.ko || trans.description.ko };
+    }
+
     const created: ProductEntity = {
       ...newProd,
+      name: finalName,
+      description: finalDesc,
       id: "prod-" + Date.now(),
       createdAt: new Date().toISOString()
     };
