@@ -969,10 +969,15 @@ export const LiveStreamView: React.FC = () => {
         const serverPath = data.url || `/demo_video/${file.name}`;
         setUploadMessage(`${t.uploadSuccess} public/demo_video/${data.fileName || file.name}`);
         setSelectedVideoAsset(serverPath);
+        setNewProdVideo(serverPath);
+        const tempName = (data.fileName || file.name).replace(/\.[^/.]+$/, "");
+        setNewProdName(tempName);
         await fetchDemoVideos();
       } else {
         setUploadMessage(`${t.uploadSuccess} (${file.name})`);
         setSelectedVideoAsset(objectUrl);
+        setNewProdVideo(objectUrl);
+        setNewProdName(file.name.replace(/\.[^/.]+$/, ""));
       }
     } catch (err) {
       console.warn("Upload fallback to object URL:", err);
@@ -1051,16 +1056,18 @@ export const LiveStreamView: React.FC = () => {
 
   const handleQuickAutoRegister = async (videoUrlToUse?: string) => {
     const targetVideo = videoUrlToUse || selectedVideoAsset;
+    const rawFileName = targetVideo.split("/").pop() || "Demo_Product";
+    const tempProdName = rawFileName ? rawFileName.replace(/\.[^/.]+$/, "") : "Live Special Product";
 
-    // 사용자 요청: 자동 등록 시 엉뚱한 코드나 파일명 텍스트 대신 공란("")으로 깨끗하게 등록
+    // 사용자 요청: 비디오 파일명을 임시 상품명으로 등록, 상세설명은 공란("")으로 깔끔하게 설정
     const updatedList = await productService.addProduct({
       name: {
-        ko: "",
-        en: "",
-        ja: "",
-        zh: "",
-        es: "",
-        fr: ""
+        ko: tempProdName,
+        en: tempProdName,
+        ja: tempProdName,
+        zh: tempProdName,
+        es: tempProdName,
+        fr: tempProdName
       },
       price: 0,
       currency: "KRW",
@@ -1082,7 +1089,7 @@ export const LiveStreamView: React.FC = () => {
     const newlyCreated = updatedList[0];
     setLastAutoRegisteredProduct(newlyCreated);
     setEditingProduct(newlyCreated);
-    setEditFormName("");
+    setEditFormName(tempProdName);
     setEditFormPrice(0);
     setEditFormStock(10);
     setEditFormDesc("");
