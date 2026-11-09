@@ -923,6 +923,10 @@ export const LiveStreamView: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [processLog, setProcessLog] = useState<string>("");
 
+  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true); // 모바일 브라우저 자동재생(Autoplay) 정책 준수를 위해 기본 음소거 활성화
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isAutoplayBlocked, setIsAutoplayBlocked] = useState<boolean>(false);
+
   const fetchDemoVideos = async () => {
     try {
       const res = await fetch("/api/list-demo-videos");
@@ -1251,10 +1255,6 @@ export const LiveStreamView: React.FC = () => {
       stopDubbing();
     };
   }, [isAudioMuted, isPlaying, lang, currentProd?.id, voicePersona, isDubbingEnabled]);
-
-  const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true); // 모바일 브라우저 자동재생(Autoplay) 정책 준수를 위해 기본 음소거 활성화
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [isAutoplayBlocked, setIsAutoplayBlocked] = useState<boolean>(false);
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
