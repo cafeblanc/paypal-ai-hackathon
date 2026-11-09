@@ -29,5 +29,3 @@ PayPal-BackendAi.txt
 *.bak
 * - 복사본.*
 *-copy.*
-public/demo_video/*
-!public/demo_video/.gitkeep

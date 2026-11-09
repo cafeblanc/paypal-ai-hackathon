@@ -3,6 +3,7 @@ import { defineConfig, type Plugin, type Connect } from 'vite'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { execSync } from 'node:child_process'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -54,11 +55,24 @@ function demoVideoPlugin(): Plugin {
           fs.mkdirSync(dir, { recursive: true })
         }
         const targetPath = path.resolve(dir, fileName)
+        const rawUploadPath = path.resolve(dir, `raw_${Date.now()}_${fileName}`)
 
-        const fileStream = fs.createWriteStream(targetPath)
+        const fileStream = fs.createWriteStream(rawUploadPath)
         req.pipe(fileStream)
 
         fileStream.on('finish', () => {
+          try {
+            // 사용자 요청: 동영상 업로드 시 웹 스트리밍 최적화 압축(CRF 28, 720p, faststart)을 자동 실행하여 저장
+            execSync(`ffmpeg -y -i "${rawUploadPath}" -vf "scale=w=1280:h=720:force_original_aspect_ratio=decrease" -c:v libx264 -crf 28 -preset fast -c:a aac -b:a 128k -movflags +faststart "${targetPath}"`, { stdio: 'pipe' })
+            if (fs.existsSync(rawUploadPath)) fs.unlinkSync(rawUploadPath)
+          } catch (compressErr) {
+            console.warn('FFmpeg auto-compression fallback to raw file:', compressErr)
+            if (fs.existsSync(rawUploadPath)) {
+              if (fs.existsSync(targetPath)) fs.unlinkSync(targetPath)
+              fs.renameSync(rawUploadPath, targetPath)
+            }
+          }
+
           const stat = fs.statSync(targetPath)
           res.setHeader('Content-Type', 'application/json')
           res.end(JSON.stringify({
