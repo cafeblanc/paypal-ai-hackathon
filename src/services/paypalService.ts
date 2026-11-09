@@ -65,7 +65,7 @@ export const loadPayPalScript = async (
     script.id = "paypal-sdk";
     script.dataset.locale = locale;
     script.dataset.country = country;
-    script.src = `https://www.paypal.com/sdk/js?client-id=${targetId}&currency=${currency}&locale=${locale}&buyer-country=${country}&components=buttons&enable-funding=card`;
+    script.src = `https://www.paypal.com/sdk/js?client-id=${targetId}&currency=${currency}&locale=${locale}&buyer-country=${country}&disable-funding=paylater,venmo,card&components=buttons`;
     script.async = true;
     script.onload = () => {
       console.log(`[PayPal SDK] Official PayPal Sandbox SDK (${locale}, country: ${country}) loaded.`);

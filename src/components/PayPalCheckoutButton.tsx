@@ -118,42 +118,29 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
         paypalContainerRef.current.innerHTML = "";
 
         try {
-          const formattedLocale = currentLocale.replace("_", "-");
           const btn = paypal.Buttons({
+            fundingSource: (paypal.FUNDING && paypal.FUNDING.PAYPAL) ? paypal.FUNDING.PAYPAL : undefined,
             style: {
-              layout: "horizontal",
+              layout: "vertical",
               color: "gold",
               shape: "rect",
               label: "paypal",
-              height: 36,
+              height: 40,
               tagline: false
             },
             createOrder: (_data: any, actions: any) => {
               return actions.order.create({
                 intent: "CAPTURE",
                 application_context: {
-                  locale: formattedLocale,
                   brand_name: "PayPal AI Live Commerce",
-                  landing_page: "LOGIN",
-                  user_action: "PAY_NOW",
-                  shipping_preference: "SET_PROVIDED_ADDRESS"
+                  user_action: "PAY_NOW"
                 },
                 purchase_units: [
                   {
-                    description: `PayPal AI Live Commerce (${formattedLocale})`,
+                    description: `PayPal AI Live Commerce (${currentLocale})`,
                     amount: {
                       currency_code: currency,
                       value: amount.toFixed(2)
-                    },
-                    shipping: {
-                      name: {
-                        full_name: t.recipientName
-                      },
-                      address: {
-                        address_line_1: t.address,
-                        admin_area_2: t.city,
-                        country_code: countryCode
-                      }
                     }
                   }
                 ]
@@ -237,24 +224,26 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
         <p className="text-slate-400 text-[10px] truncate">{t.phone}</p>
       </div>
 
-      {/* Action Buttons */}
+      {/* Action Buttons: Unified into 1 Single PayPal Button */}
       <div className="pt-1 flex flex-col gap-1.5">
-        {/* Official PayPal SDK Smart Button (dynamically matches national locale & currency) */}
+        {/* Official PayPal SDK Smart Button (Single unified golden PayPal button) */}
         <div 
           ref={paypalContainerRef} 
-          className={`w-full overflow-hidden ${sdkRendered ? "min-h-[36px]" : "h-0"}`} 
+          className={`w-full overflow-hidden ${sdkRendered ? "min-h-[42px]" : "h-0"}`} 
         />
 
-        {/* Guaranteed Instant Checkout Button */}
-        <button
-          type="button"
-          onClick={handleInstantApprove}
-          disabled={loading}
-          className="w-full bg-[#0070BA] hover:bg-[#003087] active:scale-[0.99] text-white py-2.5 px-3 rounded-lg text-center font-bold text-xs sm:text-sm cursor-pointer shadow-xl transition flex items-center justify-center gap-1.5 border border-blue-400/30"
-        >
-          <span>{loading ? "⏳" : "💳"}</span>
-          <span>{loading ? "Processing PayPal Checkout..." : t.payBtn(amount)}</span>
-        </button>
+        {/* Fallback button: Only displayed while SDK is loading */}
+        {!sdkRendered && (
+          <button
+            type="button"
+            onClick={handleInstantApprove}
+            disabled={loading}
+            className="w-full bg-[#0070BA] hover:bg-[#003087] active:scale-[0.99] text-white py-2.5 px-3 rounded-lg text-center font-bold text-xs sm:text-sm cursor-pointer shadow-xl transition flex items-center justify-center gap-1.5 border border-blue-400/30"
+          >
+            <span>{loading ? "⏳" : "💳"}</span>
+            <span>{loading ? "Processing PayPal Checkout..." : t.payBtn(amount)}</span>
+          </button>
+        )}
       </div>
 
       {/* Footer */}

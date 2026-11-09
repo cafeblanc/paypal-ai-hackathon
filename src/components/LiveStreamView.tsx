@@ -1598,11 +1598,11 @@ export const LiveStreamView: React.FC = () => {
 
       <div className="relative flex-1 flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3 p-1.5 sm:p-4 w-full max-w-full box-border items-stretch overflow-hidden" style={{ height: "calc(100dvh - 52px)", maxHeight: "calc(100dvh - 52px)" }}>
         
-        {/* Section 1: Video Player (동영상 구간 대폭 확대 및 페이팔 결제 버튼 상시 표시) */}
-        <div className={`${isCheckingOut ? "h-[68%] sm:h-[65%] md:h-full shrink-0 md:shrink" : "h-[58%] sm:h-[60%] md:h-full shrink-0 md:shrink"} md:col-span-7 relative bg-slate-900/40 border border-slate-700/80 rounded-xl sm:rounded-2xl p-1.5 sm:p-2.5 shadow-xl flex flex-col justify-between w-full max-w-full overflow-hidden box-border`}>
+        {/* Section 1: Video Player (동영상 축소 없이 항상 풀 화면 유지 & 결제창은 오버레이로 표시) */}
+        <div className="h-[58%] sm:h-[60%] md:h-full md:col-span-7 relative bg-slate-900/40 border border-slate-700/80 rounded-xl sm:rounded-2xl p-1.5 sm:p-2.5 shadow-xl flex flex-col justify-between w-full max-w-full overflow-hidden box-border">
           <div 
             onClick={handleTogglePlayOrUnmute}
-            className={`relative w-full bg-black rounded-lg sm:rounded-xl overflow-hidden border border-slate-700 shadow-lg cursor-pointer select-none transition-all ${isCheckingOut ? "h-20 sm:h-24 shrink-0" : "flex-1 min-h-0"}`}
+            className="relative w-full bg-black rounded-lg sm:rounded-xl overflow-hidden border border-slate-700 shadow-lg cursor-pointer select-none flex-1 min-h-0"
           >
             {currentProd ? (
               <>
@@ -1701,10 +1701,39 @@ export const LiveStreamView: React.FC = () => {
                 </span>
               )}
             </div>
+
+            {/* Overlay Checkout Card (동영상 위에 오버랩되어 동영상이 전혀 축소되거나 짤리지 않음) */}
+            {isCheckingOut && currentProd && (
+              <div 
+                className="absolute inset-x-2 bottom-2 z-30 bg-slate-950/95 border-2 border-blue-500 p-2.5 sm:p-3 rounded-xl shadow-2xl backdrop-blur-md max-h-[85%] overflow-y-auto box-border animate-in slide-in-from-bottom duration-150"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-[11px] sm:text-xs font-bold text-blue-400 flex items-center gap-1">
+                    <span>🔒</span> {t.secureCheckout}
+                  </span>
+                  <button 
+                    type="button" 
+                    onClick={() => setIsCheckingOut(false)} 
+                    className="text-[10px] sm:text-[11px] text-slate-400 hover:text-white underline cursor-pointer font-bold"
+                  >
+                    {t.cancelBack}
+                  </button>
+                </div>
+                <ErrorBoundary>
+                  <PayPalCheckoutButton 
+                    amount={Math.round(currentProd.price / 1350)} 
+                    currency="USD" 
+                    lang={lang}
+                    onSuccess={(orderId) => handlePaymentSuccess(orderId, currentProd)} 
+                  />
+                </ErrorBoundary>
+              </div>
+            )}
           </div>
 
           <div className="mt-1.5 sm:mt-2 shrink-0 w-full box-border">
-            {currentProd && !isCheckingOut && !latestOrder ? (
+            {currentProd && !latestOrder ? (
               <div className="bg-slate-900/95 p-2 sm:p-2.5 rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-between gap-2 shadow-xl w-full h-[64px] sm:h-[76px] box-border overflow-hidden">
                 <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-base sm:text-xl shrink-0">{currentProd.icon}</div>
@@ -1716,9 +1745,16 @@ export const LiveStreamView: React.FC = () => {
                   </div>
                 </div>
                 {currentProd.stock > 0 ? (
-                  <button onClick={() => setIsCheckingOut(true)} className="bg-[#0070BA] hover:bg-[#005ea6] active:scale-95 text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs font-bold shrink-0 cursor-pointer shadow-lg transition flex items-center gap-1 border border-blue-400/40">
+                  <button 
+                    onClick={() => setIsCheckingOut(prev => !prev)} 
+                    className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs font-bold shrink-0 cursor-pointer shadow-lg transition flex items-center gap-1 border ${
+                      isCheckingOut 
+                        ? "bg-slate-800 text-slate-300 border-slate-600 hover:bg-slate-700" 
+                        : "bg-[#0070BA] hover:bg-[#005ea6] text-white border-blue-400/40 active:scale-95"
+                    }`}
+                  >
                     <span>💳</span>
-                    <span>{t.payWithPayPal}</span>
+                    <span>{isCheckingOut ? t.cancelBack : t.payWithPayPal}</span>
                   </button>
                 ) : (
                   <button disabled className="bg-slate-800 text-slate-500 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs font-bold shrink-0">{t.soldOut}</button>
@@ -1731,32 +1767,17 @@ export const LiveStreamView: React.FC = () => {
                   상품 등록하기
                 </button>
               </div>
-            ) : isCheckingOut && currentProd ? (
-              <div className="bg-slate-900 border border-blue-500 p-2 sm:p-2.5 rounded-lg sm:rounded-xl shadow-xl w-full box-border">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-[11px] sm:text-xs font-bold text-blue-400 flex items-center gap-1">
-                    <span>🔒</span> {t.secureCheckout}
-                  </span>
-                  <button onClick={() => setIsCheckingOut(false)} className="text-[10px] sm:text-[11px] text-slate-400 hover:text-white underline cursor-pointer">{t.cancelBack}</button>
-                </div>
-                <ErrorBoundary>
-                  <PayPalCheckoutButton 
-                    amount={Math.round(currentProd.price / 1350)} 
-                    currency="USD" 
-                    lang={lang}
-                    onSuccess={(orderId) => handlePaymentSuccess(orderId, currentProd)} 
-                  />
-                </ErrorBoundary>
-              </div>
-            ) : latestOrder ? (
-              <div className="bg-slate-900 border border-emerald-500 p-2 sm:p-2.5 rounded-lg sm:rounded-xl shadow-xl flex flex-col gap-1">
+            ) : null}
+
+            {latestOrder && (
+              <div className="bg-slate-900 border border-emerald-500 p-2 sm:p-2.5 rounded-lg sm:rounded-xl shadow-xl flex flex-col gap-1 mt-1">
                 <div className="flex justify-between items-center">
                   <span className="text-[11px] sm:text-xs font-bold text-emerald-400">{t.trackingViewTitle}</span>
                   <button onClick={() => { setLatestOrder(null); setCheckoutStatus(null); }} className="text-[10px] sm:text-[11px] text-slate-400 hover:text-white cursor-pointer">{t.closeBtn || "닫기"}</button>
                 </div>
                 <p className="text-[11px] sm:text-xs text-slate-300 font-mono">{latestOrder.orderId} / {latestOrder.shippingStatus}</p>
               </div>
-            ) : null}
+            )}
           </div>
         </div>
 
