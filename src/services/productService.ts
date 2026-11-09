@@ -133,6 +133,20 @@ export const productService = {
     return cachedProducts;
   },
 
+  async updateProduct(id: string, updatedData: Partial<Omit<ProductEntity, "id" | "createdAt">>): Promise<ProductEntity[]> {
+    cachedProducts = cachedProducts.map(p => {
+      if (p.id !== id) return p;
+      return {
+        ...p,
+        ...updatedData,
+        name: updatedData.name ? { ...p.name, ...updatedData.name } : p.name,
+        description: updatedData.description ? { ...p.description, ...updatedData.description } : p.description
+      };
+    });
+    saveProductsToStorage(cachedProducts);
+    return cachedProducts;
+  },
+
   async updateStock(id: string, stock: number): Promise<ProductEntity[]> {
     cachedProducts = cachedProducts.map(p => p.id === id ? { ...p, stock: Math.max(0, stock) } : p);
     saveProductsToStorage(cachedProducts);

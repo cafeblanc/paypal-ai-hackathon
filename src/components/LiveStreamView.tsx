@@ -124,6 +124,13 @@ const TRANSLATIONS: Record<Language, any> = {
     dubbingReplace: "🌐 원음 제거 영어 더빙 (원음 완전 대체)",
     refreshListBtn: "새로고침",
     videoPreviewLabel: "동영상 실시간 미리보기",
+    autoRegisterSuccess: "✨ 동영상 기반 신규 상품이 자동 등록되었습니다! 아래에서 단가 및 상세설명을 직접 수정하실 수 있습니다.",
+    autoProductEditTitle: "🛍️ 자동 등록 상품 정보 즉시 수정 (단가 / 상세설명 / 재고)",
+    editProdBtn: "✏️ 편집",
+    editProductModalTitle: "✏️ 상품 정보 상세 편집",
+    saveChangesBtn: "💾 수정사항 저장",
+    cancelBtn: "취소",
+    saveSuccess: "✅ 상품 정보가 성공적으로 수정되었습니다!",
     crfLabel: "고압축 품질 (CRF 20 ~ 35, 권장: 28)",
     speedLabel: "재생 속도",
     audioLabel: "오디오 트랙",
@@ -255,6 +262,13 @@ const TRANSLATIONS: Record<Language, any> = {
     dubbingReplace: "🌐 Full Voice Replace (Mute Original + Clean English Voice)",
     refreshListBtn: "Refresh List",
     videoPreviewLabel: "Live Video Preview",
+    autoRegisterSuccess: "✨ New product automatically registered! You can edit price and description below.",
+    autoProductEditTitle: "🛍️ Edit Registered Product Details (Price / Description / Stock)",
+    editProdBtn: "✏️ Edit",
+    editProductModalTitle: "✏️ Edit Product Details",
+    saveChangesBtn: "💾 Save Changes",
+    cancelBtn: "Cancel",
+    saveSuccess: "✅ Product details updated successfully!",
     crfLabel: "Compression Quality (CRF 20 ~ 35, Rec: 28)",
     speedLabel: "Playback Speed",
     audioLabel: "Audio Track",
@@ -386,6 +400,13 @@ const TRANSLATIONS: Record<Language, any> = {
     dubbingReplace: "🌐 原音ミュート英語吹き替え (原音完全代替)",
     refreshListBtn: "更新",
     videoPreviewLabel: "リアルタイム動画プレビュー",
+    autoRegisterSuccess: "✨ 動画から新商品が自動登録されました！以下で単価と説明を直接編集できます。",
+    autoProductEditTitle: "🛍️ 登録商品の即時編集 (単価 / 詳細説明 / 在庫)",
+    editProdBtn: "✏️ 編集",
+    editProductModalTitle: "✏️ 商品情報の詳細編集",
+    saveChangesBtn: "💾 変更を保存",
+    cancelBtn: "キャンセル",
+    saveSuccess: "✅ 商品情報が正常に更新されました！",
     crfLabel: "高圧縮品質 (CRF 20 ~ 35, 推奨: 28)",
     speedLabel: "再生速度",
     audioLabel: "オーディオトラック",
@@ -517,6 +538,13 @@ const TRANSLATIONS: Record<Language, any> = {
     dubbingReplace: "🌐 替换原声配音 (完全静音原声 + 纯净英语配音)",
     refreshListBtn: "刷新列表",
     videoPreviewLabel: "视频实时预览",
+    autoRegisterSuccess: "✨ 基于视频的新商品已自动完成登记！可在下方直接修改单价和详细说明。",
+    autoProductEditTitle: "🛍️ 即时修改登记商品信息 (单价 / 详细说明 / 库存)",
+    editProdBtn: "✏️ 编辑",
+    editProductModalTitle: "✏️ 编辑商品详细信息",
+    saveChangesBtn: "💾 保存修改",
+    cancelBtn: "取消",
+    saveSuccess: "✅ 商品信息已成功更新！",
     crfLabel: "高压缩质量 (CRF 20 ~ 35, 推荐: 28)",
     speedLabel: "播放速度",
     audioLabel: "音轨设置",
@@ -648,6 +676,13 @@ const TRANSLATIONS: Record<Language, any> = {
     dubbingReplace: "🌐 Reemplazo completo (Silenciar original + Voz limpia en inglés)",
     refreshListBtn: "Actualizar",
     videoPreviewLabel: "Vista previa de video",
+    autoRegisterSuccess: "✨ ¡Nuevo producto registrado automáticamente! Puede editar el precio y la descripción abajo.",
+    autoProductEditTitle: "🛍️ Editar detalles del producto (Precio / Descripción / Stock)",
+    editProdBtn: "✏️ Editar",
+    editProductModalTitle: "✏️ Editar Detalles del Producto",
+    saveChangesBtn: "💾 Guardar Cambios",
+    cancelBtn: "Cancelar",
+    saveSuccess: "✅ ¡Detalles del producto actualizados con éxito!",
     crfLabel: "Calidad de Compresión (CRF 20 ~ 35, Rec: 28)",
     speedLabel: "Velocidad",
     audioLabel: "Pista de Audio",
@@ -779,6 +814,13 @@ const TRANSLATIONS: Record<Language, any> = {
     dubbingReplace: "🌐 Remplacement total (Son original muet + Voix anglaise seule)",
     refreshListBtn: "Actualiser",
     videoPreviewLabel: "Aperçu vidéo en direct",
+    autoRegisterSuccess: "✨ Nouveau produit enregistré automatiquement ! Vous pouvez modifier le prix et la description ci-dessous.",
+    autoProductEditTitle: "🛍️ Modifier les détails du produit (Prix / Description / Stock)",
+    editProdBtn: "✏️ Modifier",
+    editProductModalTitle: "✏️ Modifier les Détails du Produit",
+    saveChangesBtn: "💾 Enregistrer les Modifications",
+    cancelBtn: "Annuler",
+    saveSuccess: "✅ Détails du produit mis à jour avec succès !",
     crfLabel: "Qualité de Compression (CRF 20 ~ 35, Rec: 28)",
     speedLabel: "Vitesse",
     audioLabel: "Piste Audio",
@@ -942,6 +984,127 @@ export const LiveStreamView: React.FC = () => {
       setIsUploadingVideo(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
+  };
+
+  // 상품 상세 정보 편집 (단가, 상세설명, 재고, 상품명 등) 관련 상태
+  const [editingProduct, setEditingProduct] = useState<ProductEntity | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [editFormName, setEditFormName] = useState<string>("");
+  const [editFormPrice, setEditFormPrice] = useState<number>(35000);
+  const [editFormStock, setEditFormStock] = useState<number>(20);
+  const [editFormDesc, setEditFormDesc] = useState<string>("");
+  const [editFormIcon, setEditFormIcon] = useState<string>("🎬");
+  const [editFormVideo, setEditFormVideo] = useState<string>("");
+  const [editSuccessMsg, setEditSuccessMsg] = useState<string | null>(null);
+  const [lastAutoRegisteredProduct, setLastAutoRegisteredProduct] = useState<ProductEntity | null>(null);
+
+  const openProductEditor = (product: ProductEntity) => {
+    setEditingProduct(product);
+    setEditFormName(product.name[lang] || product.name.ko || "");
+    setEditFormPrice(product.price);
+    setEditFormStock(product.stock);
+    setEditFormDesc(product.description[lang] || product.description.ko || "");
+    setEditFormIcon(product.icon || "🎁");
+    setEditFormVideo(product.videoUrl);
+    setEditSuccessMsg(null);
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveEditedProduct = async () => {
+    if (!editingProduct) return;
+    const updatedName = editFormName.trim() || editingProduct.name[lang] || "Product";
+    const updatedDesc = editFormDesc.trim() || editingProduct.description[lang] || "";
+    
+    const updatedList = await productService.updateProduct(editingProduct.id, {
+      name: {
+        ko: lang === "ko" ? updatedName : (editingProduct.name.ko || updatedName),
+        en: lang === "en" ? updatedName : (editingProduct.name.en || updatedName),
+        ja: lang === "ja" ? updatedName : (editingProduct.name.ja || updatedName),
+        zh: lang === "zh" ? updatedName : (editingProduct.name.zh || updatedName),
+        es: lang === "es" ? updatedName : (editingProduct.name.es || updatedName),
+        fr: lang === "fr" ? updatedName : (editingProduct.name.fr || updatedName),
+      },
+      price: Number(editFormPrice) || 0,
+      stock: Number(editFormStock) || 0,
+      description: {
+        ko: lang === "ko" ? updatedDesc : (editingProduct.description.ko || updatedDesc),
+        en: lang === "en" ? updatedDesc : (editingProduct.description.en || updatedDesc),
+        ja: lang === "ja" ? updatedDesc : (editingProduct.description.ja || updatedDesc),
+        zh: lang === "zh" ? updatedDesc : (editingProduct.description.zh || updatedDesc),
+        es: lang === "es" ? updatedDesc : (editingProduct.description.es || updatedDesc),
+        fr: lang === "fr" ? updatedDesc : (editingProduct.description.fr || updatedDesc),
+      },
+      icon: editFormIcon || "🎁",
+      videoUrl: editFormVideo || editingProduct.videoUrl
+    });
+
+    setProducts(updatedList);
+    const refreshed = updatedList.find(p => p.id === editingProduct.id) || null;
+    setEditingProduct(refreshed);
+    if (lastAutoRegisteredProduct && lastAutoRegisteredProduct.id === editingProduct.id) {
+      setLastAutoRegisteredProduct(refreshed);
+    }
+    setEditSuccessMsg(t.saveSuccess);
+    setTimeout(() => {
+      setEditSuccessMsg(null);
+      setIsEditModalOpen(false);
+    }, 1200);
+  };
+
+  const handleQuickAutoRegister = async (videoUrlToUse?: string) => {
+    const targetVideo = videoUrlToUse || selectedVideoAsset;
+    const rawFileName = targetVideo.split("/").pop() || "Demo_Product.mp4";
+    const cleanBaseName = rawFileName.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
+    const autoProdName = cleanBaseName
+      ? cleanBaseName.charAt(0).toUpperCase() + cleanBaseName.slice(1)
+      : "AI Live Special Product";
+
+    const newDescKo = `[AI 라이브 커머스 특가] ${autoProdName} - 원어민 영어 더빙 및 페이팔 즉시 결제 연동 상품`;
+    const newDescEn = `[AI Live Special] ${autoProdName} - AI Native Voice-Over dubbed with PayPal 1-click checkout.`;
+    const newDescJa = `[AIライブ特価] ${autoProdName} - ネイティブ吹き替えおよびPayPal即時決済対応商品です。`;
+    const newDescZh = `[AI直播特惠] ${autoProdName} - 母语级配音与PayPal一键即时结账商品。`;
+    const newDescEs = `[Oferta Especial IA] ${autoProdName} - Doblaje nativo de IA y pago con PayPal en 1 clic.`;
+    const newDescFr = `[Offre Spéciale IA] ${autoProdName} - Doublage natif IA et paiement instantané PayPal en 1 clic.`;
+
+    const updatedList = await productService.addProduct({
+      name: {
+        ko: autoProdName,
+        en: autoProdName,
+        ja: autoProdName,
+        zh: autoProdName,
+        es: autoProdName,
+        fr: autoProdName
+      },
+      price: 35000,
+      currency: "KRW",
+      stock: 20,
+      icon: "🎬",
+      videoUrl: targetVideo,
+      fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+      description: {
+        ko: newDescKo,
+        en: newDescEn,
+        ja: newDescJa,
+        zh: newDescZh,
+        es: newDescEs,
+        fr: newDescFr
+      }
+    }, true);
+
+    setProducts(updatedList);
+    const newlyCreated = updatedList[0];
+    setLastAutoRegisteredProduct(newlyCreated);
+    setEditingProduct(newlyCreated);
+    setEditFormName(newlyCreated.name[lang] || autoProdName);
+    setEditFormPrice(newlyCreated.price);
+    setEditFormStock(newlyCreated.stock);
+    setEditFormDesc(newlyCreated.description[lang] || newDescKo);
+    setEditFormIcon(newlyCreated.icon);
+    setEditFormVideo(newlyCreated.videoUrl);
+
+    const newDefId = await productService.getDefaultProductId();
+    setDefaultProductId(newDefId);
+    return newlyCreated;
   };
 
   const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true); // 모바일 브라우저 자동재생(Autoplay) 정책 준수를 위해 기본 음소거 활성화
@@ -1300,6 +1463,12 @@ export const LiveStreamView: React.FC = () => {
       ? "🎧 15% Ducked Original + AI English Voice-Over" 
       : "🌐 Full AI Voice Replace (Mute Original)";
 
+    const rawFileName = selectedVideoAsset.split("/").pop() || "Demo_Product.mp4";
+    const cleanBaseName = rawFileName.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
+    const autoProdName = cleanBaseName
+      ? cleanBaseName.charAt(0).toUpperCase() + cleanBaseName.slice(1)
+      : "AI Live Special Product";
+
     setProcessLog(
       `[Video Engine] Loading asset: ${selectedVideoAsset} ...\n` +
       `[Video Engine] Settings: CRF ${compressionCrf}, Speed ${videoSpeed}x\n` +
@@ -1308,11 +1477,18 @@ export const LiveStreamView: React.FC = () => {
       `[Gemini Voice Engine] Dubbing Mode: ${modeLabel}\n` +
       `[Gemini Voice Engine] Synthesizing studio-grade native English voice stream...\n` +
       `[FFmpeg Audio Mixer] Sidechain ducking Korean audio by -16dB & blending English voice-over...\n` +
-      `[FFmpeg Web Stream] Re-encoding video stream (H.264 / AAC) with faststart moov atom...`
+      `[FFmpeg Web Stream] Re-encoding video stream (H.264 / AAC) with faststart moov atom...\n` +
+      `[Auto Product Register] Registering product for "${autoProdName}" with price & description...`
     );
 
-    setTimeout(() => {
-      setProcessLog(prev => prev + `\n\n[Success] ✅ Processed dubbed video rendered & saved to public/demo_video/!\n[Status] Ready for Live Streaming & Instant PayPal Checkout Demo.`);
+    setTimeout(async () => {
+      const created = await handleQuickAutoRegister(selectedVideoAsset);
+      setProcessLog(prev => prev + 
+        `\n\n[Success] ✅ Processed dubbed video rendered & saved to public/demo_video/!\n` +
+        `[Auto Register] 🛍️ Product "${created.name[lang] || autoProdName}" successfully registered (ID: ${created.id})!\n` +
+        `[Auto Register] ✏️ Price (KRW ${created.price.toLocaleString()}) and Description ready for immediate editing below!\n` +
+        `[Status] Ready for Live Streaming & Instant PayPal Checkout Demo.`
+      );
       setIsProcessing(false);
     }, 1800);
   };
@@ -1497,7 +1673,15 @@ export const LiveStreamView: React.FC = () => {
                               </button>
                             )}
                           </td>
-                          <td className="py-3 text-right space-x-2 whitespace-nowrap">
+                          <td className="py-3 text-right space-x-1.5 whitespace-nowrap">
+                            <button
+                              type="button"
+                              onClick={() => openProductEditor(p)}
+                              className="bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded text-xs transition cursor-pointer font-semibold inline-flex items-center gap-1"
+                            >
+                              <span>✏️</span>
+                              <span>{t.editProdBtn}</span>
+                            </button>
                             <button onClick={() => changeProductVideoMapping(p.id)} className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-2.5 py-1 rounded text-xs transition cursor-pointer">{t.changeVideoBtn}</button>
                             <button onClick={() => handleDeleteProduct(p.id)} className="bg-red-600/20 hover:bg-red-600/30 text-red-400 px-2.5 py-1 rounded text-xs transition cursor-pointer">{t.deleteBtn}</button>
                           </td>
@@ -1833,13 +2017,24 @@ export const LiveStreamView: React.FC = () => {
                       </div>
                     </div>
 
-                    <button
-                      disabled={isProcessing}
-                      onClick={runVideoEditorCompression}
-                      className="mt-1 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 disabled:bg-slate-700 text-white py-3 rounded-lg text-xs font-bold transition shadow-xl cursor-pointer border border-amber-400/40 flex items-center justify-center gap-2"
-                    >
-                      {isProcessing ? t.renderingBtn : t.renderBtn}
-                    </button>
+                    <div className="flex flex-col sm:flex-row gap-2 mt-1">
+                      <button
+                        disabled={isProcessing}
+                        onClick={runVideoEditorCompression}
+                        className="flex-1 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 disabled:bg-slate-700 text-white py-3 rounded-lg text-xs font-bold transition shadow-xl cursor-pointer border border-amber-400/40 flex items-center justify-center gap-2"
+                      >
+                        {isProcessing ? t.renderingBtn : t.renderBtn}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleQuickAutoRegister()}
+                        className="bg-slate-800 hover:bg-slate-700 text-amber-300 hover:text-amber-200 border border-amber-500/30 px-3 py-3 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0 flex items-center justify-center gap-1.5"
+                        title="동영상 기반으로 신규 상품을 즉시 자동 등록"
+                      >
+                        <span>⚡</span>
+                        <span>신규 상품 즉시 자동등록</span>
+                      </button>
+                    </div>
                   </div>
 
                   <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col font-mono text-[11px] text-emerald-400 h-[380px] overflow-y-auto shadow-inner w-full">
@@ -1851,10 +2046,231 @@ export const LiveStreamView: React.FC = () => {
                     )}
                   </div>
                 </div>
+
+                {/* 자동 등록 및 즉시 수정 가능한 상품 편집 패널 (단가, 상세설명, 재고, 상품명 수정) */}
+                {editingProduct && (
+                  <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border-2 border-amber-500/70 p-5 rounded-xl shadow-2xl flex flex-col gap-4 mt-2 w-full animate-fadeIn">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-3">
+                      <div>
+                        <h4 className="text-sm font-bold text-amber-300 flex items-center gap-2">
+                          <span>✨</span> {t.autoProductEditTitle}
+                        </h4>
+                        <p className="text-[11px] text-emerald-400 mt-0.5">
+                          {t.autoRegisterSuccess}
+                        </p>
+                      </div>
+                      <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded-full font-bold">
+                        ID: {editingProduct.id}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-end">
+                      <div className="md:col-span-4">
+                        <label className="text-xs text-slate-300 font-semibold mb-1 block">
+                          {t.prodNameRequired}
+                        </label>
+                        <input
+                          type="text"
+                          value={editFormName}
+                          onChange={(e) => setEditFormName(e.target.value)}
+                          className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-amber-500 font-medium"
+                        />
+                      </div>
+
+                      <div className="md:col-span-3">
+                        <label className="text-xs text-slate-300 font-semibold mb-1 block">
+                          {t.prodPriceRequired}
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="number"
+                            value={editFormPrice}
+                            onChange={(e) => setEditFormPrice(Number(e.target.value))}
+                            className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-amber-300 font-bold focus:outline-none focus:border-amber-500 pl-7"
+                          />
+                          <span className="absolute left-2.5 top-2.5 text-xs text-slate-500 font-bold">₩</span>
+                        </div>
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="text-xs text-slate-300 font-semibold mb-1 block">
+                          {t.prodStockRequired}
+                        </label>
+                        <input
+                          type="number"
+                          value={editFormStock}
+                          onChange={(e) => setEditFormStock(Number(e.target.value))}
+                          className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500"
+                        />
+                      </div>
+
+                      <div className="md:col-span-1">
+                        <label className="text-xs text-slate-300 font-semibold mb-1 block">
+                          {t.prodIconOptional}
+                        </label>
+                        <input
+                          type="text"
+                          value={editFormIcon}
+                          onChange={(e) => setEditFormIcon(e.target.value)}
+                          className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-center text-white focus:outline-none focus:border-amber-500"
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <button
+                          type="button"
+                          onClick={handleSaveEditedProduct}
+                          className="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold py-2.5 px-3 rounded-lg text-xs shadow-lg transition cursor-pointer border border-emerald-400/40 flex items-center justify-center gap-1.5"
+                        >
+                          <span>💾</span>
+                          <span>{t.saveChangesBtn}</span>
+                        </button>
+                      </div>
+
+                      <div className="md:col-span-12">
+                        <label className="text-xs text-slate-300 font-semibold mb-1 block">
+                          {t.prodDescOptional}
+                        </label>
+                        <textarea
+                          rows={2}
+                          value={editFormDesc}
+                          onChange={(e) => setEditFormDesc(e.target.value)}
+                          className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500 resize-none leading-relaxed"
+                        />
+                      </div>
+                    </div>
+
+                    {editSuccessMsg && (
+                      <div className="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-2">
+                        <span>✅</span>
+                        <span>{editSuccessMsg}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           )}
         </div>
+
+        {/* 개별 상품 상세 정보 수정 모달 (Product Edit Modal - SECTION 1 테이블 ✏️ 편집 버튼 연동) */}
+        {isEditModalOpen && editingProduct && (
+          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-slate-900 border-2 border-amber-500/60 rounded-2xl p-6 max-w-xl w-full shadow-2xl flex flex-col gap-4 animate-scaleUp">
+              <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 className="text-base font-bold text-amber-300 flex items-center gap-2">
+                  <span>✏️</span> {t.editProductModalTitle}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="text-slate-400 hover:text-white text-lg font-bold p-1 cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-3.5">
+                <div>
+                  <label className="text-xs text-slate-300 font-semibold mb-1 block">
+                    {t.prodNameRequired}
+                  </label>
+                  <input
+                    type="text"
+                    value={editFormName}
+                    onChange={(e) => setEditFormName(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-amber-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-xs text-slate-300 font-semibold mb-1 block">
+                      {t.prodPriceRequired}
+                    </label>
+                    <input
+                      type="number"
+                      value={editFormPrice}
+                      onChange={(e) => setEditFormPrice(Number(e.target.value))}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-amber-300 font-bold focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-300 font-semibold mb-1 block">
+                      {t.prodStockRequired}
+                    </label>
+                    <input
+                      type="number"
+                      value={editFormStock}
+                      onChange={(e) => setEditFormStock(Number(e.target.value))}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-300 font-semibold mb-1 block">
+                      {t.prodIconOptional}
+                    </label>
+                    <input
+                      type="text"
+                      value={editFormIcon}
+                      onChange={(e) => setEditFormIcon(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-center text-white focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs text-slate-300 font-semibold mb-1 block">
+                    {t.prodVideoRequired}
+                  </label>
+                  <input
+                    type="text"
+                    value={editFormVideo}
+                    onChange={(e) => setEditFormVideo(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-amber-300 font-mono focus:outline-none focus:border-amber-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs text-slate-300 font-semibold mb-1 block">
+                    {t.prodDescOptional}
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={editFormDesc}
+                    onChange={(e) => setEditFormDesc(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500 resize-none leading-relaxed"
+                  />
+                </div>
+
+                {editSuccessMsg && (
+                  <div className="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-2">
+                    <span>✅</span>
+                    <span>{editSuccessMsg}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end items-center gap-3 border-t border-slate-800 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer transition"
+                >
+                  {t.cancelBtn}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveEditedProduct}
+                  className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold px-5 py-2 rounded-lg text-xs shadow-lg transition cursor-pointer border border-emerald-400/40 flex items-center gap-1.5"
+                >
+                  <span>💾</span>
+                  <span>{t.saveChangesBtn}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
