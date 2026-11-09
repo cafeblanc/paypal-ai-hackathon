@@ -1,5 +1,7 @@
 // Official PayPal Developer Platform (Sandbox) Integration Service
-// Loads official PayPal JavaScript SDK and handles Sandbox Orders API
+// Loads official PayPal JavaScript SDK with dynamic international locale matching
+
+export type SupportedLanguage = "en" | "ko" | "ja" | "zh" | "es" | "fr";
 
 declare global {
   interface Window {
@@ -15,32 +17,58 @@ export const getPayPalClientId = (): string => {
   );
 };
 
+export const getPayPalLocale = (lang: string = "en"): string => {
+  const map: Record<string, string> = {
+    en: "en_US",
+    ko: "ko_KR",
+    ja: "ja_JP",
+    zh: "zh_CN",
+    es: "es_ES",
+    fr: "fr_FR"
+  };
+  return map[lang] || "en_US";
+};
+
+export const getCountryCode = (lang: string = "en"): string => {
+  const map: Record<string, string> = {
+    en: "US",
+    ko: "KR",
+    ja: "JP",
+    zh: "CN",
+    es: "ES",
+    fr: "FR"
+  };
+  return map[lang] || "US";
+};
+
 export const loadPayPalScript = async (
   clientId?: string,
-  currency: string = "USD"
+  currency: string = "USD",
+  lang: string = "en"
 ): Promise<any> => {
   const targetId = clientId || getPayPalClientId();
-
-  // If already loaded and matching, resolve immediately
-  if (window.paypal) {
-    return window.paypal;
-  }
+  const locale = getPayPalLocale(lang);
+  const country = getCountryCode(lang);
 
   const existingScript = document.getElementById("paypal-sdk") as HTMLScriptElement | null;
   if (existingScript) {
-    return new Promise((resolve, reject) => {
-      existingScript.addEventListener("load", () => resolve(window.paypal));
-      existingScript.addEventListener("error", () => reject(new Error("PayPal SDK failed to load.")));
-    });
+    if (existingScript.dataset.locale === locale && window.paypal) {
+      return window.paypal;
+    }
+    // If locale changed, remove old script to reload in selected language
+    existingScript.remove();
+    delete (window as any).paypal;
   }
 
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
     script.id = "paypal-sdk";
-    script.src = `https://www.paypal.com/sdk/js?client-id=${targetId}&currency=${currency}&components=buttons&enable-funding=card`;
+    script.dataset.locale = locale;
+    script.dataset.country = country;
+    script.src = `https://www.paypal.com/sdk/js?client-id=${targetId}&currency=${currency}&locale=${locale}&buyer-country=${country}&components=buttons&enable-funding=card`;
     script.async = true;
     script.onload = () => {
-      console.log("[PayPal SDK] Official PayPal Sandbox SDK loaded successfully.");
+      console.log(`[PayPal SDK] Official PayPal Sandbox SDK (${locale}, country: ${country}) loaded.`);
       resolve(window.paypal);
     };
     script.onerror = () => {

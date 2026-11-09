@@ -753,9 +753,7 @@ const INITIAL_QA_LIST: CustomQARecord[] = [
 ];
 
 export const LiveStreamView: React.FC = () => {
-  const [lang, setLang] = useState<Language>(() => {
-    return (localStorage.getItem("preferred_language") as Language) || "en";
-  });
+  const [lang, setLang] = useState<Language>("en");
   const t = TRANSLATIONS[lang];
 
   const [isAdminRoute, setIsAdminRoute] = useState<boolean>(

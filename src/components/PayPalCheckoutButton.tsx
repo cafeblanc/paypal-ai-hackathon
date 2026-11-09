@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Language } from "../services/productService";
-import { loadPayPalScript, getPayPalClientId } from "../services/paypalService";
+import { loadPayPalScript, getPayPalClientId, getPayPalLocale, getCountryCode } from "../services/paypalService";
 
 interface PayPalCheckoutButtonProps {
   amount: number;
@@ -14,91 +14,111 @@ const CHECKOUT_TRANSLATIONS: Record<Language, {
   country: string;
   city: string;
   address: string;
+  phone: string;
+  recipientName: string;
   payBtn: (amt: number) => string;
   fastDemoBtn: string;
-  sdkButtonTitle: string;
+  statusBadge: string;
 }> = {
+  en: {
+    shippingLabel: "Confirm Shipping Address & Contact (United States)",
+    country: "United States (US)",
+    city: "New York, NY 10001",
+    address: "350 5th Avenue, Suite 4100",
+    phone: "+1-212-555-0198 · shopper@example.com",
+    recipientName: "John Doe",
+    payBtn: (amt) => `Instant Checkout with PayPal ($${amt}.00)`,
+    fastDemoBtn: "⚡ Fast Sandbox Approve (Demo Mode)",
+    statusBadge: "English (en_US) Active"
+  },
   ko: {
-    shippingLabel: "배송 주소 및 연락처 확인",
+    shippingLabel: "배송 주소 및 연락처 확인 (대한민국)",
     country: "대한민국 (KR)",
     city: "경기도 양평군",
     address: "북한강로 807, 문호리 729-4",
+    phone: "010-1234-5678 · opener@cafeblanc.kr",
+    recipientName: "홍길동",
     payBtn: (amt) => `PayPal로 즉시 결제 ($${amt}.00)`,
     fastDemoBtn: "⚡ 샌드박스 즉시 승인 (영상 시연용)",
-    sdkButtonTitle: "PayPal 공식 스마트 결제창"
-  },
-  en: {
-    shippingLabel: "Confirm Shipping Address & Contact",
-    country: "South Korea (KR)",
-    city: "Yangpyeong-gun, Gyeonggi-do",
-    address: "807 Bukhangang-ro, Munho-ri 729-4",
-    payBtn: (amt) => `Instant Checkout with PayPal ($${amt}.00)`,
-    fastDemoBtn: "⚡ Fast Sandbox Approve (Demo Mode)",
-    sdkButtonTitle: "Official PayPal Smart Buttons"
+    statusBadge: "한국어 (ko_KR) 모드"
   },
   ja: {
-    shippingLabel: "お届け先住所および連絡先の確認",
-    country: "韓国 (KR)",
-    city: "京畿道 楊平郡",
-    address: "北漢江路 807, 汶湖里 729-4",
+    shippingLabel: "お届け先住所および連絡先 (日本)",
+    country: "日本 (JP)",
+    city: "東京都 港区",
+    address: "六本木 6-10-1 六本木ヒルズ",
+    phone: "03-1234-5678 · tokyo_buyer@example.jp",
+    recipientName: "山田 太郎",
     payBtn: (amt) => `PayPalで今すぐ支払う ($${amt}.00)`,
     fastDemoBtn: "⚡ 即時承認 (デモ撮影用)",
-    sdkButtonTitle: "PayPal公式スマート決済"
+    statusBadge: "日本語 (ja_JP) モード"
   },
   zh: {
-    shippingLabel: "确认收货地址与联系方式",
-    country: "韩国 (KR)",
-    city: "京畿道 杨平郡",
-    address: "北汉江路 807, 汶湖里 729-4",
+    shippingLabel: "确认收货地址与联系方式 (中国)",
+    country: "中国 (CN)",
+    city: "北京市 朝阳区",
+    address: "建国门外大街 1号 国贸大厦",
+    phone: "010-8888-9999 · beijing_buyer@example.cn",
+    recipientName: "张伟",
     payBtn: (amt) => `立即使用 PayPal 支付 ($${amt}.00)`,
     fastDemoBtn: "⚡ 一键沙盒支付 (视频演示用)",
-    sdkButtonTitle: "PayPal 官方快捷支付"
+    statusBadge: "简体中文 (zh_CN) 模式"
   },
   es: {
-    shippingLabel: "Confirmar dirección de envío y contacto",
-    country: "Corea del Sur (KR)",
-    city: "Yangpyeong, Gyeonggi-do",
-    address: "807 Bukhangang-ro, Munho-ri 729-4",
+    shippingLabel: "Confirmar dirección de envío y contacto (España)",
+    country: "España (ES)",
+    city: "Madrid, 28013",
+    address: "Calle Gran Vía 28, 4º",
+    phone: "+34 91 123 4567 · cliente@example.es",
+    recipientName: "Carlos García",
     payBtn: (amt) => `Pagar al instante con PayPal ($${amt}.00)`,
     fastDemoBtn: "⚡ Aprobación Rápida Sandbox (Modo Demo)",
-    sdkButtonTitle: "Botones Oficiales PayPal"
+    statusBadge: "Español (es_ES) Modo"
   },
   fr: {
-    shippingLabel: "Confirmer l'adresse de livraison et contact",
-    country: "Corée du Sud (KR)",
-    city: "Yangpyeong, Gyeonggi-do",
-    address: "807 Bukhangang-ro, Munho-ri 729-4",
+    shippingLabel: "Confirmer l'adresse de livraison et contact (France)",
+    country: "France (FR)",
+    city: "Paris, 75008",
+    address: "101 Avenue des Champs-Élysées",
+    phone: "+33 1 42 68 55 00 · acheteur@example.fr",
+    recipientName: "Jean Dupont",
     payBtn: (amt) => `Paiement immédiat avec PayPal ($${amt}.00)`,
     fastDemoBtn: "⚡ Approbation Rapide Sandbox (Mode Démo)",
-    sdkButtonTitle: "Boutons Officiels PayPal"
+    statusBadge: "Français (fr_FR) Mode"
   }
 };
 
 export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
   amount,
   currency,
-  lang = "ko",
+  lang = "en",
   onSuccess
 }) => {
   const [loading, setLoading] = useState(false);
   const [sdkRendered, setSdkRendered] = useState(false);
   const paypalContainerRef = useRef<HTMLDivElement>(null);
-  const hasMountedRef = useRef(false);
+  const currentRenderedLangRef = useRef<string | null>(null);
 
-  const t = CHECKOUT_TRANSLATIONS[lang] || CHECKOUT_TRANSLATIONS.ko;
+  const t = CHECKOUT_TRANSLATIONS[lang] || CHECKOUT_TRANSLATIONS.en;
+  const currentLocale = getPayPalLocale(lang);
+  const countryCode = getCountryCode(lang);
 
-  // 1. Load official PayPal JavaScript SDK safely without interfering with React DOM
+  // Load & re-render official PayPal JavaScript SDK with matching locale
   useEffect(() => {
     let isMounted = true;
     const clientId = getPayPalClientId();
 
-    loadPayPalScript(clientId, currency)
+    loadPayPalScript(clientId, currency, lang)
       .then((paypal) => {
         if (!isMounted || !paypal || !paypal.Buttons || !paypalContainerRef.current) return;
-        if (hasMountedRef.current) return;
-        hasMountedRef.current = true;
+        if (currentRenderedLangRef.current === lang) return;
+        currentRenderedLangRef.current = lang;
+
+        // Clear previous buttons safely before re-rendering for new language
+        paypalContainerRef.current.innerHTML = "";
 
         try {
+          const formattedLocale = currentLocale.replace("_", "-");
           const btn = paypal.Buttons({
             style: {
               layout: "horizontal",
@@ -110,12 +130,30 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
             },
             createOrder: (_data: any, actions: any) => {
               return actions.order.create({
+                intent: "CAPTURE",
+                application_context: {
+                  locale: formattedLocale,
+                  brand_name: "PayPal AI Live Commerce",
+                  landing_page: "LOGIN",
+                  user_action: "PAY_NOW",
+                  shipping_preference: "SET_PROVIDED_ADDRESS"
+                },
                 purchase_units: [
                   {
-                    description: "PayPal AI Live Commerce Order",
+                    description: `PayPal AI Live Commerce (${formattedLocale})`,
                     amount: {
                       currency_code: currency,
                       value: amount.toFixed(2)
+                    },
+                    shipping: {
+                      name: {
+                        full_name: t.recipientName
+                      },
+                      address: {
+                        address_line_1: t.address,
+                        admin_area_2: t.city,
+                        country_code: countryCode
+                      }
                     }
                   }
                 ]
@@ -160,9 +198,9 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [amount, currency, onSuccess]);
+  }, [amount, currency, lang, currentLocale, countryCode, t.address, t.city, t.recipientName, onSuccess]);
 
-  // Standard In-Stream Instant Approval (Fast & 100% Guaranteed)
+  // Guaranteed Instant Fallback Checkout
   const handleInstantApprove = () => {
     setLoading(true);
     setTimeout(() => {
@@ -181,7 +219,7 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
             <span>🔒</span> PayPal Gateway
           </p>
           <span className="text-[9px] bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-1.5 py-0.2 rounded font-mono">
-            Sandbox SDK Active
+            {t.statusBadge}
           </span>
         </div>
         <p className="text-[12px] text-amber-300 font-bold">
@@ -189,25 +227,25 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
         </p>
       </div>
 
-      {/* Shipping Address */}
+      {/* Localized National Shipping Address */}
       <div className="bg-slate-950/90 border border-slate-800/80 rounded-lg px-2.5 py-1.5 flex flex-col gap-0.5">
         <div className="flex justify-between items-center text-[10px] text-slate-400">
           <span>📦 {t.shippingLabel}</span>
-          <span className="text-emerald-400 text-[9px] font-medium">● 배송 준비</span>
+          <span className="text-emerald-400 text-[9px] font-medium">● Order Ready ({countryCode})</span>
         </div>
-        <p className="text-white text-[11px] font-medium truncate">{t.country} {t.city} {t.address}</p>
-        <p className="text-slate-400 text-[10px] truncate">010-1234-5678 · opener@cafeblanc.kr</p>
+        <p className="text-white text-[11px] font-medium truncate">{t.country} · {t.city} {t.address}</p>
+        <p className="text-slate-400 text-[10px] truncate">{t.phone}</p>
       </div>
 
-      {/* Action Buttons Section */}
+      {/* Action Buttons */}
       <div className="pt-1 flex flex-col gap-1.5">
-        {/* 1. Official PayPal SDK Smart Button Leaf Container (MUST remain empty of React children) */}
+        {/* Official PayPal SDK Smart Button (dynamically matches national locale & currency) */}
         <div 
           ref={paypalContainerRef} 
           className={`w-full overflow-hidden ${sdkRendered ? "min-h-[36px]" : "h-0"}`} 
         />
 
-        {/* 2. Guaranteed Instant PayPal Checkout Button (Always Available & Bulletproof) */}
+        {/* Guaranteed Instant Checkout Button */}
         <button
           type="button"
           onClick={handleInstantApprove}
@@ -215,13 +253,13 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
           className="w-full bg-[#0070BA] hover:bg-[#003087] active:scale-[0.99] text-white py-2.5 px-3 rounded-lg text-center font-bold text-xs sm:text-sm cursor-pointer shadow-xl transition flex items-center justify-center gap-1.5 border border-blue-400/30"
         >
           <span>{loading ? "⏳" : "💳"}</span>
-          <span>{loading ? "PayPal 결제 처리 중..." : t.payBtn(amount)}</span>
+          <span>{loading ? "Processing PayPal Checkout..." : t.payBtn(amount)}</span>
         </button>
       </div>
 
       {/* Footer */}
       <p className="text-[9px] text-center text-slate-400 font-mono mt-0.5">
-        Official PayPal Sandbox SDK Integrated · sandbox.paypal.com
+        Official PayPal Sandbox SDK · {currentLocale} · sandbox.paypal.com
       </p>
     </div>
   );
