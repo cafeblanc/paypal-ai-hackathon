@@ -18,6 +18,7 @@ const CHECKOUT_TRANSLATIONS: Record<Language, {
   recipientName: string;
   payBtn: (amt: number) => string;
   fastDemoBtn: string;
+  instantBtn: string;
   statusBadge: string;
 }> = {
   en: {
@@ -29,6 +30,7 @@ const CHECKOUT_TRANSLATIONS: Record<Language, {
     recipientName: "John Doe",
     payBtn: (amt) => `Instant Checkout with PayPal ($${amt}.00)`,
     fastDemoBtn: "⚡ Fast Sandbox Approve (Demo Mode)",
+    instantBtn: "Instant Checkout",
     statusBadge: "English (en_US) Active"
   },
   ko: {
@@ -40,6 +42,7 @@ const CHECKOUT_TRANSLATIONS: Record<Language, {
     recipientName: "홍길동",
     payBtn: (amt) => `PayPal로 즉시 결제 ($${amt}.00)`,
     fastDemoBtn: "⚡ 샌드박스 즉시 승인 (영상 시연용)",
+    instantBtn: "Instant Checkout",
     statusBadge: "한국어 (ko_KR) 모드"
   },
   ja: {
@@ -51,6 +54,7 @@ const CHECKOUT_TRANSLATIONS: Record<Language, {
     recipientName: "山田 太郎",
     payBtn: (amt) => `PayPalで今すぐ支払う ($${amt}.00)`,
     fastDemoBtn: "⚡ 即時承認 (デモ撮影用)",
+    instantBtn: "Instant Checkout",
     statusBadge: "日本語 (ja_JP) モード"
   },
   zh: {
@@ -62,6 +66,7 @@ const CHECKOUT_TRANSLATIONS: Record<Language, {
     recipientName: "张伟",
     payBtn: (amt) => `立即使用 PayPal 支付 ($${amt}.00)`,
     fastDemoBtn: "⚡ 一键沙盒支付 (视频演示用)",
+    instantBtn: "Instant Checkout",
     statusBadge: "简体中文 (zh_CN) 模式"
   },
   es: {
@@ -73,6 +78,7 @@ const CHECKOUT_TRANSLATIONS: Record<Language, {
     recipientName: "Carlos García",
     payBtn: (amt) => `Pagar al instante con PayPal ($${amt}.00)`,
     fastDemoBtn: "⚡ Aprobación Rápida Sandbox (Modo Demo)",
+    instantBtn: "Instant Checkout",
     statusBadge: "Español (es_ES) Modo"
   },
   fr: {
@@ -84,6 +90,7 @@ const CHECKOUT_TRANSLATIONS: Record<Language, {
     recipientName: "Jean Dupont",
     payBtn: (amt) => `Paiement immédiat avec PayPal ($${amt}.00)`,
     fastDemoBtn: "⚡ Approbation Rapide Sandbox (Mode Démo)",
+    instantBtn: "Instant Checkout",
     statusBadge: "Français (fr_FR) Mode"
   }
 };
@@ -224,26 +231,36 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
         <p className="text-slate-400 text-[10px] truncate">{t.phone}</p>
       </div>
 
-      {/* Action Buttons: Unified into 1 Single PayPal Button */}
-      <div className="pt-1 flex flex-col gap-1.5">
-        {/* Official PayPal SDK Smart Button (Single unified golden PayPal button) */}
-        <div 
-          ref={paypalContainerRef} 
-          className={`w-full overflow-hidden ${sdkRendered ? "min-h-[42px]" : "h-0"}`} 
-        />
+      {/* Action Buttons: 1. 정식 PayPal 버튼 (75%) + 2. Instant Checkout 버튼 (25%) */}
+      <div className="pt-1 flex items-center gap-2 w-full">
+        {/* 1. Official PayPal SDK Smart Button (75% 너비) */}
+        <div className="w-[75%] flex-grow basis-3/4 min-h-[40px] relative rounded-md overflow-hidden flex items-center">
+          <div 
+            ref={paypalContainerRef} 
+            className="w-full min-h-[40px]" 
+          />
+          {!sdkRendered && (
+            <div className="absolute inset-0 w-full h-[40px] bg-[#ffc439] rounded-md flex items-center justify-center shadow-md pointer-events-none">
+              <span className="text-[#003087] font-black text-sm italic tracking-tight flex items-center gap-1">
+                Pay<span className="text-[#0079C1]">Pal</span>
+              </span>
+            </div>
+          )}
+        </div>
 
-        {/* Fallback button: Only displayed while SDK is loading */}
-        {!sdkRendered && (
-          <button
-            type="button"
-            onClick={handleInstantApprove}
-            disabled={loading}
-            className="w-full bg-[#0070BA] hover:bg-[#003087] active:scale-[0.99] text-white py-2.5 px-3 rounded-lg text-center font-bold text-xs sm:text-sm cursor-pointer shadow-xl transition flex items-center justify-center gap-1.5 border border-blue-400/30"
-          >
-            <span>{loading ? "⏳" : "💳"}</span>
-            <span>{loading ? "Processing PayPal Checkout..." : t.payBtn(amount)}</span>
-          </button>
-        )}
+        {/* 2. Instant Checkout Button (25% 너비) */}
+        <button
+          type="button"
+          onClick={handleInstantApprove}
+          disabled={loading}
+          className="w-[25%] basis-1/4 h-[40px] bg-[#0070BA] hover:bg-[#005ea6] active:scale-95 text-white rounded-md text-center font-bold cursor-pointer shadow-md transition flex flex-col items-center justify-center border border-blue-400/40 shrink-0 leading-tight p-1"
+          title="PayPal Instant Checkout (Agent One-Click)"
+        >
+          <span className="text-xs">{loading ? "⏳" : "⚡"}</span>
+          <span className="text-[10px] sm:text-[11px] leading-tight font-extrabold whitespace-nowrap overflow-hidden text-ellipsis">
+            {loading ? "..." : (t.instantBtn || "Instant Checkout")}
+          </span>
+        </button>
       </div>
 
       {/* Footer */}
