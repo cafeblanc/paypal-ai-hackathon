@@ -1618,7 +1618,7 @@ export const LiveStreamView: React.FC = () => {
       currency: "KRW",
       stock: Number(newProdStock) || 10,
       icon: newProdIcon || "🎁",
-      videoUrl: newProdVideo || "/videos/honey_demo.mp4",
+      videoUrl: selectedVideoAsset || newProdVideo || (demoVideoFiles.length > 0 ? demoVideoFiles[0].path : ""),
       fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
       description: { ko: descText, en: descText, ja: descText, zh: descText, es: descText, fr: descText }
     }, isStartVideo);
@@ -1817,7 +1817,7 @@ export const LiveStreamView: React.FC = () => {
               <div className="bg-slate-900 border-2 border-amber-500 p-6 rounded-2xl shadow-2xl flex flex-col gap-4">
                 <h3 className="text-base font-bold text-amber-400">{t.adminNewProdTitle}</h3>
                 <form onSubmit={handleRegisterNewProduct} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
-                  <div className="md:col-span-3">
+                  <div className="md:col-span-5">
                     <label className="text-xs text-slate-300 mb-1 block">{t.prodNameRequired}</label>
                     <input type="text" value={newProdName} onChange={e => setNewProdName(e.target.value)} placeholder={t.prodNamePlaceholderShort} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" required />
                   </div>
@@ -1829,16 +1829,12 @@ export const LiveStreamView: React.FC = () => {
                     <label className="text-xs text-slate-300 mb-1 block">{t.prodStockRequired}</label>
                     <input type="number" value={newProdStock} onChange={e => setNewProdStock(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white" />
                   </div>
-                  <div className="md:col-span-3">
-                    <label className="text-xs text-slate-300 mb-1 block">{t.prodVideoRequired}</label>
-                    <input type="text" value={newProdVideo} onChange={e => setNewProdVideo(e.target.value)} placeholder={t.prodVideoPlaceholder} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-amber-300 font-mono" />
-                  </div>
                   <div className="md:col-span-1">
                     <label className="text-xs text-slate-300 mb-1 block">{t.prodIconOptional}</label>
                     <IconPicker value={newProdIcon} onChange={setNewProdIcon} />
                   </div>
-                  <div className="md:col-span-1">
-                    <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-xs font-bold cursor-pointer transition">{t.registerBtnShort}</button>
+                  <div className="md:col-span-2">
+                    <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-xs font-bold cursor-pointer transition shadow-md">{t.registerBtnShort}</button>
                   </div>
                   <div className="md:col-span-8">
                     <label className="text-xs text-slate-300 mb-1 block">{t.prodDescOptional}</label>
@@ -1859,234 +1855,7 @@ export const LiveStreamView: React.FC = () => {
                 </form>
               </div>
 
-              {/* SECTION 1: 상품 및 재고/동영상 관리 */}
-              <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl flex flex-col gap-4">
-                <div className="flex justify-between items-center flex-wrap gap-2">
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <span>📦</span> {t.tabInventory} ({products.length}{t.registeredCount})
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={handleResetToDefaultProducts}
-                      className="bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded text-xs transition cursor-pointer"
-                    >
-                      {t.resetDemoProducts}
-                    </button>
-                    <span className="text-xs text-slate-400 hidden sm:inline">{t.realtimeDBSync}</span>
-                  </div>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs min-w-[650px]">
-                    <thead>
-                      <tr className="border-b border-slate-800 text-slate-400">
-                        <th className="pb-3">{t.productNameCol}</th>
-                        <th className="pb-3">{t.priceCol}</th>
-                        <th className="pb-3">{t.stockCol}</th>
-                        <th className="pb-3">{t.videoAssetCol}</th>
-                        <th className="pb-3">{t.startupVideoCol}</th>
-                        <th className="pb-3 text-right">{t.actionsCol}</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/60">
-                      {products.length === 0 ? (
-                        <tr>
-                          <td colSpan={6} className="py-8 text-center text-slate-400">
-                            {t.noProductsNotice}
-                          </td>
-                        </tr>
-                      ) : products.map(p => (
-                        <tr key={p.id} className="hover:bg-slate-800/40">
-                          <td className="py-3 font-bold text-white">
-                            <div className="flex items-center gap-1.5">
-                              <span>{p.icon}</span>
-                              <span>{p.name[lang] || p.name.ko}</span>
-                            </div>
-                            <p className="text-[11px] text-slate-400 font-normal mt-0.5">{p.description[lang] || p.description.ko}</p>
-                          </td>
-                          <td className="py-3 text-slate-300 whitespace-nowrap">KRW {p.price.toLocaleString()}</td>
-                          <td className="py-3">
-                            <input type="number" value={p.stock} onChange={e => updateProductStock(p.id, Number(e.target.value))} className="w-16 bg-slate-950 border border-slate-700 text-amber-400 font-bold rounded p-1 text-xs" />
-                          </td>
-                          <td className="py-3 font-mono text-amber-300 truncate max-w-[150px]">{p.videoUrl}</td>
-                          <td className="py-3">
-                            {p.id === defaultProductId ? (
-                              <span className="bg-amber-500/20 text-amber-300 border border-amber-500/50 px-2.5 py-1 rounded-full text-[11px] font-bold inline-flex items-center gap-1">
-                                {t.startupVideoBadge}
-                              </span>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={() => handleSetDefaultProduct(p.id)}
-                                className="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-600 px-2 py-1 rounded text-[11px] cursor-pointer transition"
-                              >
-                                {t.setAsDefaultBtn}
-                              </button>
-                            )}
-                          </td>
-                          <td className="py-3 text-right space-x-1.5 whitespace-nowrap">
-                            <button
-                              type="button"
-                              onClick={() => openProductEditor(p)}
-                              className="bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded text-xs transition cursor-pointer font-semibold inline-flex items-center gap-1"
-                            >
-                              <span>✏️</span>
-                              <span>{t.editProdBtn}</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => openReplaceVideoModal(p)}
-                              className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 px-2.5 py-1 rounded text-xs transition cursor-pointer font-semibold inline-flex items-center gap-1"
-                              title={t.replaceVideoDubbingBtn || "동영상 및 번역·더빙 교체"}
-                            >
-                              <span>🎬</span>
-                              <span>{t.replaceVideoDubbingBtn || t.changeVideoBtn}</span>
-                            </button>
-                            <button onClick={() => handleDeleteProduct(p.id)} className="bg-red-600/20 hover:bg-red-600/30 text-red-400 px-2.5 py-1 rounded text-xs transition cursor-pointer">{t.deleteBtn}</button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* SECTION 2: AI 맞춤 답변 및 FAQ 사전 편집 */}
-              <div className="bg-slate-900 border-2 border-blue-500/40 p-5 rounded-xl flex flex-col gap-4 shadow-xl w-full overflow-hidden">
-                <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2">
-                  <span>💬</span> {t.tabQA}
-                </h3>
-                <p className="text-xs text-slate-400">{t.qaDesc}</p>
-
-                <div className="overflow-x-auto w-full">
-                  <table className="w-full text-left text-xs min-w-[500px]">
-                    <thead>
-                      <tr className="border-b border-slate-800 text-slate-400">
-                        <th className="pb-3 font-semibold">{t.qaKeywordCol}</th>
-                        <th className="pb-3 font-semibold">{t.qaQuestionCol}</th>
-                        <th className="pb-3 font-semibold">{t.qaAnswerCol}</th>
-                        <th className="pb-3 font-semibold text-right">{t.actionsCol}</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/60">
-                      {qaList.map(qa => (
-                        <tr key={qa.id} className="hover:bg-slate-800/40">
-                          <td className="py-3 font-mono font-bold text-amber-300">{qa.keyword}</td>
-                          <td className="py-3 text-slate-300">{qa.question}</td>
-                          <td className="py-3">
-                            <input
-                              type="text"
-                              value={qa.answer}
-                              onChange={(e) => updateCustomQAAnswer(qa.id, e.target.value)}
-                              className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded px-2.5 py-1.5 text-xs focus:outline-none focus:border-blue-500"
-                            />
-                          </td>
-                          <td className="py-3 text-right">
-                            <button
-                              onClick={() => deleteCustomQA(qa.id)}
-                              className="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/40 px-2.5 py-1 rounded text-[11px] transition cursor-pointer"
-                            >
-                              {t.deleteBtn}
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                <form onSubmit={handleAddCustomQA} className="mt-3 pt-4 border-t border-slate-800 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
-                  <div className="md:col-span-3">
-                    <label className="text-[11px] text-slate-400 mb-1 block">{t.qaKeywordCol}</label>
-                    <input
-                      type="text"
-                      value={newKeyword}
-                      onChange={e => setNewKeyword(e.target.value)}
-                      placeholder={t.qaKeywordPlace}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
-                  <div className="md:col-span-4">
-                    <label className="text-[11px] text-slate-400 mb-1 block">{t.qaQuestionCol}</label>
-                    <input
-                      type="text"
-                      value={newQuestion}
-                      onChange={e => setNewQuestion(e.target.value)}
-                      placeholder={t.qaQuestionPlace}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
-                  <div className="md:col-span-4">
-                    <label className="text-[11px] text-slate-400 mb-1 block">{t.qaAnswerCol}</label>
-                    <input
-                      type="text"
-                      value={newAnswer}
-                      onChange={e => setNewAnswer(e.target.value)}
-                      placeholder={t.qaAnswerPlace}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
-                  <div className="md:col-span-1">
-                    <button
-                      type="submit"
-                      className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-xs font-bold transition cursor-pointer shadow border border-blue-400/30"
-                    >
-                      {t.addBtn}
-                    </button>
-                  </div>
-                </form>
-              </div>
-
-              {/* SECTION 3: 배송 관리 & 주문 내역 */}
-              <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl flex flex-col gap-4 w-full overflow-hidden">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <span>🚚</span> {t.tabShipping} & {t.orderHistory}
-                </h3>
-                {orders.length === 0 ? (
-                  <p className="text-xs text-slate-500 py-4 text-center">{t.noOrders}</p>
-                ) : (
-                  <div className="overflow-x-auto w-full">
-                    <table className="w-full text-left text-xs min-w-[500px]">
-                      <thead>
-                        <tr className="border-b border-slate-800 text-slate-400">
-                          <th className="pb-3 font-semibold">{t.orderIdCol}</th>
-                          <th className="pb-3 font-semibold">{t.productNameCol}</th>
-                          <th className="pb-3 font-semibold">{t.priceCol}</th>
-                          <th className="pb-3 font-semibold">{t.trackingCol}</th>
-                          <th className="pb-3 font-semibold">{t.shippingCol}</th>
-                          <th className="pb-3 font-semibold text-right">{t.dateCol}</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-800/60">
-                        {orders.map((ord, idx) => (
-                          <tr key={idx} className="hover:bg-slate-800/40">
-                            <td className="py-3.5 font-mono text-blue-400">{ord.orderId}</td>
-                            <td className="py-3.5 text-white font-medium">{ord.productName}</td>
-                            <td className="py-3.5 text-slate-300">KRW {ord.amount.toLocaleString()}</td>
-                            <td className="py-3.5 font-mono text-amber-300">{ord.trackingNumber}</td>
-                            <td className="py-3.5">
-                              <select
-                                value={ord.shippingStatus}
-                                onChange={(e) => updateShippingStatus(ord.orderId, e.target.value as any)}
-                                className="bg-slate-950 border border-slate-700 text-slate-100 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
-                              >
-                                <option value="상품 준비중">{t.statusPrep}</option>
-                                <option value="배송중">{t.statusShip}</option>
-                                <option value="배송완료">{t.statusDone}</option>
-                              </select>
-                            </td>
-                            <td className="py-3.5 text-right">
-                              <span className="text-[10px] text-slate-400">{ord.timestamp}</span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
-
-              {/* SECTION 4: 동영상 편집 및 압축 스튜디오 */}
+              {/* SECTION 1: 동영상 편집 및 압축 스튜디오 */}
               <div className="bg-slate-900 border-2 border-amber-500/40 p-5 rounded-xl flex flex-col gap-4 shadow-xl w-full">
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-slate-800 pb-3 gap-2">
                   <div className="flex items-center gap-2">
@@ -2396,7 +2165,234 @@ export const LiveStreamView: React.FC = () => {
                   </div>
                 )}
               </div>
-            </div>
+{/* SECTION 2: 등록된 판매 상품 및 재고 목록 */}
+              <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl flex flex-col gap-4">
+                <div className="flex justify-between items-center flex-wrap gap-2">
+                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <span>📦</span> {t.tabInventory} ({products.length}{t.registeredCount})
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleResetToDefaultProducts}
+                      className="bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded text-xs transition cursor-pointer"
+                    >
+                      {t.resetDemoProducts}
+                    </button>
+                    <span className="text-xs text-slate-400 hidden sm:inline">{t.realtimeDBSync}</span>
+                  </div>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs min-w-[650px]">
+                    <thead>
+                      <tr className="border-b border-slate-800 text-slate-400">
+                        <th className="pb-3">{t.productNameCol}</th>
+                        <th className="pb-3">{t.priceCol}</th>
+                        <th className="pb-3">{t.stockCol}</th>
+                        <th className="pb-3">{t.videoAssetCol}</th>
+                        <th className="pb-3">{t.startupVideoCol}</th>
+                        <th className="pb-3 text-right">{t.actionsCol}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60">
+                      {products.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="py-8 text-center text-slate-400">
+                            {t.noProductsNotice}
+                          </td>
+                        </tr>
+                      ) : products.map(p => (
+                        <tr key={p.id} className="hover:bg-slate-800/40">
+                          <td className="py-3 font-bold text-white">
+                            <div className="flex items-center gap-1.5">
+                              <span>{p.icon}</span>
+                              <span>{p.name[lang] || p.name.ko}</span>
+                            </div>
+                            <p className="text-[11px] text-slate-400 font-normal mt-0.5">{p.description[lang] || p.description.ko}</p>
+                          </td>
+                          <td className="py-3 text-slate-300 whitespace-nowrap">KRW {p.price.toLocaleString()}</td>
+                          <td className="py-3">
+                            <input type="number" value={p.stock} onChange={e => updateProductStock(p.id, Number(e.target.value))} className="w-16 bg-slate-950 border border-slate-700 text-amber-400 font-bold rounded p-1 text-xs" />
+                          </td>
+                          <td className="py-3 font-mono text-amber-300 truncate max-w-[150px]">{p.videoUrl}</td>
+                          <td className="py-3">
+                            {p.id === defaultProductId ? (
+                              <span className="bg-amber-500/20 text-amber-300 border border-amber-500/50 px-2.5 py-1 rounded-full text-[11px] font-bold inline-flex items-center gap-1">
+                                {t.startupVideoBadge}
+                              </span>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => handleSetDefaultProduct(p.id)}
+                                className="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-600 px-2 py-1 rounded text-[11px] cursor-pointer transition"
+                              >
+                                {t.setAsDefaultBtn}
+                              </button>
+                            )}
+                          </td>
+                          <td className="py-3 text-right space-x-1.5 whitespace-nowrap">
+                            <button
+                              type="button"
+                              onClick={() => openProductEditor(p)}
+                              className="bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded text-xs transition cursor-pointer font-semibold inline-flex items-center gap-1"
+                            >
+                              <span>✏️</span>
+                              <span>{t.editProdBtn}</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => openReplaceVideoModal(p)}
+                              className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 px-2.5 py-1 rounded text-xs transition cursor-pointer font-semibold inline-flex items-center gap-1"
+                              title={t.replaceVideoDubbingBtn || "동영상 및 번역·더빙 교체"}
+                            >
+                              <span>🎬</span>
+                              <span>{t.replaceVideoDubbingBtn || t.changeVideoBtn}</span>
+                            </button>
+                            <button onClick={() => handleDeleteProduct(p.id)} className="bg-red-600/20 hover:bg-red-600/30 text-red-400 px-2.5 py-1 rounded text-xs transition cursor-pointer">{t.deleteBtn}</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* SECTION 3: AI 맞춤 답변 및 FAQ 사전 편집 */}
+              <div className="bg-slate-900 border-2 border-blue-500/40 p-5 rounded-xl flex flex-col gap-4 shadow-xl w-full overflow-hidden">
+                <h3 className="text-sm font-bold text-blue-400 flex items-center gap-2">
+                  <span>💬</span> {t.tabQA}
+                </h3>
+                <p className="text-xs text-slate-400">{t.qaDesc}</p>
+
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full text-left text-xs min-w-[500px]">
+                    <thead>
+                      <tr className="border-b border-slate-800 text-slate-400">
+                        <th className="pb-3 font-semibold">{t.qaKeywordCol}</th>
+                        <th className="pb-3 font-semibold">{t.qaQuestionCol}</th>
+                        <th className="pb-3 font-semibold">{t.qaAnswerCol}</th>
+                        <th className="pb-3 font-semibold text-right">{t.actionsCol}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60">
+                      {qaList.map(qa => (
+                        <tr key={qa.id} className="hover:bg-slate-800/40">
+                          <td className="py-3 font-mono font-bold text-amber-300">{qa.keyword}</td>
+                          <td className="py-3 text-slate-300">{qa.question}</td>
+                          <td className="py-3">
+                            <input
+                              type="text"
+                              value={qa.answer}
+                              onChange={(e) => updateCustomQAAnswer(qa.id, e.target.value)}
+                              className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded px-2.5 py-1.5 text-xs focus:outline-none focus:border-blue-500"
+                            />
+                          </td>
+                          <td className="py-3 text-right">
+                            <button
+                              onClick={() => deleteCustomQA(qa.id)}
+                              className="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-500/40 px-2.5 py-1 rounded text-[11px] transition cursor-pointer"
+                            >
+                              {t.deleteBtn}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <form onSubmit={handleAddCustomQA} className="mt-3 pt-4 border-t border-slate-800 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                  <div className="md:col-span-3">
+                    <label className="text-[11px] text-slate-400 mb-1 block">{t.qaKeywordCol}</label>
+                    <input
+                      type="text"
+                      value={newKeyword}
+                      onChange={e => setNewKeyword(e.target.value)}
+                      placeholder={t.qaKeywordPlace}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="md:col-span-4">
+                    <label className="text-[11px] text-slate-400 mb-1 block">{t.qaQuestionCol}</label>
+                    <input
+                      type="text"
+                      value={newQuestion}
+                      onChange={e => setNewQuestion(e.target.value)}
+                      placeholder={t.qaQuestionPlace}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="md:col-span-4">
+                    <label className="text-[11px] text-slate-400 mb-1 block">{t.qaAnswerCol}</label>
+                    <input
+                      type="text"
+                      value={newAnswer}
+                      onChange={e => setNewAnswer(e.target.value)}
+                      placeholder={t.qaAnswerPlace}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
+                    />
+                  </div>
+                  <div className="md:col-span-1">
+                    <button
+                      type="submit"
+                      className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg text-xs font-bold transition cursor-pointer shadow border border-blue-400/30"
+                    >
+                      {t.addBtn}
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              {/* SECTION 4: 배송 관리 & 주문 내역 */}
+              <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl flex flex-col gap-4 w-full overflow-hidden">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <span>🚚</span> {t.tabShipping} & {t.orderHistory}
+                </h3>
+                {orders.length === 0 ? (
+                  <p className="text-xs text-slate-500 py-4 text-center">{t.noOrders}</p>
+                ) : (
+                  <div className="overflow-x-auto w-full">
+                    <table className="w-full text-left text-xs min-w-[500px]">
+                      <thead>
+                        <tr className="border-b border-slate-800 text-slate-400">
+                          <th className="pb-3 font-semibold">{t.orderIdCol}</th>
+                          <th className="pb-3 font-semibold">{t.productNameCol}</th>
+                          <th className="pb-3 font-semibold">{t.priceCol}</th>
+                          <th className="pb-3 font-semibold">{t.trackingCol}</th>
+                          <th className="pb-3 font-semibold">{t.shippingCol}</th>
+                          <th className="pb-3 font-semibold text-right">{t.dateCol}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800/60">
+                        {orders.map((ord, idx) => (
+                          <tr key={idx} className="hover:bg-slate-800/40">
+                            <td className="py-3.5 font-mono text-blue-400">{ord.orderId}</td>
+                            <td className="py-3.5 text-white font-medium">{ord.productName}</td>
+                            <td className="py-3.5 text-slate-300">KRW {ord.amount.toLocaleString()}</td>
+                            <td className="py-3.5 font-mono text-amber-300">{ord.trackingNumber}</td>
+                            <td className="py-3.5">
+                              <select
+                                value={ord.shippingStatus}
+                                onChange={(e) => updateShippingStatus(ord.orderId, e.target.value as any)}
+                                className="bg-slate-950 border border-slate-700 text-slate-100 rounded px-2 py-1 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
+                              >
+                                <option value="상품 준비중">{t.statusPrep}</option>
+                                <option value="배송중">{t.statusShip}</option>
+                                <option value="배송완료">{t.statusDone}</option>
+                              </select>
+                            </td>
+                            <td className="py-3.5 text-right">
+                              <span className="text-[10px] text-slate-400">{ord.timestamp}</span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
+                          </div>
           )}
         </div>
 
