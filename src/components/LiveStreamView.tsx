@@ -118,8 +118,8 @@ const TRANSLATIONS: Record<Language, any> = {
     demoFolderLabel: "📂 public/demo_video/ 저장된 동영상 목록",
     voiceDubbingTitle: "🎙️ AI 원어민 영어 더빙 스튜디오 (Voice-Over)",
     voicePersonaLabel: "목소리 모델 (Voice Persona)",
-    voiceMaleC: "👨 남성 C: 40~50대 중후하고 신뢰감 넘치는 프리미엄 내레이터",
-    voiceFemaleD: "👩 여성 D: 40대 따뜻하고 전문적인 글로벌 라이브 쇼호스트",
+    voiceMaleC: "👨 남성 C: 60대 중후하고 품격 있는 장인 내레이터 (약간 느리고 차분한 톤)",
+    voiceFemaleD: "👩 여성 D: 60대 온화하고 우아한 명품 라이브 쇼호스트 (약간 느리고 편안한 톤)",
     dubbingModeLabel: "더빙 방식 (Dubbing Mode)",
     dubbingVoiceOver: "🎧 AI 원어민 영어 더빙 (원음 볼륨 15% 덕킹 + Voice-Over - 권장 ⭐)",
     dubbingReplace: "🌐 원음 제거 영어 더빙 (원음 완전 대체)",
@@ -132,6 +132,14 @@ const TRANSLATIONS: Record<Language, any> = {
     saveChangesBtn: "💾 수정사항 저장",
     cancelBtn: "취소",
     saveSuccess: "✅ 상품 정보가 성공적으로 수정되었습니다!",
+    replaceVideoDubbingBtn: "🎬 동영상 및 번역·더빙 교체",
+    replaceModalTitle: "🎬 동영상 및 번역·더빙 교체 및 재생성",
+    replaceModalDesc: "기존 상품명, 가격, 재고, 아이콘은 100% 그대로 유지되며, 선택한 원본 동영상과 번역·더빙(상세설명)만 즉시 교체됩니다.",
+    selectOrUploadVideo: "동영상 선택 또는 새 파일 업로드",
+    dubbingScriptEdit: "번역 상세설명 / 더빙 스크립트 수정",
+    applyReplaceBtn: "✅ 동영상 및 번역·더빙 즉시 교체 적용",
+    replaceSuccessMsg: "✅ 동영상과 번역·더빙이 성공적으로 교체되었습니다!",
+    applyToCurrentProductBtn: "🔄 현재 상품의 동영상 & 번역더빙만 즉시 교체",
     crfLabel: "고압축 품질 (CRF 20 ~ 35, 권장: 28)",
     speedLabel: "재생 속도",
     audioLabel: "오디오 트랙",
@@ -256,8 +264,8 @@ const TRANSLATIONS: Record<Language, any> = {
     demoFolderLabel: "📂 public/demo_video/ Video Assets",
     voiceDubbingTitle: "🎙️ AI Native Voice-Over Dubbing Studio",
     voicePersonaLabel: "Voice Persona",
-    voiceMaleC: "👨 Male C: 40s-50s Deep & Trustworthy Premium Narrator",
-    voiceFemaleD: "👩 Female D: 40s Warm & Professional Global Live Host",
+    voiceMaleC: "👨 Male C: 60s Prestigious Elder Master Narrator (Slightly Slower & Deep Tone)",
+    voiceFemaleD: "👩 Female D: 60s Warm & Elegant Senior Host (Slightly Slower & Graceful Tone)",
     dubbingModeLabel: "Dubbing Mode",
     dubbingVoiceOver: "🎧 AI Native Voice-Over (15% Ducked Original + English Voice - Rec ⭐)",
     dubbingReplace: "🌐 Full Voice Replace (Mute Original + Clean English Voice)",
@@ -270,6 +278,14 @@ const TRANSLATIONS: Record<Language, any> = {
     saveChangesBtn: "💾 Save Changes",
     cancelBtn: "Cancel",
     saveSuccess: "✅ Product details updated successfully!",
+    replaceVideoDubbingBtn: "🎬 Replace Video & Dubbing",
+    replaceModalTitle: "🎬 Replace Video & Re-generate Dubbing",
+    replaceModalDesc: "Original product name, price, stock, and icon are 100% preserved. Only the video and translated dubbing script are replaced.",
+    selectOrUploadVideo: "Select Video Asset or Upload New File",
+    dubbingScriptEdit: "Edit Translated Description / Dubbing Script",
+    applyReplaceBtn: "✅ Apply Video & Dubbing Replacement",
+    replaceSuccessMsg: "✅ Video and dubbing replaced successfully!",
+    applyToCurrentProductBtn: "🔄 Replace Video & Dubbing of Current Product",
     crfLabel: "Compression Quality (CRF 20 ~ 35, Rec: 28)",
     speedLabel: "Playback Speed",
     audioLabel: "Audio Track",
@@ -394,8 +410,8 @@ const TRANSLATIONS: Record<Language, any> = {
     demoFolderLabel: "📂 public/demo_video/ 保存済み動画一覧",
     voiceDubbingTitle: "🎙️ AIネイティブ吹き替えスタジオ (Voice-Over)",
     voicePersonaLabel: "音声ペルソナ (Voice Persona)",
-    voiceMaleC: "👨 男性 C: 40~50代 重厚で信頼感のあるプレミアムナレーター",
-    voiceFemaleD: "👩 女性 D: 40代 温かくプロフェッショナルなグローバルショホスト",
+    voiceMaleC: "👨 男性 C: 60代 重厚で品格ある巨匠ナレーター (ややゆっくり・落ち着いた低音)",
+    voiceFemaleD: "👩 女性 D: 60代 温和で優雅なシニアショーホスト (ややゆっくり・心地よいトーン)",
     dubbingModeLabel: "吹き替えモード",
     dubbingVoiceOver: "🎧 AIネイティブ吹き替え (原音15%ダッキング + 英語Voice-Over - 推奨 ⭐)",
     dubbingReplace: "🌐 原音ミュート英語吹き替え (原音完全代替)",
@@ -408,6 +424,14 @@ const TRANSLATIONS: Record<Language, any> = {
     saveChangesBtn: "💾 変更を保存",
     cancelBtn: "キャンセル",
     saveSuccess: "✅ 商品情報が正常に更新されました！",
+    replaceVideoDubbingBtn: "🎬 動画および翻訳・吹替の差替",
+    replaceModalTitle: "🎬 動画および翻訳・吹替の差替と再生成",
+    replaceModalDesc: "既存の商品名、価格、在庫、アイコンはそのまま保持され、動画と翻訳・吹替スクリプトのみが即座に差し替えられます。",
+    selectOrUploadVideo: "動画選択または新規アップロード",
+    dubbingScriptEdit: "翻訳商品説明／吹替スクリプト編集",
+    applyReplaceBtn: "✅ 動画と翻訳・吹替を即座に差替適用",
+    replaceSuccessMsg: "✅ 動画と翻訳・吹替が正常に差し替えられました！",
+    applyToCurrentProductBtn: "🔄 現在の商品の動画・吹替のみ差替",
     crfLabel: "高圧縮品質 (CRF 20 ~ 35, 推奨: 28)",
     speedLabel: "再生速度",
     audioLabel: "オーディオトラック",
@@ -532,8 +556,8 @@ const TRANSLATIONS: Record<Language, any> = {
     demoFolderLabel: "📂 public/demo_video/ 视频文件列表",
     voiceDubbingTitle: "🎙️ AI母语级英语配音工作台 (Voice-Over)",
     voicePersonaLabel: "配音角色模型 (Voice Persona)",
-    voiceMaleC: "👨 男性 C: 40~50岁 稳重沉着且极具信任感的名品旁白",
-    voiceFemaleD: "👩 女性 D: 40岁 温暖专业且具说服力的全球带货主播",
+    voiceMaleC: "👨 男性 C: 60岁 沉稳庄重且典雅的大师旁白 (语速微缓・深沉醇厚)",
+    voiceFemaleD: "👩 女性 D: 60岁 温婉优雅的资深名品主播 (语速微缓・从容亲切)",
     dubbingModeLabel: "配音模式",
     dubbingVoiceOver: "🎧 AI母语配音 (原音15%背景压音 + 英语配音 - 强烈推荐 ⭐)",
     dubbingReplace: "🌐 替换原声配音 (完全静音原声 + 纯净英语配音)",
@@ -546,6 +570,14 @@ const TRANSLATIONS: Record<Language, any> = {
     saveChangesBtn: "💾 保存修改",
     cancelBtn: "取消",
     saveSuccess: "✅ 商品信息已成功更新！",
+    replaceVideoDubbingBtn: "🎬 更换视频与翻译配音",
+    replaceModalTitle: "🎬 更换视频并重新生成翻译配音",
+    replaceModalDesc: "原商品名称、价格、库存及图标将完整保留，仅即时替换所选视频与多语言翻译配音文案。",
+    selectOrUploadVideo: "选择视频素材或上传新文件",
+    dubbingScriptEdit: "编辑翻译描述与配音文案",
+    applyReplaceBtn: "✅ 立即应用视频与翻译配音更换",
+    replaceSuccessMsg: "✅ 视频与翻译配音已成功更换！",
+    applyToCurrentProductBtn: "🔄 仅更换当前商品的视频与配音",
     crfLabel: "高压缩质量 (CRF 20 ~ 35, 推荐: 28)",
     speedLabel: "播放速度",
     audioLabel: "音轨设置",
@@ -670,8 +702,8 @@ const TRANSLATIONS: Record<Language, any> = {
     demoFolderLabel: "📂 Archivos en public/demo_video/",
     voiceDubbingTitle: "🎙️ Estudio de Doblaje por IA (Voice-Over)",
     voicePersonaLabel: "Persona de Voz",
-    voiceMaleC: "👨 Masculino C: Narrador premium 40s-50s profundo y confiable",
-    voiceFemaleD: "👩 Femenina D: Presentadora global en vivo 40s cálida y profesional",
+    voiceMaleC: "👨 Masculino C: Narrador maestro senior de 60 años (ligeramente más pausado, tono profundo)",
+    voiceFemaleD: "👩 Femenino D: Presentadora senior de 60 años elegante y cálida (ligeramente más pausada, tono sereno)",
     dubbingModeLabel: "Modo de Doblaje",
     dubbingVoiceOver: "🎧 AI Voice-Over (Audio original al 15% + Doblaje en inglés - Rec ⭐)",
     dubbingReplace: "🌐 Reemplazo completo (Silenciar original + Voz limpia en inglés)",
@@ -684,6 +716,14 @@ const TRANSLATIONS: Record<Language, any> = {
     saveChangesBtn: "💾 Guardar Cambios",
     cancelBtn: "Cancelar",
     saveSuccess: "✅ ¡Detalles del producto actualizados con éxito!",
+    replaceVideoDubbingBtn: "🎬 Reemplazar Video y Doblaje",
+    replaceModalTitle: "🎬 Reemplazar Video y Regenerar Doblaje",
+    replaceModalDesc: "El nombre, precio, stock e ícono del producto se conservan al 100%. Solo se reemplazan el video y el guión de doblaje traducido.",
+    selectOrUploadVideo: "Seleccionar Video o Subir Nuevo Archivo",
+    dubbingScriptEdit: "Editar Descripción Traducida / Guión de Doblaje",
+    applyReplaceBtn: "✅ Aplicar Reemplazo de Video y Doblaje",
+    replaceSuccessMsg: "✅ ¡Video y doblaje reemplazados con éxito!",
+    applyToCurrentProductBtn: "🔄 Reemplazar solo Video y Doblaje del Producto Actual",
     crfLabel: "Calidad de Compresión (CRF 20 ~ 35, Rec: 28)",
     speedLabel: "Velocidad",
     audioLabel: "Pista de Audio",
@@ -808,8 +848,8 @@ const TRANSLATIONS: Record<Language, any> = {
     demoFolderLabel: "📂 Fichiers vidéo dans public/demo_video/",
     voiceDubbingTitle: "🎙️ Studio de Doublage Natif IA (Voice-Over)",
     voicePersonaLabel: "Voix / Persona",
-    voiceMaleC: "👨 Homme C : Narrateur premium 40-50 ans grave et rassurant",
-    voiceFemaleD: "👩 Femme D : Présentatrice live shopping 40 ans chaleureuse et experte",
+    voiceMaleC: "👨 Homme C : Maître narrateur senior de 60 ans (légèrement plus posé, voix noble)",
+    voiceFemaleD: "👩 Femme D : Animatrice senior de 60 ans chaleureuse et raffinée (légèrement plus posée, ton serein)",
     dubbingModeLabel: "Mode de Doublage",
     dubbingVoiceOver: "🎧 AI Voice-Over (Son original atténué à 15% + Voix anglaise - Recommandé ⭐)",
     dubbingReplace: "🌐 Remplacement total (Son original muet + Voix anglaise seule)",
@@ -822,6 +862,14 @@ const TRANSLATIONS: Record<Language, any> = {
     saveChangesBtn: "💾 Enregistrer les Modifications",
     cancelBtn: "Annuler",
     saveSuccess: "✅ Détails du produit mis à jour avec succès !",
+    replaceVideoDubbingBtn: "🎬 Remplacer Vidéo & Doublage",
+    replaceModalTitle: "🎬 Remplacer Vidéo et Régénérer le Doublage",
+    replaceModalDesc: "Le nom du produit, le prix, le stock et l'icône sont conservés à 100%. Seuls la vidéo et le script de doublage traduit sont remplacés.",
+    selectOrUploadVideo: "Sélectionner une Vidéo ou Téléverser un Fichier",
+    dubbingScriptEdit: "Modifier la Description Traduite / Script de Doublage",
+    applyReplaceBtn: "✅ Appliquer le Remplacement Vidéo et Doublage",
+    replaceSuccessMsg: "✅ Vidéo et doublage remplacés avec succès !",
+    applyToCurrentProductBtn: "🔄 Remplacer uniquement la Vidéo et Doublage du Produit Actuel",
     crfLabel: "Qualité de Compression (CRF 20 ~ 35, Rec: 28)",
     speedLabel: "Vitesse",
     audioLabel: "Piste Audio",
@@ -974,6 +1022,7 @@ export const LiveStreamView: React.FC = () => {
         setUploadMessage(`${t.uploadSuccess} public/demo_video/${data.fileName || file.name}`);
         setSelectedVideoAsset(serverPath);
         setNewProdVideo(serverPath);
+        setReplaceVideoAsset(serverPath);
         const tempName = (data.fileName || file.name).replace(/\.[^/.]+$/, "");
         setNewProdName(tempName);
         await fetchDemoVideos();
@@ -981,6 +1030,7 @@ export const LiveStreamView: React.FC = () => {
         setUploadMessage(`${t.uploadSuccess} (${file.name})`);
         setSelectedVideoAsset(objectUrl);
         setNewProdVideo(objectUrl);
+        setReplaceVideoAsset(objectUrl);
         setNewProdName(file.name.replace(/\.[^/.]+$/, ""));
       }
     } catch (err) {
@@ -1004,6 +1054,55 @@ export const LiveStreamView: React.FC = () => {
   const [editFormVideo, setEditFormVideo] = useState<string>("");
   const [editSuccessMsg, setEditSuccessMsg] = useState<string | null>(null);
   const [lastAutoRegisteredProduct, setLastAutoRegisteredProduct] = useState<ProductEntity | null>(null);
+
+  // 동영상 및 번역·더빙 교체/재생성 전용 모달 상태
+  const [isReplaceModalOpen, setIsReplaceModalOpen] = useState<boolean>(false);
+  const [replaceTargetProduct, setReplaceTargetProduct] = useState<ProductEntity | null>(null);
+  const [replaceVideoAsset, setReplaceVideoAsset] = useState<string>("");
+  const [replaceDubbingScript, setReplaceDubbingScript] = useState<string>("");
+  const [replaceSuccessMsg, setReplaceSuccessMsg] = useState<string | null>(null);
+  const replaceFileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const openReplaceVideoModal = (product: ProductEntity) => {
+    setReplaceTargetProduct(product);
+    setReplaceVideoAsset(product.videoUrl);
+    setReplaceDubbingScript(product.description[lang] || product.description.ko || "");
+    setReplaceSuccessMsg(null);
+    setIsReplaceModalOpen(true);
+  };
+
+  const handleApplyReplaceVideo = async (targetProd?: ProductEntity, newVideoUrl?: string, newDesc?: string) => {
+    const prod = targetProd || replaceTargetProduct;
+    if (!prod) return;
+    const finalVideo = newVideoUrl || replaceVideoAsset || prod.videoUrl;
+    const finalDesc = newDesc !== undefined ? newDesc : replaceDubbingScript;
+
+    const updatedList = await productService.updateProduct(prod.id, {
+      videoUrl: finalVideo,
+      description: {
+        ko: lang === "ko" ? finalDesc : (prod.description.ko || finalDesc),
+        en: lang === "en" ? finalDesc : (prod.description.en || finalDesc),
+        ja: lang === "ja" ? finalDesc : (prod.description.ja || finalDesc),
+        zh: lang === "zh" ? finalDesc : (prod.description.zh || finalDesc),
+        es: lang === "es" ? finalDesc : (prod.description.es || finalDesc),
+        fr: lang === "fr" ? finalDesc : (prod.description.fr || finalDesc),
+      }
+    });
+
+    setProducts(updatedList);
+    const refreshed = updatedList.find(p => p.id === prod.id) || null;
+    if (activeProduct && activeProduct.id === prod.id) {
+      setActiveProduct(refreshed);
+    }
+    if (replaceTargetProduct && replaceTargetProduct.id === prod.id) {
+      setReplaceTargetProduct(refreshed);
+    }
+    setReplaceSuccessMsg(t.replaceSuccessMsg || "✅ 동영상과 번역·더빙이 성공적으로 교체되었습니다!");
+    setTimeout(() => {
+      setReplaceSuccessMsg(null);
+      setIsReplaceModalOpen(false);
+    }, 1200);
+  };
 
   const openProductEditor = (product: ProductEntity) => {
     setEditingProduct(product);
@@ -1184,19 +1283,27 @@ export const LiveStreamView: React.FC = () => {
 
     const voices = window.speechSynthesis.getVoices();
     const targetCode = (langCodeMap[lang] || "en-US").slice(0, 2).toLowerCase();
-    const matchedVoice = voices.find(v => v.lang.toLowerCase().startsWith(targetCode));
+    const matchingVoices = voices.filter(v => v.lang.toLowerCase().startsWith(targetCode));
+    
+    // 남성/여성 60대 장인/시니어 보이스 매칭
+    let matchedVoice: SpeechSynthesisVoice | undefined;
+    if (voicePersona === "male_c") {
+      matchedVoice = matchingVoices.find(v => /david|george|guy|james|mark|male|richard|martin|jean/i.test(v.name)) || matchingVoices[0];
+    } else {
+      matchedVoice = matchingVoices.find(v => /zira|susan|catherine|mary|female|clara|marie/i.test(v.name)) || matchingVoices[0];
+    }
     if (matchedVoice) {
       utterance.voice = matchedVoice;
     }
 
     if (voicePersona === "male_c") {
-      utterance.pitch = 0.88; // Deep prestigious male narrator
-      utterance.rate = 0.95;
+      utterance.pitch = 0.74; // 60대 중후하고 품격 있는 남성 장인 톤
+      utterance.rate = 0.82;  // 60대 약간 느리고 편안한 호흡
     } else {
-      utterance.pitch = 1.05; // Warm professional female live host
-      utterance.rate = 1.0;
+      utterance.pitch = 0.86; // 60대 온화하고 우아한 여성 시니어 톤
+      utterance.rate = 0.82;  // 60대 약간 느리고 편안한 호흡
     }
-    utterance.volume = 1.0;
+    utterance.volume = 1.0; // 사용자 요청: 볼륨 100% 그대로 유지
 
     utterance.onend = () => {
       if (isDubbingActiveRef.current && !isAudioMuted && isDubbingEnabled) {
@@ -1547,10 +1654,9 @@ export const LiveStreamView: React.FC = () => {
   };
 
   const changeProductVideoMapping = async (productId: string) => {
-    const newVideo = prompt("동영상 경로 입력:", "/videos/honey_demo.mp4");
-    if (newVideo) {
-      const updated = await productService.updateVideoMapping(productId, newVideo.trim());
-      setProducts(updated);
+    const target = products.find(p => p.id === productId);
+    if (target) {
+      openReplaceVideoModal(target);
     }
   };
 
@@ -1827,7 +1933,15 @@ export const LiveStreamView: React.FC = () => {
                               <span>✏️</span>
                               <span>{t.editProdBtn}</span>
                             </button>
-                            <button onClick={() => changeProductVideoMapping(p.id)} className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-2.5 py-1 rounded text-xs transition cursor-pointer">{t.changeVideoBtn}</button>
+                            <button
+                              type="button"
+                              onClick={() => openReplaceVideoModal(p)}
+                              className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 px-2.5 py-1 rounded text-xs transition cursor-pointer font-semibold inline-flex items-center gap-1"
+                              title={t.replaceVideoDubbingBtn || "동영상 및 번역·더빙 교체"}
+                            >
+                              <span>🎬</span>
+                              <span>{t.replaceVideoDubbingBtn || t.changeVideoBtn}</span>
+                            </button>
                             <button onClick={() => handleDeleteProduct(p.id)} className="bg-red-600/20 hover:bg-red-600/30 text-red-400 px-2.5 py-1 rounded text-xs transition cursor-pointer">{t.deleteBtn}</button>
                           </td>
                         </tr>
@@ -2054,7 +2168,9 @@ export const LiveStreamView: React.FC = () => {
                           </optgroup>
                         )}
                         <optgroup label="🛍️ Catalog Product Videos">
-                          {products.map(p => (
+                          {products
+                            .filter(p => p.videoUrl && !p.videoUrl.includes("honey_demo") && !p.videoUrl.includes("tea_demo") && !p.videoUrl.startsWith("/videos/"))
+                            .map(p => (
                             <option key={p.id} value={p.videoUrl}>
                               {p.icon} {p.videoUrl} ({p.name[lang] || p.name.ko})
                             </option>
@@ -2179,6 +2295,17 @@ export const LiveStreamView: React.FC = () => {
                         <span>⚡</span>
                         <span>신규 상품 즉시 자동등록</span>
                       </button>
+                      {currentProd && (
+                        <button
+                          type="button"
+                          onClick={() => openReplaceVideoModal(currentProd)}
+                          className="bg-blue-900/60 hover:bg-blue-800 text-blue-200 border border-blue-500/40 px-3 py-3 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0 flex items-center justify-center gap-1.5 shadow-md"
+                          title="현재 상품의 다른 정보(이름, 단가, 재고)는 그대로 두고, 동영상과 번역·더빙만 교체"
+                        >
+                          <span>🔄</span>
+                          <span>{t.applyToCurrentProductBtn || "현재 상품 동영상&더빙만 교체"}</span>
+                        </button>
+                      )}
                     </div>
                   </div>
 
@@ -2401,6 +2528,181 @@ export const LiveStreamView: React.FC = () => {
                 >
                   <span>💾</span>
                   <span>{t.saveChangesBtn}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 동영상 및 번역·더빙 교체 및 재생성 전용 모달 */}
+        {isReplaceModalOpen && replaceTargetProduct && (
+          <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-fadeIn">
+            <div className="bg-slate-900 border-2 border-blue-500/80 rounded-2xl p-6 max-w-xl w-full shadow-2xl flex flex-col gap-4 text-left my-8">
+              <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🎬</span>
+                  <div>
+                    <h3 className="text-base font-bold text-blue-300">
+                      {t.replaceModalTitle}
+                    </h3>
+                    <p className="text-[11px] text-slate-400">
+                      {replaceTargetProduct.icon} {replaceTargetProduct.name[lang] || replaceTargetProduct.name.ko} (₩{replaceTargetProduct.price.toLocaleString()} / 재고: {replaceTargetProduct.stock}개)
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsReplaceModalOpen(false)}
+                  className="text-slate-400 hover:text-white text-lg font-bold p-1 cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* 안내 배너: 기존 정보 100% 보존 */}
+              <div className="bg-blue-950/70 border border-blue-500/40 rounded-xl p-3 text-xs text-blue-200 leading-relaxed flex items-start gap-2 shadow-inner">
+                <span className="text-blue-400 text-sm">💡</span>
+                <span>{t.replaceModalDesc}</span>
+              </div>
+
+              <div className="flex flex-col gap-4 max-h-[65vh] overflow-y-auto pr-1">
+                {/* 1. 원본 동영상 선택 및 PC 파일 검색 업로드 */}
+                <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col gap-3">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <label className="text-xs text-amber-300 font-bold flex items-center gap-1.5">
+                      <span>📁</span> {t.selectOrUploadVideo}
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => replaceFileInputRef.current?.click()}
+                      disabled={isUploadingVideo}
+                      className="bg-amber-600/30 hover:bg-amber-600/50 text-amber-300 border border-amber-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition flex items-center gap-1.5"
+                    >
+                      <span>📂</span>
+                      <span>{isUploadingVideo ? t.uploadingVideo : "PC에서 새 동영상 선택 업로드"}</span>
+                    </button>
+                    <input
+                      type="file"
+                      ref={replaceFileInputRef}
+                      onChange={handleFileUpload}
+                      accept="video/*"
+                      className="hidden"
+                    />
+                  </div>
+
+                  {/* 저장된 동영상 목록 드롭다운 */}
+                  <select
+                    value={replaceVideoAsset}
+                    onChange={(e) => setReplaceVideoAsset(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-500 cursor-pointer font-mono"
+                  >
+                    {demoVideoFiles.length > 0 && (
+                      <optgroup label={t.demoFolderLabel}>
+                        {demoVideoFiles.map(file => (
+                          <option key={file.path} value={file.path}>
+                            🎬 {file.name} {file.size ? `(${(file.size / (1024 * 1024)).toFixed(1)}MB)` : ''}
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
+                    <optgroup label="🛍️ Registered Video Assets">
+                      {products
+                        .filter(p => p.videoUrl && !p.videoUrl.includes("honey_demo") && !p.videoUrl.includes("tea_demo") && !p.videoUrl.startsWith("/videos/"))
+                        .map(p => (
+                          <option key={p.id} value={p.videoUrl}>
+                            {p.icon} {p.videoUrl}
+                          </option>
+                        ))}
+                    </optgroup>
+                  </select>
+
+                  {/* 실시간 미리보기 비디오 */}
+                  <div className="rounded-lg overflow-hidden border border-slate-800 bg-black aspect-video flex items-center justify-center relative shadow-inner">
+                    {replaceVideoAsset ? (
+                      <video
+                        key={replaceVideoAsset}
+                        src={replaceVideoAsset}
+                        controls
+                        playsInline
+                        muted
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <span className="text-xs text-slate-500 italic">No video selected</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* 2. 번역 및 더빙 모델 설정 */}
+                <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col gap-3">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs text-blue-300 font-bold flex items-center gap-1.5">
+                      <span>🎙️</span> {t.voicePersonaLabel}
+                    </label>
+                    <span className="text-[10px] text-slate-400">
+                      실시간 60대 장인/시니어 보이스
+                    </span>
+                  </div>
+                  <select
+                    value={voicePersona}
+                    onChange={(e) => setVoicePersona(e.target.value as "male_c" | "female_d")}
+                    className="w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
+                  >
+                    <option value="male_c">{t.voiceMaleC}</option>
+                    <option value="female_d">{t.voiceFemaleD}</option>
+                  </select>
+
+                  {/* 번역 상세설명 / 더빙 스크립트 편집 */}
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="text-xs text-slate-300 font-semibold">
+                        {t.dubbingScriptEdit}
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const autoTexts = getDubbingScript(replaceTargetProduct, lang);
+                          if (autoTexts && autoTexts.length > 0) {
+                            setReplaceDubbingScript(autoTexts[1] || autoTexts[0]);
+                          }
+                        }}
+                        className="text-[11px] text-amber-400 hover:text-amber-300 underline cursor-pointer"
+                      >
+                        ✨ 추천 더빙 스크립트 자동 채우기
+                      </button>
+                    </div>
+                    <textarea
+                      rows={3}
+                      value={replaceDubbingScript}
+                      onChange={(e) => setReplaceDubbingScript(e.target.value)}
+                      placeholder="더빙 및 상품 상세설명으로 읽을 번역 문구를 입력하세요..."
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 resize-none leading-relaxed"
+                    />
+                  </div>
+                </div>
+
+                {replaceSuccessMsg && (
+                  <div className="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-2">
+                    <span>✅</span>
+                    <span>{replaceSuccessMsg}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end items-center gap-3 border-t border-slate-800 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setIsReplaceModalOpen(false)}
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer transition"
+                >
+                  {t.cancelBtn}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleApplyReplaceVideo()}
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold px-5 py-2.5 rounded-lg text-xs shadow-lg transition cursor-pointer border border-blue-400/40 flex items-center gap-1.5"
+                >
+                  <span>✅</span>
+                  <span>{t.applyReplaceBtn}</span>
                 </button>
               </div>
             </div>

@@ -24,10 +24,17 @@ const loadProductsFromStorage = (): ProductEntity[] => {
     const raw = localStorage.getItem(STORAGE_KEY_PRODUCTS);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        // 삭제된 이전 하드코딩 비디오(honey_demo, tea_demo)는 제외하고 실제 카탈로그에 등록된 상품/비디오만 적용
-        const filtered = parsed.filter(p => p.videoUrl && !p.videoUrl.includes("honey_demo") && !p.videoUrl.includes("tea_demo"));
-        if (filtered.length > 0) return filtered;
+      if (Array.isArray(parsed)) {
+        // 사용자가 삭제한 이전 비디오(honey_demo, tea_demo, /videos/ 등)는 완전 제거하고 실제 등록된 비디오만 유지
+        const filtered = parsed.filter(p => 
+          p && p.videoUrl && 
+          !p.videoUrl.includes("honey_demo") && 
+          !p.videoUrl.includes("tea_demo") &&
+          !p.videoUrl.startsWith("/videos/")
+        );
+        // 클린업된 데이터를 localStorage에 즉시 반영하여 잔여 찌꺼기 제거
+        saveProductsToStorage(filtered);
+        return filtered;
       }
     }
   } catch (e) {
