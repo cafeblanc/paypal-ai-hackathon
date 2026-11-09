@@ -2278,34 +2278,14 @@ export const LiveStreamView: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-2 mt-1">
+                    <div className="mt-1">
                       <button
                         disabled={isProcessing}
                         onClick={runVideoEditorCompression}
-                        className="flex-1 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 disabled:bg-slate-700 text-white py-3 rounded-lg text-xs font-bold transition shadow-xl cursor-pointer border border-amber-400/40 flex items-center justify-center gap-2"
+                        className="w-full bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 disabled:bg-slate-700 text-white py-3 rounded-lg text-xs font-bold transition shadow-xl cursor-pointer border border-amber-400/40 flex items-center justify-center gap-2"
                       >
                         {isProcessing ? t.renderingBtn : t.renderBtn}
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => handleQuickAutoRegister()}
-                        className="bg-slate-800 hover:bg-slate-700 text-amber-300 hover:text-amber-200 border border-amber-500/30 px-3 py-3 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0 flex items-center justify-center gap-1.5"
-                        title="동영상 기반으로 신규 상품을 즉시 자동 등록"
-                      >
-                        <span>⚡</span>
-                        <span>신규 상품 즉시 자동등록</span>
-                      </button>
-                      {currentProd && (
-                        <button
-                          type="button"
-                          onClick={() => openReplaceVideoModal(currentProd)}
-                          className="bg-blue-900/60 hover:bg-blue-800 text-blue-200 border border-blue-500/40 px-3 py-3 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0 flex items-center justify-center gap-1.5 shadow-md"
-                          title="현재 상품의 다른 정보(이름, 단가, 재고)는 그대로 두고, 동영상과 번역·더빙만 교체"
-                        >
-                          <span>🔄</span>
-                          <span>{t.applyToCurrentProductBtn || "현재 상품 동영상&더빙만 교체"}</span>
-                        </button>
-                      )}
                     </div>
                   </div>
 
