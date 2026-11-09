@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import PayPalCheckoutButton from "./PayPalCheckoutButton";
 import ErrorBoundary from "./ErrorBoundary";
+import IconPicker from "./IconPicker";
 import { productService, ProductEntity, Language } from "../services/productService";
 
 export type { Language };
@@ -895,10 +896,10 @@ export const LiveStreamView: React.FC = () => {
   const [qaList, setQaList] = useState<CustomQARecord[]>(INITIAL_QA_LIST);
 
   const [newProdName, setNewProdName] = useState<string>("");
-  const [newProdPrice, setNewProdPrice] = useState<string>("35000");
+  const [newProdPrice, setNewProdPrice] = useState<string>("");
   const [newProdStock, setNewProdStock] = useState<string>("10");
   const [newProdIcon, setNewProdIcon] = useState<string>("🎁");
-  const [newProdVideo, setNewProdVideo] = useState<string>("/videos/honey_demo.mp4");
+  const [newProdVideo, setNewProdVideo] = useState<string>("");
   const [newProdDesc, setNewProdDesc] = useState<string>("");
   const [isStartVideo, setIsStartVideo] = useState<boolean>(false);
   const [defaultProductId, setDefaultProductId] = useState<string | null>(null);
@@ -909,7 +910,7 @@ export const LiveStreamView: React.FC = () => {
   const [newQuestion, setNewQuestion] = useState<string>("");
   const [newAnswer, setNewAnswer] = useState<string>("");
 
-  const [selectedVideoAsset, setSelectedVideoAsset] = useState<string>("/videos/honey_demo.mp4");
+  const [selectedVideoAsset, setSelectedVideoAsset] = useState<string>("");
   const [demoVideoFiles, setDemoVideoFiles] = useState<{ name: string; path: string; size?: number }[]>([]);
   const [isUploadingVideo, setIsUploadingVideo] = useState<boolean>(false);
   const [uploadMessage, setUploadMessage] = useState<string | null>(null);
@@ -927,21 +928,18 @@ export const LiveStreamView: React.FC = () => {
       const res = await fetch("/api/list-demo-videos");
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data.files) && data.files.length > 0) {
+        if (Array.isArray(data.files)) {
           setDemoVideoFiles(data.files);
+          if (data.files.length > 0 && !selectedVideoAsset) {
+            setSelectedVideoAsset(data.files[0].path);
+          }
           return;
         }
       }
     } catch {
       // ignore
     }
-    setDemoVideoFiles([
-      { name: "clip1_live.mp4", path: "/demo_video/clip1_live.mp4" },
-      { name: "clip2_mobile.mp4", path: "/demo_video/clip2_mobile.mp4" },
-      { name: "clip3_stream.mp4", path: "/demo_video/clip3_stream.mp4" },
-      { name: "clip4_admin.mp4", path: "/demo_video/clip4_admin.mp4" },
-      { name: "clip5_tea.mp4", path: "/demo_video/clip5_tea.mp4" }
-    ]);
+    setDemoVideoFiles([]);
   };
 
   useEffect(() => {
@@ -1053,41 +1051,30 @@ export const LiveStreamView: React.FC = () => {
 
   const handleQuickAutoRegister = async (videoUrlToUse?: string) => {
     const targetVideo = videoUrlToUse || selectedVideoAsset;
-    const rawFileName = targetVideo.split("/").pop() || "Demo_Product.mp4";
-    const cleanBaseName = rawFileName.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
-    const autoProdName = cleanBaseName
-      ? cleanBaseName.charAt(0).toUpperCase() + cleanBaseName.slice(1)
-      : "AI Live Special Product";
 
-    const newDescKo = `[AI 라이브 커머스 특가] ${autoProdName} - 원어민 영어 더빙 및 페이팔 즉시 결제 연동 상품`;
-    const newDescEn = `[AI Live Special] ${autoProdName} - AI Native Voice-Over dubbed with PayPal 1-click checkout.`;
-    const newDescJa = `[AIライブ特価] ${autoProdName} - ネイティブ吹き替えおよびPayPal即時決済対応商品です。`;
-    const newDescZh = `[AI直播特惠] ${autoProdName} - 母语级配音与PayPal一键即时结账商品。`;
-    const newDescEs = `[Oferta Especial IA] ${autoProdName} - Doblaje nativo de IA y pago con PayPal en 1 clic.`;
-    const newDescFr = `[Offre Spéciale IA] ${autoProdName} - Doublage natif IA et paiement instantané PayPal en 1 clic.`;
-
+    // 사용자 요청: 자동 등록 시 엉뚱한 코드나 파일명 텍스트 대신 공란("")으로 깨끗하게 등록
     const updatedList = await productService.addProduct({
       name: {
-        ko: autoProdName,
-        en: autoProdName,
-        ja: autoProdName,
-        zh: autoProdName,
-        es: autoProdName,
-        fr: autoProdName
+        ko: "",
+        en: "",
+        ja: "",
+        zh: "",
+        es: "",
+        fr: ""
       },
-      price: 35000,
+      price: 0,
       currency: "KRW",
-      stock: 20,
-      icon: "🎬",
+      stock: 10,
+      icon: "🎁",
       videoUrl: targetVideo,
       fallbackVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
       description: {
-        ko: newDescKo,
-        en: newDescEn,
-        ja: newDescJa,
-        zh: newDescZh,
-        es: newDescEs,
-        fr: newDescFr
+        ko: "",
+        en: "",
+        ja: "",
+        zh: "",
+        es: "",
+        fr: ""
       }
     }, true);
 
@@ -1095,17 +1082,168 @@ export const LiveStreamView: React.FC = () => {
     const newlyCreated = updatedList[0];
     setLastAutoRegisteredProduct(newlyCreated);
     setEditingProduct(newlyCreated);
-    setEditFormName(newlyCreated.name[lang] || autoProdName);
-    setEditFormPrice(newlyCreated.price);
-    setEditFormStock(newlyCreated.stock);
-    setEditFormDesc(newlyCreated.description[lang] || newDescKo);
-    setEditFormIcon(newlyCreated.icon);
+    setEditFormName("");
+    setEditFormPrice(0);
+    setEditFormStock(10);
+    setEditFormDesc("");
+    setEditFormIcon("🎁");
     setEditFormVideo(newlyCreated.videoUrl);
 
     const newDefId = await productService.getDefaultProductId();
     setDefaultProductId(newDefId);
     return newlyCreated;
   };
+
+  // AI Voice Dubbing Engine (원어민 영어 및 국가별 언어 실시간 음성 더빙)
+  const [isDubbingEnabled, setIsDubbingEnabled] = useState<boolean>(true);
+  const isDubbingActiveRef = useRef<boolean>(false);
+  const dubbingScriptIndexRef = useRef<number>(0);
+
+  const getDubbingScript = (prod: ProductEntity | null, language: Language): string[] => {
+    const prodName = prod?.name[language] || prod?.name.ko || (language === "en" ? "Exclusive Live Product" : "라이브 특별 상품");
+    const prodDesc = prod?.description[language] || prod?.description.ko || "";
+
+    if (language === "en") {
+      return [
+        `Welcome to PayPal AI Live Shopping! Right now we are featuring ${prodName}.`,
+        prodDesc ? prodDesc : `This premium authentic item is direct from origin and certified organic with verified quality.`,
+        `Limited inventory remains in stock! You can checkout right now with one single click using the golden PayPal button.`
+      ];
+    } else if (language === "ja") {
+      return [
+        `PayPal AIライブコマースへようこそ！本日ご紹介するのは${prodName}です。`,
+        prodDesc ? prodDesc : `産地直送の厳選されたオーガニック特産品をお届けします。`,
+        `数量限定です！画面下のPayPalボタンから、ワンクリックで安全にお支払いいただけます。`
+      ];
+    } else if (language === "zh") {
+      return [
+        `欢迎来到 PayPal AI 智能直播带货！今天为您精选推荐的是 ${prodName}。`,
+        prodDesc ? prodDesc : `产地直采高品质有机认证商品，品质卓越，值得信赖。`,
+        `实时库存极为有限！点击下方的 PayPal 金色按钮，即可一键极速安全下单。`
+      ];
+    } else if (language === "es") {
+      return [
+        `¡Bienvenido a PayPal Live Shopping! Hoy presentamos ${prodName}.`,
+        prodDesc ? prodDesc : `Producto orgánico premium certificado, directo del productor a su hogar.`,
+        `¡Stock muy limitado! Puede pagar al instante con un solo clic usando el botón dorado de PayPal.`
+      ];
+    } else if (language === "fr") {
+      return [
+        `Bienvenue sur le Live Shopping PayPal ! Aujourd'hui nous vous présentons ${prodName}.`,
+        prodDesc ? prodDesc : `Produit biologique d'exception certifié, direct du producteur.`,
+        `Stock très limité ! Commandez instantanément en un clic avec le bouton officiel PayPal.`
+      ];
+    } else {
+      return [
+        `페이팔 AI 라이브 쇼핑에 오신 것을 환영합니다! 오늘 선보이는 상품은 ${prodName}입니다.`,
+        prodDesc ? prodDesc : `청정 자연에서 직송한 100% 천연 인증 특산품입니다.`,
+        `실시간 한정 수량입니다! 하단의 페이팔 원클릭 결제 버튼으로 안전하게 주문하세요.`
+      ];
+    }
+  };
+
+  const stopDubbing = () => {
+    isDubbingActiveRef.current = false;
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+  };
+
+  const playNextDubbingSegment = () => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    if (!isDubbingActiveRef.current || isAudioMuted || !isDubbingEnabled) return;
+
+    const scripts = getDubbingScript(currentProd, lang);
+    if (!scripts || scripts.length === 0) return;
+
+    const textToSpeak = scripts[dubbingScriptIndexRef.current % scripts.length];
+    dubbingScriptIndexRef.current = (dubbingScriptIndexRef.current + 1) % scripts.length;
+
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+
+    const langCodeMap: Record<Language, string> = {
+      en: "en-US",
+      ko: "ko-KR",
+      ja: "ja-JP",
+      zh: "zh-CN",
+      es: "es-ES",
+      fr: "fr-FR"
+    };
+    utterance.lang = langCodeMap[lang] || "en-US";
+
+    const voices = window.speechSynthesis.getVoices();
+    const targetCode = (langCodeMap[lang] || "en-US").slice(0, 2).toLowerCase();
+    const matchedVoice = voices.find(v => v.lang.toLowerCase().startsWith(targetCode));
+    if (matchedVoice) {
+      utterance.voice = matchedVoice;
+    }
+
+    if (voicePersona === "male_c") {
+      utterance.pitch = 0.88; // Deep prestigious male narrator
+      utterance.rate = 0.95;
+    } else {
+      utterance.pitch = 1.05; // Warm professional female live host
+      utterance.rate = 1.0;
+    }
+    utterance.volume = 1.0;
+
+    utterance.onend = () => {
+      if (isDubbingActiveRef.current && !isAudioMuted && isDubbingEnabled) {
+        setTimeout(() => {
+          playNextDubbingSegment();
+        }, 2200);
+      }
+    };
+
+    utterance.onerror = (e) => {
+      console.warn("Speech synthesis notice:", e);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const startDubbing = () => {
+    stopDubbing();
+    if (isAudioMuted || !isDubbingEnabled) return;
+
+    if (videoRef.current) {
+      if (lang !== "ko") {
+        videoRef.current.muted = false;
+        videoRef.current.volume = 0.12; // Sidechain audio ducking for original Korean track
+      } else {
+        videoRef.current.muted = false;
+        videoRef.current.volume = 1.0;
+        return; // In Korean mode, play original audio directly
+      }
+    }
+
+    isDubbingActiveRef.current = true;
+    dubbingScriptIndexRef.current = 0;
+    playNextDubbingSegment();
+  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isAudioMuted && isPlaying) {
+      startDubbing();
+    } else {
+      stopDubbing();
+      if (videoRef.current && isAudioMuted) {
+        videoRef.current.muted = true;
+      }
+    }
+    return () => {
+      stopDubbing();
+    };
+  }, [isAudioMuted, isPlaying, lang, currentProd?.id, voicePersona, isDubbingEnabled]);
 
   const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true); // 모바일 브라우저 자동재생(Autoplay) 정책 준수를 위해 기본 음소거 활성화
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -1472,22 +1610,22 @@ export const LiveStreamView: React.FC = () => {
     setProcessLog(
       `[Video Engine] Loading asset: ${selectedVideoAsset} ...\n` +
       `[Video Engine] Settings: CRF ${compressionCrf}, Speed ${videoSpeed}x\n` +
-      `[Whisper-AI] Extracting vocal track & transcribing Korean speech to English text...\n` +
+      `[Whisper-AI] Extracting vocal track & transcribing Korean speech to ${lang.toUpperCase()} text...\n` +
       `[Gemini Voice Engine] Target Persona: ${personaLabel}\n` +
       `[Gemini Voice Engine] Dubbing Mode: ${modeLabel}\n` +
-      `[Gemini Voice Engine] Synthesizing studio-grade native English voice stream...\n` +
-      `[FFmpeg Audio Mixer] Sidechain ducking Korean audio by -16dB & blending English voice-over...\n` +
+      `[Gemini Voice Engine] Synthesizing studio-grade native voice stream (${lang.toUpperCase()})...\n` +
+      `[FFmpeg Audio Mixer] Sidechain ducking Korean audio by -16dB & blending Native Voice-Over...\n` +
       `[FFmpeg Web Stream] Re-encoding video stream (H.264 / AAC) with faststart moov atom...\n` +
-      `[Auto Product Register] Registering product for "${autoProdName}" with price & description...`
+      `[Auto Product Register] Registering clean product record for editing...`
     );
 
     setTimeout(async () => {
       const created = await handleQuickAutoRegister(selectedVideoAsset);
       setProcessLog(prev => prev + 
         `\n\n[Success] ✅ Processed dubbed video rendered & saved to public/demo_video/!\n` +
-        `[Auto Register] 🛍️ Product "${created.name[lang] || autoProdName}" successfully registered (ID: ${created.id})!\n` +
-        `[Auto Register] ✏️ Price (KRW ${created.price.toLocaleString()}) and Description ready for immediate editing below!\n` +
-        `[Status] Ready for Live Streaming & Instant PayPal Checkout Demo.`
+        `[Auto Register] 🛍️ New product successfully registered (ID: ${created.id})!\n` +
+        `[Auto Register] ✏️ Product name, price, and description are blank for your clean input below!\n` +
+        `[Status] Ready for Live Streaming with AI Native Voice Dubbing & Instant PayPal Checkout Demo.`
       );
       setIsProcessing(false);
     }, 1800);
@@ -1584,7 +1722,7 @@ export const LiveStreamView: React.FC = () => {
                   </div>
                   <div className="md:col-span-1">
                     <label className="text-xs text-slate-300 mb-1 block">{t.prodIconOptional}</label>
-                    <input type="text" value={newProdIcon} onChange={e => setNewProdIcon(e.target.value)} className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-center text-white" />
+                    <IconPicker value={newProdIcon} onChange={setNewProdIcon} />
                   </div>
                   <div className="md:col-span-1">
                     <button type="submit" className="w-full bg-amber-600 hover:bg-amber-500 text-white py-2 rounded text-xs font-bold cursor-pointer transition">{t.registerBtnShort}</button>
@@ -2108,12 +2246,7 @@ export const LiveStreamView: React.FC = () => {
                         <label className="text-xs text-slate-300 font-semibold mb-1 block">
                           {t.prodIconOptional}
                         </label>
-                        <input
-                          type="text"
-                          value={editFormIcon}
-                          onChange={(e) => setEditFormIcon(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-center text-white focus:outline-none focus:border-amber-500"
-                        />
+                        <IconPicker value={editFormIcon} onChange={setEditFormIcon} />
                       </div>
 
                       <div className="md:col-span-2">
@@ -2210,12 +2343,7 @@ export const LiveStreamView: React.FC = () => {
                     <label className="text-xs text-slate-300 font-semibold mb-1 block">
                       {t.prodIconOptional}
                     </label>
-                    <input
-                      type="text"
-                      value={editFormIcon}
-                      onChange={(e) => setEditFormIcon(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-center text-white focus:outline-none focus:border-amber-500"
-                    />
+                    <IconPicker value={editFormIcon} onChange={setEditFormIcon} />
                   </div>
                 </div>
 
@@ -2392,21 +2520,46 @@ export const LiveStreamView: React.FC = () => {
               <span className="bg-red-600 text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-md animate-pulse uppercase">● {t.liveStream}</span>
               <span className="bg-black/70 text-slate-200 text-[10px] sm:text-[11px] px-2 py-0.5 rounded-md border border-slate-600">{t.marketName}</span>
             </div>
-            {/* 우측 상단 단일 통합 사운드 토글 버튼 (음소거 / 소리켜기) */}
+            {/* 우측 상단 단일 통합 사운드 토글 버튼 (음소거 / 소리켜기) 및 AI 원어민 더빙 상태 */}
             <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-20 flex flex-col items-end gap-1.5">
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const nextMuted = !isAudioMuted;
-                  setIsAudioMuted(nextMuted);
-                  if (videoRef.current) {
-                    videoRef.current.muted = nextMuted;
-                  }
-                }} 
-                className={`text-[10px] sm:text-[11px] px-2.5 py-1 rounded border transition font-semibold cursor-pointer shadow-md ${isAudioMuted ? "bg-amber-500 hover:bg-amber-400 text-slate-950 border-amber-400 font-bold" : "bg-black/80 hover:bg-black/90 text-white border-slate-600"}`}
-              >
-                {isAudioMuted ? t.soundOn : t.soundOff}
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button 
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const nextMuted = !isAudioMuted;
+                    setIsAudioMuted(nextMuted);
+                    if (videoRef.current) {
+                      videoRef.current.muted = nextMuted;
+                    }
+                  }} 
+                  className={`text-[10px] sm:text-[11px] px-2.5 py-1 rounded border transition font-semibold cursor-pointer shadow-md ${isAudioMuted ? "bg-amber-500 hover:bg-amber-400 text-slate-950 border-amber-400 font-bold" : "bg-black/80 hover:bg-black/90 text-white border-slate-600"}`}
+                >
+                  {isAudioMuted ? t.soundOn : t.soundOff}
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsDubbingEnabled(prev => !prev);
+                  }}
+                  className={`text-[9px] sm:text-[10px] px-2 py-1 rounded border transition font-semibold cursor-pointer shadow ${
+                    isDubbingEnabled
+                      ? "bg-blue-600 hover:bg-blue-500 text-white border-blue-400"
+                      : "bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-slate-600"
+                  }`}
+                  title="AI 원어민 더빙 켜기/끄기"
+                >
+                  {isDubbingEnabled ? `🎙️ AI 더빙(${lang.toUpperCase()}) ON` : "🔊 원본"}
+                </button>
+              </div>
+
+              {!isAudioMuted && isDubbingEnabled && lang !== "ko" && (
+                <span className="text-[9px] bg-emerald-500 text-white font-bold px-2 py-0.5 rounded shadow-lg flex items-center gap-1 animate-pulse">
+                  <span>🎙️</span> {lang.toUpperCase()} AI Voice Dubbing Active
+                </span>
+              )}
+
               {currentProd && (
                 <span className={`text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-1 rounded border ${currentProd.stock <= 0 ? "bg-red-600 text-white" : "bg-black/80 text-amber-300"}`}>
                   {currentProd.stock <= 0 ? t.soldOut : `${t.stockLeft}${currentProd.stock}${t.unit}`}
