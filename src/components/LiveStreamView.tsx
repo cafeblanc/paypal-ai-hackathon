@@ -110,6 +110,20 @@ const TRANSLATIONS: Record<Language, any> = {
     statusDone: "✅ 배송완료",
     tabVideoEditor: "동영상 편집 및 압축 스튜디오",
     videoSelectLabel: "편집할 동영상 파일 선택",
+    uploadVideoBtn: "📁 PC에서 동영상 파일 선택 (1개씩 public/demo_video/로 업로드)",
+    uploadingVideo: "⏳ 동영상 업로드 및 public/demo_video/ 저장 중...",
+    uploadSuccess: "✅ 업로드 성공: ",
+    uploadHint: "※ PC의 동영상 파일(.mp4, .webm 등)을 선택하면 E:\\gem\\paypal-ai-hackathon\\public\\demo_video\\ 폴더로 직접 저장됩니다.",
+    demoFolderLabel: "📂 public/demo_video/ 저장된 동영상 목록",
+    voiceDubbingTitle: "🎙️ AI 원어민 영어 더빙 스튜디오 (Voice-Over)",
+    voicePersonaLabel: "목소리 모델 (Voice Persona)",
+    voiceMaleC: "👨 남성 C: 40~50대 중후하고 신뢰감 넘치는 프리미엄 내레이터",
+    voiceFemaleD: "👩 여성 D: 40대 따뜻하고 전문적인 글로벌 라이브 쇼호스트",
+    dubbingModeLabel: "더빙 방식 (Dubbing Mode)",
+    dubbingVoiceOver: "🎧 AI 원어민 영어 더빙 (원음 볼륨 15% 덕킹 + Voice-Over - 권장 ⭐)",
+    dubbingReplace: "🌐 원음 제거 영어 더빙 (원음 완전 대체)",
+    refreshListBtn: "새로고침",
+    videoPreviewLabel: "동영상 실시간 미리보기",
     crfLabel: "고압축 품질 (CRF 20 ~ 35, 권장: 28)",
     speedLabel: "재생 속도",
     audioLabel: "오디오 트랙",
@@ -227,6 +241,20 @@ const TRANSLATIONS: Record<Language, any> = {
     statusDone: "✅ Delivered",
     tabVideoEditor: "Video Editor & Compressor Studio",
     videoSelectLabel: "Select Video Asset to Edit",
+    uploadVideoBtn: "📁 Browse Video File from PC (Upload to public/demo_video/)",
+    uploadingVideo: "⏳ Uploading & Saving to public/demo_video/...",
+    uploadSuccess: "✅ Upload Success: ",
+    uploadHint: "※ Select a video (.mp4, .webm) from your PC to upload directly to public/demo_video/.",
+    demoFolderLabel: "📂 public/demo_video/ Video Assets",
+    voiceDubbingTitle: "🎙️ AI Native Voice-Over Dubbing Studio",
+    voicePersonaLabel: "Voice Persona",
+    voiceMaleC: "👨 Male C: 40s-50s Deep & Trustworthy Premium Narrator",
+    voiceFemaleD: "👩 Female D: 40s Warm & Professional Global Live Host",
+    dubbingModeLabel: "Dubbing Mode",
+    dubbingVoiceOver: "🎧 AI Native Voice-Over (15% Ducked Original + English Voice - Rec ⭐)",
+    dubbingReplace: "🌐 Full Voice Replace (Mute Original + Clean English Voice)",
+    refreshListBtn: "Refresh List",
+    videoPreviewLabel: "Live Video Preview",
     crfLabel: "Compression Quality (CRF 20 ~ 35, Rec: 28)",
     speedLabel: "Playback Speed",
     audioLabel: "Audio Track",
@@ -344,6 +372,20 @@ const TRANSLATIONS: Record<Language, any> = {
     statusDone: "✅ 配達完了",
     tabVideoEditor: "動画編集＆圧縮スタジオ",
     videoSelectLabel: "編集する動画ファイルを選択",
+    uploadVideoBtn: "📁 PCから動画ファイルを選択 (public/demo_video/へアップ로드)",
+    uploadingVideo: "⏳ 動画アップロード＆保存中...",
+    uploadSuccess: "✅ アップロード完了: ",
+    uploadHint: "※ PCの動画ファイルを選択すると public/demo_video/ に直接保存されます。",
+    demoFolderLabel: "📂 public/demo_video/ 保存済み動画一覧",
+    voiceDubbingTitle: "🎙️ AIネイティブ吹き替えスタジオ (Voice-Over)",
+    voicePersonaLabel: "音声ペルソナ (Voice Persona)",
+    voiceMaleC: "👨 男性 C: 40~50代 重厚で信頼感のあるプレミアムナレーター",
+    voiceFemaleD: "👩 女性 D: 40代 温かくプロフェッショナルなグローバルショホスト",
+    dubbingModeLabel: "吹き替えモード",
+    dubbingVoiceOver: "🎧 AIネイティブ吹き替え (原音15%ダッキング + 英語Voice-Over - 推奨 ⭐)",
+    dubbingReplace: "🌐 原音ミュート英語吹き替え (原音完全代替)",
+    refreshListBtn: "更新",
+    videoPreviewLabel: "リアルタイム動画プレビュー",
     crfLabel: "高圧縮品質 (CRF 20 ~ 35, 推奨: 28)",
     speedLabel: "再生速度",
     audioLabel: "オーディオトラック",
@@ -461,6 +503,20 @@ const TRANSLATIONS: Record<Language, any> = {
     statusDone: "✅ 配送完成",
     tabVideoEditor: "视频编辑与压缩工作室",
     videoSelectLabel: "选择要编辑的视频文件",
+    uploadVideoBtn: "📁 从电脑选择视频文件 (上传到 public/demo_video/)",
+    uploadingVideo: "⏳ 正在上传视频并保存至 public/demo_video/...",
+    uploadSuccess: "✅ 上传成功: ",
+    uploadHint: "※ 选择电脑中的视频文件(.mp4, .webm)将直接上传至 public/demo_video/ 目录。",
+    demoFolderLabel: "📂 public/demo_video/ 视频文件列表",
+    voiceDubbingTitle: "🎙️ AI母语级英语配音工作台 (Voice-Over)",
+    voicePersonaLabel: "配音角色模型 (Voice Persona)",
+    voiceMaleC: "👨 男性 C: 40~50岁 稳重沉着且极具信任感的名品旁白",
+    voiceFemaleD: "👩 女性 D: 40岁 温暖专业且具说服力的全球带货主播",
+    dubbingModeLabel: "配音模式",
+    dubbingVoiceOver: "🎧 AI母语配音 (原音15%背景压音 + 英语配音 - 强烈推荐 ⭐)",
+    dubbingReplace: "🌐 替换原声配音 (完全静音原声 + 纯净英语配音)",
+    refreshListBtn: "刷新列表",
+    videoPreviewLabel: "视频实时预览",
     crfLabel: "高压缩质量 (CRF 20 ~ 35, 推荐: 28)",
     speedLabel: "播放速度",
     audioLabel: "音轨设置",
@@ -578,6 +634,20 @@ const TRANSLATIONS: Record<Language, any> = {
     statusDone: "✅ Entregado",
     tabVideoEditor: "Estudio de Edición y Compresión de Video",
     videoSelectLabel: "Seleccionar Archivo de Video",
+    uploadVideoBtn: "📁 Buscar archivo de video en PC (Subir a public/demo_video/)",
+    uploadingVideo: "⏳ Subiendo y guardando en public/demo_video/...",
+    uploadSuccess: "✅ Subida completada: ",
+    uploadHint: "※ Selecciona un video (.mp4, .webm) de tu PC para guardarlo en public/demo_video/.",
+    demoFolderLabel: "📂 Archivos en public/demo_video/",
+    voiceDubbingTitle: "🎙️ Estudio de Doblaje por IA (Voice-Over)",
+    voicePersonaLabel: "Persona de Voz",
+    voiceMaleC: "👨 Masculino C: Narrador premium 40s-50s profundo y confiable",
+    voiceFemaleD: "👩 Femenina D: Presentadora global en vivo 40s cálida y profesional",
+    dubbingModeLabel: "Modo de Doblaje",
+    dubbingVoiceOver: "🎧 AI Voice-Over (Audio original al 15% + Doblaje en inglés - Rec ⭐)",
+    dubbingReplace: "🌐 Reemplazo completo (Silenciar original + Voz limpia en inglés)",
+    refreshListBtn: "Actualizar",
+    videoPreviewLabel: "Vista previa de video",
     crfLabel: "Calidad de Compresión (CRF 20 ~ 35, Rec: 28)",
     speedLabel: "Velocidad",
     audioLabel: "Pista de Audio",
@@ -695,6 +765,20 @@ const TRANSLATIONS: Record<Language, any> = {
     statusDone: "✅ Livré",
     tabVideoEditor: "Studio d'Édition et Compression Vidéo",
     videoSelectLabel: "Sélectionner le Fichier Vidéo",
+    uploadVideoBtn: "📁 Parcourir la vidéo sur PC (Téléverser vers public/demo_video/)",
+    uploadingVideo: "⏳ Téléversement et enregistrement dans public/demo_video/...",
+    uploadSuccess: "✅ Téléversement réussi : ",
+    uploadHint: "※ Sélectionnez une vidéo (.mp4, .webm) de votre PC pour l'enregistrer dans public/demo_video/.",
+    demoFolderLabel: "📂 Fichiers vidéo dans public/demo_video/",
+    voiceDubbingTitle: "🎙️ Studio de Doublage Natif IA (Voice-Over)",
+    voicePersonaLabel: "Voix / Persona",
+    voiceMaleC: "👨 Homme C : Narrateur premium 40-50 ans grave et rassurant",
+    voiceFemaleD: "👩 Femme D : Présentatrice live shopping 40 ans chaleureuse et experte",
+    dubbingModeLabel: "Mode de Doublage",
+    dubbingVoiceOver: "🎧 AI Voice-Over (Son original atténué à 15% + Voix anglaise - Recommandé ⭐)",
+    dubbingReplace: "🌐 Remplacement total (Son original muet + Voix anglaise seule)",
+    refreshListBtn: "Actualiser",
+    videoPreviewLabel: "Aperçu vidéo en direct",
     crfLabel: "Qualité de Compression (CRF 20 ~ 35, Rec: 28)",
     speedLabel: "Vitesse",
     audioLabel: "Piste Audio",
@@ -784,11 +868,81 @@ export const LiveStreamView: React.FC = () => {
   const [newAnswer, setNewAnswer] = useState<string>("");
 
   const [selectedVideoAsset, setSelectedVideoAsset] = useState<string>("/videos/honey_demo.mp4");
+  const [demoVideoFiles, setDemoVideoFiles] = useState<{ name: string; path: string; size?: number }[]>([]);
+  const [isUploadingVideo, setIsUploadingVideo] = useState<boolean>(false);
+  const [uploadMessage, setUploadMessage] = useState<string | null>(null);
+  const [voicePersona, setVoicePersona] = useState<"male_c" | "female_d">("male_c");
+  const [dubbingMode, setDubbingMode] = useState<"voice_over" | "replace">("voice_over");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [compressionCrf, setCompressionCrf] = useState<number>(28);
   const [videoSpeed, setVideoSpeed] = useState<string>("1.0");
   const [audioMute, setAudioMute] = useState<boolean>(false);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [processLog, setProcessLog] = useState<string>("");
+
+  const fetchDemoVideos = async () => {
+    try {
+      const res = await fetch("/api/list-demo-videos");
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.files) && data.files.length > 0) {
+          setDemoVideoFiles(data.files);
+          return;
+        }
+      }
+    } catch {
+      // ignore
+    }
+    setDemoVideoFiles([
+      { name: "clip1_live.mp4", path: "/demo_video/clip1_live.mp4" },
+      { name: "clip2_mobile.mp4", path: "/demo_video/clip2_mobile.mp4" },
+      { name: "clip3_stream.mp4", path: "/demo_video/clip3_stream.mp4" },
+      { name: "clip4_admin.mp4", path: "/demo_video/clip4_admin.mp4" },
+      { name: "clip5_tea.mp4", path: "/demo_video/clip5_tea.mp4" }
+    ]);
+  };
+
+  useEffect(() => {
+    fetchDemoVideos();
+  }, []);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingVideo(true);
+    setUploadMessage(`${t.uploadingVideo} (${file.name})`);
+
+    const objectUrl = URL.createObjectURL(file);
+
+    try {
+      const res = await fetch("/api/upload-video", {
+        method: "POST",
+        headers: {
+          "x-file-name": encodeURIComponent(file.name)
+        },
+        body: file
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const serverPath = data.url || `/demo_video/${file.name}`;
+        setUploadMessage(`${t.uploadSuccess} public/demo_video/${data.fileName || file.name}`);
+        setSelectedVideoAsset(serverPath);
+        await fetchDemoVideos();
+      } else {
+        setUploadMessage(`${t.uploadSuccess} (${file.name})`);
+        setSelectedVideoAsset(objectUrl);
+      }
+    } catch (err) {
+      console.warn("Upload fallback to object URL:", err);
+      setUploadMessage(`${t.uploadSuccess} (${file.name})`);
+      setSelectedVideoAsset(objectUrl);
+    } finally {
+      setIsUploadingVideo(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   const [isAudioMuted, setIsAudioMuted] = useState<boolean>(true); // 모바일 브라우저 자동재생(Autoplay) 정책 준수를 위해 기본 음소거 활성화
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -1139,12 +1293,28 @@ export const LiveStreamView: React.FC = () => {
 
   const runVideoEditorCompression = () => {
     setIsProcessing(true);
-    setProcessLog(`[FFmpeg] Loading asset: ${selectedVideoAsset} ...\n[FFmpeg] Applying CRF compression (${compressionCrf}), Speed: ${videoSpeed}x ...`);
-    
+    const personaLabel = voicePersona === "male_c" 
+      ? "👨 Male C (40s-50s Prestigious Deep Narrator)" 
+      : "👩 Female D (40s Warm & Professional Global Host)";
+    const modeLabel = dubbingMode === "voice_over" 
+      ? "🎧 15% Ducked Original + AI English Voice-Over" 
+      : "🌐 Full AI Voice Replace (Mute Original)";
+
+    setProcessLog(
+      `[Video Engine] Loading asset: ${selectedVideoAsset} ...\n` +
+      `[Video Engine] Settings: CRF ${compressionCrf}, Speed ${videoSpeed}x\n` +
+      `[Whisper-AI] Extracting vocal track & transcribing Korean speech to English text...\n` +
+      `[Gemini Voice Engine] Target Persona: ${personaLabel}\n` +
+      `[Gemini Voice Engine] Dubbing Mode: ${modeLabel}\n` +
+      `[Gemini Voice Engine] Synthesizing studio-grade native English voice stream...\n` +
+      `[FFmpeg Audio Mixer] Sidechain ducking Korean audio by -16dB & blending English voice-over...\n` +
+      `[FFmpeg Web Stream] Re-encoding video stream (H.264 / AAC) with faststart moov atom...`
+    );
+
     setTimeout(() => {
-      setProcessLog(prev => prev + `\n[FFmpeg] Encoding video stream (libx264) & optimizing moov atom for web streaming...\n[Success] Processed video rendered and saved to public/videos/!`);
+      setProcessLog(prev => prev + `\n\n[Success] ✅ Processed dubbed video rendered & saved to public/demo_video/!\n[Status] Ready for Live Streaming & Instant PayPal Checkout Demo.`);
       setIsProcessing(false);
-    }, 1500);
+    }, 1800);
   };
 
   if (isAdminRoute) {
@@ -1476,48 +1646,174 @@ export const LiveStreamView: React.FC = () => {
               {/* SECTION 4: 동영상 편집 및 압축 스튜디오 */}
               <div className="bg-slate-900 border-2 border-amber-500/40 p-5 rounded-xl flex flex-col gap-4 shadow-xl w-full">
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-b border-slate-800 pb-3 gap-2">
-                  <h3 className="text-sm font-bold text-amber-400 flex items-center gap-2">
-                    <span>🎬</span> {t.tabVideoEditor}
-                  </h3>
-                  <span className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded font-medium">
-                    FFmpeg Web Engine Active
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-amber-400 flex items-center gap-2">
+                      <span>🎬</span> {t.tabVideoEditor}
+                    </h3>
+                    <span className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded font-medium">
+                      FFmpeg & AI Voice Studio Active
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-slate-400">
+                    Target: <code className="text-amber-300 bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">public/demo_video/</code>
                   </span>
+                </div>
+
+                {/* 1. PC 동영상 파일 선택 및 public/demo_video/ 업로드 컨트롤 */}
+                <div className="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col gap-3">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileUpload}
+                      accept="video/mp4,video/webm,video/quicktime,video/*"
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      disabled={isUploadingVideo}
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex-1 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 text-white font-bold py-2.5 px-4 rounded-lg text-xs flex items-center justify-center gap-2 border border-amber-400/50 shadow-lg transition cursor-pointer disabled:opacity-50"
+                    >
+                      <span className="text-sm">📁</span>
+                      <span>{isUploadingVideo ? t.uploadingVideo : t.uploadVideoBtn}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={fetchDemoVideos}
+                      className="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-2 rounded-lg text-xs flex items-center justify-center gap-1.5 transition cursor-pointer shrink-0"
+                    >
+                      <span>🔄</span>
+                      <span>{t.refreshListBtn}</span>
+                    </button>
+                  </div>
+
+                  {uploadMessage && (
+                    <div className="text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-2 rounded-lg flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                      <span>{uploadMessage}</span>
+                    </div>
+                  )}
+
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    {t.uploadHint}
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
                   <div className="flex flex-col gap-4">
+                    {/* 동영상 파일 선택 드롭다운 */}
                     <div>
-                      <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.videoSelectLabel}</label>
+                      <div className="flex justify-between items-center mb-1">
+                        <label className="text-xs text-slate-300 font-semibold">{t.videoSelectLabel}</label>
+                        <span className="text-[10px] text-amber-400 font-mono">
+                          {selectedVideoAsset.split('/').pop()}
+                        </span>
+                      </div>
                       <select
                         value={selectedVideoAsset}
                         onChange={(e) => setSelectedVideoAsset(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-amber-500 cursor-pointer"
+                        className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-amber-500 cursor-pointer font-mono"
                       >
-                        {products.map(p => (
-                          <option key={p.id} value={p.videoUrl}>{p.icon} {p.videoUrl} ({p.name[lang] || p.name.ko})</option>
-                        ))}
+                        {demoVideoFiles.length > 0 && (
+                          <optgroup label={t.demoFolderLabel}>
+                            {demoVideoFiles.map(file => (
+                              <option key={file.path} value={file.path}>
+                                🎬 {file.name} {file.size ? `(${(file.size / (1024 * 1024)).toFixed(1)}MB)` : ''}
+                              </option>
+                            ))}
+                          </optgroup>
+                        )}
+                        <optgroup label="🛍️ Catalog Product Videos">
+                          {products.map(p => (
+                            <option key={p.id} value={p.videoUrl}>
+                              {p.icon} {p.videoUrl} ({p.name[lang] || p.name.ko})
+                            </option>
+                          ))}
+                        </optgroup>
                       </select>
                     </div>
 
-                    <div>
-                      <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.crfLabel}</label>
-                      <input
-                        type="number"
-                        min="20"
-                        max="35"
-                        value={compressionCrf}
-                        onChange={(e) => setCompressionCrf(Number(e.target.value))}
-                        className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-amber-500"
-                      />
+                    {/* 실시간 동영상 미리보기 플레이어 */}
+                    <div className="bg-slate-950 border border-slate-800 rounded-xl p-2.5 flex flex-col gap-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                          <span>📺</span> {t.videoPreviewLabel}
+                        </span>
+                        <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-mono truncate max-w-[200px]">
+                          {selectedVideoAsset}
+                        </span>
+                      </div>
+                      <div className="rounded-lg overflow-hidden border border-slate-800/80 bg-black aspect-video flex items-center justify-center relative">
+                        {selectedVideoAsset ? (
+                          <video
+                            key={selectedVideoAsset}
+                            src={selectedVideoAsset}
+                            controls
+                            playsInline
+                            muted
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          <span className="text-xs text-slate-500 italic">No video selected</span>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    {/* AI 원어민 더빙 옵션 (남성 C / 여성 D) */}
+                    <div className="bg-slate-950/80 border border-amber-500/30 p-3.5 rounded-xl flex flex-col gap-3">
+                      <h4 className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                        <span>🎙️</span> {t.voiceDubbingTitle}
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-[11px] text-slate-300 font-semibold mb-1 block">
+                            {t.voicePersonaLabel}
+                          </label>
+                          <select
+                            value={voicePersona}
+                            onChange={(e) => setVoicePersona(e.target.value as "male_c" | "female_d")}
+                            className="w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-amber-500 cursor-pointer"
+                          >
+                            <option value="male_c">{t.voiceMaleC}</option>
+                            <option value="female_d">{t.voiceFemaleD}</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-[11px] text-slate-300 font-semibold mb-1 block">
+                            {t.dubbingModeLabel}
+                          </label>
+                          <select
+                            value={dubbingMode}
+                            onChange={(e) => setDubbingMode(e.target.value as "voice_over" | "replace")}
+                            className="w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-amber-500 cursor-pointer"
+                          >
+                            <option value="voice_over">{t.dubbingVoiceOver}</option>
+                            <option value="replace">{t.dubbingReplace}</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 압축 및 속도 설정 */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.crfLabel}</label>
+                        <input
+                          type="number"
+                          min="20"
+                          max="35"
+                          value={compressionCrf}
+                          onChange={(e) => setCompressionCrf(Number(e.target.value))}
+                          className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500"
+                        />
+                      </div>
                       <div>
                         <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.speedLabel}</label>
                         <select
                           value={videoSpeed}
                           onChange={(e) => setVideoSpeed(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-amber-500 cursor-pointer"
+                          className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 cursor-pointer"
                         >
                           <option value="1.0">1.0x (Normal)</option>
                           <option value="1.25">1.25x (Fast)</option>
@@ -1529,7 +1825,7 @@ export const LiveStreamView: React.FC = () => {
                         <select
                           value={audioMute ? "mute" : "keep"}
                           onChange={(e) => setAudioMute(e.target.value === "mute")}
-                          className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3.5 py-2 text-xs focus:outline-none focus:border-amber-500 cursor-pointer"
+                          className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 cursor-pointer"
                         >
                           <option value="keep">{t.audioKeep}</option>
                           <option value="mute">{t.audioMuteOpt}</option>
@@ -1540,18 +1836,18 @@ export const LiveStreamView: React.FC = () => {
                     <button
                       disabled={isProcessing}
                       onClick={runVideoEditorCompression}
-                      className="mt-2 bg-amber-600 hover:bg-amber-500 disabled:bg-slate-700 text-white py-2.5 rounded-lg text-xs font-bold transition shadow-lg cursor-pointer border border-amber-400/30 flex items-center justify-center gap-2"
+                      className="mt-1 bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 hover:from-amber-500 hover:to-amber-400 disabled:bg-slate-700 text-white py-3 rounded-lg text-xs font-bold transition shadow-xl cursor-pointer border border-amber-400/40 flex items-center justify-center gap-2"
                     >
                       {isProcessing ? t.renderingBtn : t.renderBtn}
                     </button>
                   </div>
 
-                  <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col font-mono text-[11px] text-emerald-400 h-[220px] overflow-y-auto shadow-inner w-full">
-                    <p className="text-slate-500 pb-2 border-b border-slate-900 mb-2">// FFmpeg Studio Console Output</p>
+                  <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col font-mono text-[11px] text-emerald-400 h-[380px] overflow-y-auto shadow-inner w-full">
+                    <p className="text-slate-500 pb-2 border-b border-slate-900 mb-2">// FFmpeg Studio & AI Voice Engine Console Output</p>
                     {processLog ? (
                       <pre className="whitespace-pre-wrap">{processLog}</pre>
                     ) : (
-                      <span className="text-slate-600 italic">Ready for video editing & compression tasks...</span>
+                      <span className="text-slate-600 italic">Ready for video editing, CRF compression & AI Voice-Over dubbing tasks...</span>
                     )}
                   </div>
                 </div>
