@@ -34,23 +34,12 @@ export interface CustomQARecord {
   answer: string;
 }
 
-export const formatPrice = (priceInKrw: number, l: Language = "ko"): string => {
-  if (isNaN(priceInKrw)) return "0";
-  switch (l) {
-    case "en":
-      return `$${(priceInKrw / 1350).toFixed(2)}`;
-    case "ja":
-      return `${Math.round(priceInKrw * 0.11).toLocaleString()}엔`;
-    case "zh":
-      return `${Math.round(priceInKrw * 0.0053).toLocaleString()}위안`;
-    case "es":
-      return `$${(priceInKrw / 1350).toFixed(2)}`;
-    case "fr":
-      return `${(priceInKrw / 1450).toFixed(2)} €`;
-    case "ko":
-    default:
-      return `${priceInKrw.toLocaleString()}원`;
+export const formatPrice = (priceInKrw: number, _l: Language = "en"): string => {
+  if (isNaN(priceInKrw)) return "$0.00";
+  if (priceInKrw > 1000) {
+    return `$${(priceInKrw / 1350).toFixed(2)}`;
   }
+  return `$${Number(priceInKrw).toFixed(2)}`;
 };
 
 const TRANSLATIONS: Record<Language, any> = {
@@ -935,21 +924,27 @@ const TRANSLATIONS: Record<Language, any> = {
 const INITIAL_QA_LIST: CustomQARecord[] = [
   {
     id: "qa-1",
-    keyword: "깎아",
-    question: "값을 좀 깎아 주세요 / 할인 되나요?",
-    answer: "현재 양평 오픈축제 특가로 제공 중이나, 페이팔 샌드박스 결제 시 즉시 적용 가능한 특별 쿠폰 혜택을 안내해 드립니다!"
+    keyword: "discount",
+    question: "Can I get a discount or special deal?",
+    answer: "Our items are offered at exclusive live promotional prices with PayPal buyer protection!"
   },
   {
     id: "qa-2",
-    keyword: "배송",
-    question: "배송은 얼마나 걸리나요?",
-    answer: "결제 완료 즉시 관리자 백엔드에서 CJ대한통운 운송장이 발급되며, 보통 1~2일 내에 안전하게 받아보실 수 있습니다."
+    keyword: "shipping",
+    question: "How long does shipping take?",
+    answer: "Orders are shipped within 1 business day upon PayPal payment capture, typically arriving within 2-3 business days."
+  },
+  {
+    id: "qa-3",
+    keyword: "organic",
+    question: "Is this product 100% organic and eco-friendly?",
+    answer: "Yes! 100% pure squeezed juice and eco-friendly handmade crafts from verified artisans."
   }
 ];
 
 export const LiveStreamView: React.FC = () => {
   const [lang, setLang] = useState<Language>("en");
-  const t = TRANSLATIONS[lang];
+  const t = TRANSLATIONS.en;
 
   const [isAdminRoute, setIsAdminRoute] = useState<boolean>(
     window.location.hash.includes("admin") || window.location.pathname.includes("admin")
@@ -2651,23 +2646,9 @@ export const LiveStreamView: React.FC = () => {
           <button onClick={() => setIsAdminRoute(true)} className="bg-slate-800 text-amber-400 border border-amber-500/40 px-2 sm:px-2.5 py-1 rounded text-[10px] sm:text-[11px] font-semibold cursor-pointer shrink-0">
             {t.adminPortalBtn}
           </button>
-          <div className="flex bg-slate-950 border border-slate-700 rounded p-0.5 text-xs shrink-0">
-            {(["ko", "en", "ja", "zh", "es", "fr"] as Language[]).map(l => (
-              <button 
-                key={l} 
-                onClick={() => {
-                  setLang(l);
-                  try {
-                    localStorage.setItem("preferred_language", l);
-                  } catch (e) {
-                    // ignore localStorage failure
-                  }
-                }} 
-                className={`px-1.5 sm:px-2 py-0.5 rounded uppercase text-[9px] sm:text-[10px] font-bold transition cursor-pointer ${lang === l ? "bg-blue-600 text-white shadow" : "text-slate-400 hover:text-white"}`}
-              >
-                {l}
-              </button>
-            ))}
+          <div className="flex items-center gap-1.5 bg-slate-950 border border-slate-700/80 rounded-md px-2 sm:px-2.5 py-1 text-slate-300 text-[10px] sm:text-[11px] font-semibold shadow-inner">
+            <span className="text-xs">🇺🇸</span>
+            <span>English (USD)</span>
           </div>
         </div>
       </header>
@@ -2795,34 +2776,16 @@ export const LiveStreamView: React.FC = () => {
                     setIsAudioMuted(nextMuted);
                     if (videoRef.current) {
                       videoRef.current.muted = nextMuted;
+                      if (!nextMuted) {
+                        videoRef.current.volume = 1.0;
+                      }
                     }
                   }} 
                   className={`text-[10px] sm:text-[11px] px-2.5 py-1 rounded border transition font-semibold cursor-pointer shadow-md ${isAudioMuted ? "bg-amber-500 hover:bg-amber-400 text-slate-950 border-amber-400 font-bold" : "bg-black/80 hover:bg-black/90 text-white border-slate-600"}`}
                 >
                   {isAudioMuted ? t.soundOn : t.soundOff}
                 </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsDubbingEnabled(prev => !prev);
-                  }}
-                  className={`text-[9px] sm:text-[10px] px-2 py-1 rounded border transition font-semibold cursor-pointer shadow ${
-                    isDubbingEnabled
-                      ? "bg-blue-600 hover:bg-blue-500 text-white border-blue-400"
-                      : "bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-slate-600"
-                  }`}
-                  title="AI 원어민 더빙 켜기/끄기"
-                >
-                  {isDubbingEnabled ? `🎙️ AI 더빙(${lang.toUpperCase()}) ON` : "🔊 원본"}
-                </button>
               </div>
-
-              {!isAudioMuted && isDubbingEnabled && lang !== "ko" && (
-                <span className="text-[9px] bg-emerald-500 text-white font-bold px-2 py-0.5 rounded shadow-lg flex items-center gap-1 animate-pulse">
-                  <span>🎙️</span> {lang.toUpperCase()} AI Voice Dubbing Active
-                </span>
-              )}
 
               {currentProd && (
                 <span className={`text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-1 rounded border ${currentProd.stock <= 0 ? "bg-red-600 text-white" : "bg-black/80 text-amber-300"}`}>

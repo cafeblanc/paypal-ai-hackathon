@@ -30,52 +30,52 @@ export const createDefaultProducts = (): ProductEntity[] => {
     {
       id: "prod-gapyeong-grape",
       name: {
-        ko: "가평 운악산 친환경 포도즙",
-        en: "Gapyeong Unaksan Eco-friendly Grape Juice",
-        ja: "加平 雲岳山 エコブドウジュース",
-        zh: "加平云岳山环保葡萄汁",
-        es: "Jugo de Uva Ecológico Gapyeong Unaksan",
-        fr: "Jus de Raisin Écologique Gapyeong Unaksan"
+        en: "Gapyeong Eco-friendly Grape Juice (100% Pure Squeezed)",
+        ko: "Gapyeong Eco-friendly Grape Juice (100% Pure Squeezed)",
+        ja: "Gapyeong Eco-friendly Grape Juice (100% Pure Squeezed)",
+        zh: "Gapyeong Eco-friendly Grape Juice (100% Pure Squeezed)",
+        es: "Gapyeong Eco-friendly Grape Juice (100% Pure Squeezed)",
+        fr: "Gapyeong Eco-friendly Grape Juice (100% Pure Squeezed)"
       },
-      price: 35000,
-      currency: "KRW",
+      price: 25,
+      currency: "USD",
       stock: 1000,
       icon: "🍇",
       videoUrl: "/demo_video/gapyeong-grape.mp4",
       fallbackVideoUrl: "/demo_video/gapyeong-grape.mp4",
       description: {
-        ko: "가평 운악산 청정 지역에서 재배한 고당도 100% 순수 착즙 포도즙입니다. 무설탕, 무색소, 무방부제 건강 음료.",
-        en: "100% pure squeezed grape juice grown in the pristine region of Mt. Unaksan, Gapyeong. Healthy beverage with no added sugar, artificial colors, or preservatives.",
-        ja: "加平の雲岳山清浄地域で栽培された高糖度100%純粋搾りブドウジュースです。無加糖・無着色・保存料不使用の健康飲料。",
-        zh: "产自加平云岳山纯净地区的高糖度100%纯压榨葡萄汁。无添加糖、无色素、无防腐剂的健康饮品。",
-        es: "Jugo de uva 100% puro exprimido cultivado en la región prístina del Monte Unaksan, Gapyeong. Bebida saludable sin azúcar añadida, colorantes ni conservantes.",
-        fr: "Jus de raisin 100% pur pressé cultivé dans la région préservée du mont Unaksan à Gapyeong. Boisson saine sans sucre ajouté, colorants ni conservateurs."
+        en: "100% pure squeezed eco-friendly grape juice grown in pristine Mt. Unaksan. Healthy beverage with no added sugar, artificial colors, or preservatives.",
+        ko: "100% pure squeezed eco-friendly grape juice grown in pristine Mt. Unaksan. Healthy beverage with no added sugar, artificial colors, or preservatives.",
+        ja: "100% pure squeezed eco-friendly grape juice grown in pristine Mt. Unaksan. Healthy beverage with no added sugar, artificial colors, or preservatives.",
+        zh: "100% pure squeezed eco-friendly grape juice grown in pristine Mt. Unaksan. Healthy beverage with no added sugar, artificial colors, or preservatives.",
+        es: "100% pure squeezed eco-friendly grape juice grown in pristine Mt. Unaksan. Healthy beverage with no added sugar, artificial colors, or preservatives.",
+        fr: "100% pure squeezed eco-friendly grape juice grown in pristine Mt. Unaksan. Healthy beverage with no added sugar, artificial colors, or preservatives."
       },
       createdAt: new Date().toISOString()
     },
     {
       id: "prod-munhori-knitting",
       name: {
-        ko: "문호리 리버마켓 핸드메이드 뜨개질 공방",
-        en: "Munhori River Market Handmade Knitting Studio",
-        ja: "文湖里 リバーマーケット ハンドメイド手編み工房",
-        zh: "汶湖里河边市集手工编织工坊",
-        es: "Taller de Tejido Hecho a Mano Munhori River Market",
-        fr: "Atelier de Tricot Fait Main Munhori River Market"
+        en: "Munhori River Market Handmade Knitting Studio Crafts",
+        ko: "Munhori River Market Handmade Knitting Studio Crafts",
+        ja: "Munhori River Market Handmade Knitting Studio Crafts",
+        zh: "Munhori River Market Handmade Knitting Studio Crafts",
+        es: "Munhori River Market Handmade Knitting Studio Crafts",
+        fr: "Munhori River Market Handmade Knitting Studio Crafts"
       },
-      price: 45000,
-      currency: "KRW",
+      price: 32,
+      currency: "USD",
       stock: 50,
       icon: "🧶",
       videoUrl: "/demo_video/munhori-knitting.mp4",
       fallbackVideoUrl: "/demo_video/munhori-knitting.mp4",
       description: {
-        ko: "양평 문호리 리버마켓 장인이 한 땀 한 땀 정성스럽게 뜬 친환경 수제 뜨개 소품 컬렉션입니다.",
         en: "Handmade eco-friendly knitted crafts collection carefully crafted stitch by stitch by Munhori River Market artisans in Yangpyeong.",
-        ja: "楊平文湖里リバーマーケットの職人が一目一目丁寧に編み上げた、環境に優しい手編み小物コレクションです。",
-        zh: "由杨平汶湖里河边市集的工匠一针一线悉心编织的环保手工针织配饰系列。",
-        es: "Colección de artesanías tejidas a mano ecológicas elaboradas puntada a puntada por artesanos de Munhori River Market en Yangpyeong.",
-        fr: "Collection d'artisanat tricoté main écologique soigneusement confectionné maille après maille par les artisans du River Market de Munhori à Yangpyeong."
+        ko: "Handmade eco-friendly knitted crafts collection carefully crafted stitch by stitch by Munhori River Market artisans in Yangpyeong.",
+        ja: "Handmade eco-friendly knitted crafts collection carefully crafted stitch by stitch by Munhori River Market artisans in Yangpyeong.",
+        zh: "Handmade eco-friendly knitted crafts collection carefully crafted stitch by stitch by Munhori River Market artisans in Yangpyeong.",
+        es: "Handmade eco-friendly knitted crafts collection carefully crafted stitch by stitch by Munhori River Market artisans in Yangpyeong.",
+        fr: "Handmade eco-friendly knitted crafts collection carefully crafted stitch by stitch by Munhori River Market artisans in Yangpyeong."
       },
       createdAt: new Date().toISOString()
     }
@@ -134,9 +134,18 @@ const loadProductsFromStorage = (): ProductEntity[] => {
         finalDesc = { ...trans.description, ko: p.description?.ko || trans.description.ko };
       }
 
+      let finalPrice = p.price;
+      let finalCurrency = p.currency || "USD";
+      if (finalPrice > 1000) {
+        finalPrice = Math.round(finalPrice / 1350);
+        finalCurrency = "USD";
+      }
+
       return {
         ...p,
         name: finalName,
+        price: finalPrice,
+        currency: finalCurrency,
         description: finalDesc,
         videoUrl: finalVideo,
         fallbackVideoUrl: DEFAULT_FALLBACK_VIDEO
