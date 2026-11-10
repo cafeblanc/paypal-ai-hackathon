@@ -44,7 +44,7 @@ export const formatPrice = (priceInKrw: number, _l: Language = "en"): string => 
 
 const TRANSLATIONS: Record<Language, any> = {
   ko: {
-    marketName: "양평 오픈축제",
+    marketName: "Open Festival",
     title: "페이팔 AI 에이전틱 커머스 라이브",
     sandbox: "샌드박스 모드",
     liveStream: "실시간 라이브",
@@ -190,7 +190,7 @@ const TRANSLATIONS: Record<Language, any> = {
     noProductsNotice: "등록된 상품이 없습니다. 상단 양식에서 상품과 동영상을 등록해 주세요."
   },
   en: {
-    marketName: "Yangpyeong Open Festival",
+    marketName: "Open Festival",
     title: "PayPal AI Live Commerce",
     sandbox: "Sandbox",
     liveStream: "LIVE",
@@ -336,7 +336,7 @@ const TRANSLATIONS: Record<Language, any> = {
     noProductsNotice: "No products registered. Please register a product and video using the form above."
   },
   ja: {
-    marketName: "楊平オープンフェスティバル",
+    marketName: "Open Festival",
     title: "PayPal AI ライブコマース",
     sandbox: "サンドボックス",
     liveStream: "ライブ",
@@ -482,7 +482,7 @@ const TRANSLATIONS: Record<Language, any> = {
     noProductsNotice: "登録された商品はありません。上部フォームから商品と動画を登録してください。"
   },
   zh: {
-    marketName: "杨平开放节",
+    marketName: "Open Festival",
     title: "PayPal AI 直播电商",
     sandbox: "沙盒",
     liveStream: "直播",
@@ -628,7 +628,7 @@ const TRANSLATIONS: Record<Language, any> = {
     noProductsNotice: "暂无注册商品。请使用上方表单添加商品与视频。"
   },
   es: {
-    marketName: "Festival de Yangpyeong",
+    marketName: "Open Festival",
     title: "PayPal AI Live Commerce",
     sandbox: "Sandbox",
     liveStream: "EN VIVO",
@@ -774,7 +774,7 @@ const TRANSLATIONS: Record<Language, any> = {
     noProductsNotice: "No hay productos registrados. Por favor registre un producto y video arriba."
   },
   fr: {
-    marketName: "Festival de Yangpyeong",
+    marketName: "Open Festival",
     title: "PayPal AI Live Commerce",
     sandbox: "Sandbox",
     liveStream: "EN DIRECT",
@@ -1283,6 +1283,19 @@ export const LiveStreamView: React.FC = () => {
     }
   };
 
+  // 실시간 라이브 시청자 수 (자연스러운 실시간 변동)
+  const [viewerCount, setViewerCount] = useState<number>(3428);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setViewerCount(prev => {
+        const delta = Math.floor(Math.random() * 9) - 4; // -4 ~ +4
+        return Math.max(1250, prev + delta);
+      });
+    }, 3500);
+    return () => clearInterval(timer);
+  }, []);
+
   const stopDubbing = () => {
     isDubbingActiveRef.current = false;
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -1290,109 +1303,18 @@ export const LiveStreamView: React.FC = () => {
     }
   };
 
-  const playNextDubbingSegment = () => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-    if (!isDubbingActiveRef.current || isAudioMuted || !isDubbingEnabled) return;
-
-    const scripts = getDubbingScript(currentProd, lang);
-    if (!scripts || scripts.length === 0) return;
-
-    const textToSpeak = scripts[dubbingScriptIndexRef.current % scripts.length];
-    dubbingScriptIndexRef.current = (dubbingScriptIndexRef.current + 1) % scripts.length;
-
-    const utterance = new SpeechSynthesisUtterance(textToSpeak);
-
-    const langCodeMap: Record<Language, string> = {
-      en: "en-US",
-      ko: "ko-KR",
-      ja: "ja-JP",
-      zh: "zh-CN",
-      es: "es-ES",
-      fr: "fr-FR"
-    };
-    utterance.lang = langCodeMap[lang] || "en-US";
-
-    const voices = window.speechSynthesis.getVoices();
-    const targetCode = (langCodeMap[lang] || "en-US").slice(0, 2).toLowerCase();
-    const matchingVoices = voices.filter(v => v.lang.toLowerCase().startsWith(targetCode));
-    
-    // 남성/여성 60대 장인/시니어 보이스 매칭
-    let matchedVoice: SpeechSynthesisVoice | undefined;
-    if (voicePersona === "male_c") {
-      matchedVoice = matchingVoices.find(v => /david|george|guy|james|mark|male|richard|martin|jean/i.test(v.name)) || matchingVoices[0];
-    } else {
-      matchedVoice = matchingVoices.find(v => /zira|susan|catherine|mary|female|clara|marie/i.test(v.name)) || matchingVoices[0];
-    }
-    if (matchedVoice) {
-      utterance.voice = matchedVoice;
-    }
-
-    if (voicePersona === "male_c") {
-      utterance.pitch = 0.74; // 60대 중후하고 품격 있는 남성 장인 톤
-      utterance.rate = 0.82;  // 60대 약간 느리고 편안한 호흡
-    } else {
-      utterance.pitch = 0.86; // 60대 온화하고 우아한 여성 시니어 톤
-      utterance.rate = 0.82;  // 60대 약간 느리고 편안한 호흡
-    }
-    utterance.volume = 1.0; // 사용자 요청: 볼륨 100% 그대로 유지
-
-    utterance.onend = () => {
-      if (isDubbingActiveRef.current && !isAudioMuted && isDubbingEnabled) {
-        setTimeout(() => {
-          playNextDubbingSegment();
-        }, 2200);
-      }
-    };
-
-    utterance.onerror = (e) => {
-      console.warn("Speech synthesis notice:", e);
-    };
-
-    window.speechSynthesis.speak(utterance);
-  };
-
-  const startDubbing = () => {
-    stopDubbing();
-    if (isAudioMuted || !isDubbingEnabled) return;
-
+  useEffect(() => {
+    // 동영상 자체의 인코딩된 오디오 트랙을 직접 재생 (이중 음성 방지 및 깨끗한 원음 보장)
     if (videoRef.current) {
-      if (lang !== "ko") {
-        videoRef.current.muted = false;
-        videoRef.current.volume = 0.12; // Sidechain audio ducking for original Korean track
-      } else {
-        videoRef.current.muted = false;
+      videoRef.current.muted = isAudioMuted;
+      if (!isAudioMuted) {
         videoRef.current.volume = 1.0;
-        return; // In Korean mode, play original audio directly
-      }
-    }
-
-    isDubbingActiveRef.current = true;
-    dubbingScriptIndexRef.current = 0;
-    playNextDubbingSegment();
-  };
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      window.speechSynthesis.getVoices();
-      window.speechSynthesis.onvoiceschanged = () => {
-        window.speechSynthesis.getVoices();
-      };
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!isAudioMuted && isPlaying) {
-      startDubbing();
-    } else {
-      stopDubbing();
-      if (videoRef.current && isAudioMuted) {
-        videoRef.current.muted = true;
       }
     }
     return () => {
       stopDubbing();
     };
-  }, [isAudioMuted, isPlaying, lang, currentProd?.id, voicePersona, isDubbingEnabled]);
+  }, [isAudioMuted, isPlaying, currentProd?.id]);
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -2653,13 +2575,13 @@ export const LiveStreamView: React.FC = () => {
         </div>
       </header>
 
-      <div className="relative flex-1 flex flex-col md:grid md:grid-cols-12 gap-2 sm:gap-3 p-1.5 sm:p-4 w-full max-w-full box-border items-stretch overflow-hidden" style={{ height: "calc(100dvh - 52px)", maxHeight: "calc(100dvh - 52px)" }}>
+      <div className="relative flex-1 flex flex-col md:grid md:grid-cols-12 gap-0 md:gap-3 p-0 md:p-4 w-full max-w-full box-border items-stretch overflow-hidden" style={{ height: "calc(100dvh - 52px)", maxHeight: "calc(100dvh - 52px)" }}>
         
-        {/* Section 1: Video Player (동영상 축소 없이 항상 풀 화면 유지 & 결제창은 오버레이로 표시) */}
-        <div className="h-[58%] sm:h-[60%] md:h-full md:col-span-7 relative bg-slate-900/40 border border-slate-700/80 rounded-xl sm:rounded-2xl p-1.5 sm:p-2.5 shadow-xl flex flex-col justify-between w-full max-w-full overflow-hidden box-border">
+        {/* Section 1: Video Player (모바일 100% 풀스크린 전체화면 동영상 & 데스크톱 7열 레이아웃) */}
+        <div className="h-full md:h-full md:col-span-7 relative bg-black md:bg-slate-900/40 border-0 md:border md:border-slate-700/80 rounded-none md:rounded-2xl p-0 md:p-2.5 shadow-xl flex flex-col justify-between w-full max-w-full overflow-hidden box-border">
           <div 
             onClick={handleTogglePlayOrUnmute}
-            className="relative w-full bg-black rounded-lg sm:rounded-xl overflow-hidden border border-slate-700 shadow-lg cursor-pointer select-none flex-1 min-h-0"
+            className="relative w-full h-full bg-black rounded-none md:rounded-xl overflow-hidden md:border md:border-slate-700 shadow-lg cursor-pointer select-none flex-1 min-h-0"
           >
             {(currentProd?.videoUrl || (demoVideoFiles.length > 0)) ? (
               <>
@@ -2760,12 +2682,25 @@ export const LiveStreamView: React.FC = () => {
                 </button>
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none"></div>
+            
+            {/* 상단 및 하단 은은한 그라데이션 오버레이 */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 pointer-events-none"></div>
+            
+            {/* 좌측 상단: LIVE 뱃지 + 실시간 시청자 수 + Open Festival */}
             <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-20 flex flex-col items-start gap-1">
-              <span className="bg-red-600 text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-md animate-pulse uppercase">● {t.liveStream}</span>
-              <span className="bg-black/70 text-slate-200 text-[10px] sm:text-[11px] px-2 py-0.5 rounded-md border border-slate-600">{t.marketName}</span>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="bg-red-600 text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-md animate-pulse uppercase flex items-center gap-1 shadow">
+                  <span>●</span>
+                  <span>{t.liveStream}</span>
+                  <span className="bg-red-950/90 text-amber-200 px-1 py-0.2 rounded text-[8px] sm:text-[9px] font-mono ml-0.5">👁️ {viewerCount.toLocaleString()}</span>
+                </span>
+                <span className="bg-black/75 backdrop-blur-xs text-slate-200 text-[10px] sm:text-[11px] px-2 py-0.5 rounded-md border border-slate-600/80 font-semibold shadow">
+                  {t.marketName}
+                </span>
+              </div>
             </div>
-            {/* 우측 상단 단일 통합 사운드 토글 버튼 (음소거 / 소리켜기) 및 AI 원어민 더빙 상태 */}
+
+            {/* 우측 상단 단일 통합 사운드 토글 버튼 (음소거 / 소리켜기) 및 재고 뱃지 */}
             <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-20 flex flex-col items-end gap-1.5">
               <div className="flex items-center gap-1.5">
                 <button 
@@ -2792,6 +2727,81 @@ export const LiveStreamView: React.FC = () => {
                   {currentProd.stock <= 0 ? t.soldOut : `${t.stockLeft}${currentProd.stock}${t.unit}`}
                 </span>
               )}
+            </div>
+
+            {/* 모바일 전용 플로팅 하단 오버레이 (채팅창 + 상품목록 + 현재 동영상 상품 제목, 가격, 결제버튼 + 채팅입력) */}
+            <div 
+              className="md:hidden absolute bottom-0 inset-x-0 z-20 flex flex-col justify-end bg-gradient-to-t from-black via-black/85 to-transparent px-2.5 pb-2 pt-6 pointer-events-none gap-1.5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* 1. 플로팅 실시간 채팅 스트림 (반투명 말풍선 최근 2~3개) */}
+              <div 
+                ref={chatMessagesRef}
+                className="max-h-[85px] overflow-y-auto no-scrollbar flex flex-col gap-1 pointer-events-auto"
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              >
+                {messages.slice(-3).map(msg => (
+                  <div key={msg.id} className={msg.sender === "user" ? "flex flex-col items-end w-full" : "flex flex-col items-start w-full"}>
+                    <div className={msg.sender === "user" ? "max-w-[85%] px-2.5 py-1 rounded-lg text-[11px] bg-blue-600/90 text-white shadow backdrop-blur-xs" : "max-w-[85%] px-2.5 py-1 rounded-lg text-[11px] bg-black/60 text-slate-200 border border-white/10 shadow backdrop-blur-xs"}>
+                      {typeof msg.text === "string" ? msg.text : (msg.text[lang] || msg.text.ko || msg.text.en)}
+                    </div>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} className="h-0 w-0" />
+              </div>
+
+              {/* 2. 상품 빠른 전환 버튼 칩 */}
+              <div className="flex gap-1.5 overflow-x-auto no-scrollbar py-0.5 pointer-events-auto">
+                {products.map((prod) => (
+                  <button
+                    key={prod.id}
+                    type="button"
+                    onClick={() => handleSelectProductFromChat(prod)}
+                    className={`text-[10px] px-2.5 py-1 rounded-full cursor-pointer shadow flex items-center gap-1 border shrink-0 transition ${currentProd && currentProd.id === prod.id ? "bg-amber-600 text-white border-amber-400 font-bold" : "bg-black/70 backdrop-blur-xs text-slate-200 border-white/20"}`}
+                  >
+                    <span>{prod.icon}</span>
+                    <span className="truncate max-w-[120px]">{prod.name[lang] || prod.name.ko}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* 3. 현재 동영상 상품 슬림 바 (제목, 가격, 페이팔 결제 버튼) */}
+              {currentProd && (
+                <div className="bg-slate-900/95 backdrop-blur-md px-2.5 py-1.5 rounded-xl border border-slate-700/80 flex items-center justify-between gap-2 shadow-2xl pointer-events-auto">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <span className="text-xl shrink-0">{currentProd.icon}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold text-white truncate">{currentProd.name[lang] || currentProd.name.ko}</p>
+                      <p className="text-xs text-amber-300 font-bold">{formatPrice(currentProd.price, lang)}</p>
+                    </div>
+                  </div>
+                  {currentProd.stock > 0 ? (
+                    <button 
+                      onClick={() => setIsCheckingOut(prev => !prev)} 
+                      className="bg-[#0070BA] hover:bg-[#005ea6] text-white px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 cursor-pointer shadow flex items-center gap-1 border border-blue-400/40 active:scale-95"
+                    >
+                      <span>💳</span>
+                      <span>{isCheckingOut ? t.cancelBack : t.payWithPayPal}</span>
+                    </button>
+                  ) : (
+                    <span className="text-xs font-bold text-red-400 bg-red-950/80 px-2.5 py-1 rounded-lg">{t.soldOut}</span>
+                  )}
+                </div>
+              )}
+
+              {/* 4. 플로팅 채팅 입력창 */}
+              <form onSubmit={handleSendMessage} className="flex gap-1.5 pointer-events-auto">
+                <input
+                  type="text"
+                  value={inputText}
+                  onChange={e => setInputText(e.target.value)}
+                  placeholder={t.inputPlaceholder}
+                  className="flex-1 min-w-0 bg-black/70 backdrop-blur-md border border-white/20 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-blue-400 placeholder-slate-400"
+                />
+                <button type="submit" className="bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-lg text-xs font-bold text-white shrink-0 cursor-pointer shadow">
+                  {t.send}
+                </button>
+              </form>
             </div>
 
             {/* Overlay Checkout Card (동영상 위에 오버랩되어 동영상이 전혀 축소되거나 짤리지 않음) */}
@@ -2824,7 +2834,8 @@ export const LiveStreamView: React.FC = () => {
             )}
           </div>
 
-          <div className="mt-1.5 sm:mt-2 shrink-0 w-full box-border">
+          {/* 데스크톱 전용 하단 현재 상품 카드 */}
+          <div className="hidden md:block mt-1.5 sm:mt-2 shrink-0 w-full box-border">
             {currentProd && !latestOrder ? (
               <div className="bg-slate-900/95 p-2 sm:p-2.5 rounded-lg sm:rounded-xl border border-slate-700 flex items-center justify-between gap-2 shadow-xl w-full h-[64px] sm:h-[76px] box-border overflow-hidden">
                 <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
@@ -2873,8 +2884,8 @@ export const LiveStreamView: React.FC = () => {
           </div>
         </div>
 
-        {/* Section 2: AI Shopping Agent & Live Chat (채팅창 상단 제목 줄 삭제하여 동영상 공간 최대 확보) */}
-        <div className="flex-1 min-h-0 md:h-full md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-xl sm:rounded-2xl flex flex-col shadow-xl w-full max-w-full overflow-hidden box-border">
+        {/* Section 2: AI Shopping Agent & Live Chat (데스크톱 전용 5열 패널) */}
+        <div className="hidden md:flex md:h-full md:col-span-5 bg-slate-900/80 border border-slate-700/80 rounded-xl sm:rounded-2xl flex-col shadow-xl w-full max-w-full overflow-hidden box-border">
           {/* 채팅창 내부 스크롤 영역: 제목 줄 없이 바로 대화 내용이 시원하게 위로 올라감 */}
           <div 
             ref={chatMessagesRef}

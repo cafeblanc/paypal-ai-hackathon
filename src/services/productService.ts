@@ -84,7 +84,16 @@ export const createDefaultProducts = (): ProductEntity[] => {
 
 export const INITIAL_DEFAULT_PRODUCTS: ProductEntity[] = createDefaultProducts();
 
-const loadProductsFromStorage = (): ProductEntity[] => {
+function saveProductsToStorage(products: ProductEntity[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(products));
+  } catch (e) {
+    console.error("Failed to save products to localStorage", e);
+  }
+}
+
+function loadProductsFromStorage(): ProductEntity[] {
   if (typeof window === "undefined") return createDefaultProducts();
   try {
     const raw = localStorage.getItem(STORAGE_KEY_PRODUCTS);
@@ -158,16 +167,7 @@ const loadProductsFromStorage = (): ProductEntity[] => {
     console.error("Failed to load products from localStorage", e);
     return createDefaultProducts();
   }
-};
-
-const saveProductsToStorage = (products: ProductEntity[]) => {
-  if (typeof window === "undefined") return;
-  try {
-    localStorage.setItem(STORAGE_KEY_PRODUCTS, JSON.stringify(products));
-  } catch (e) {
-    console.error("Failed to save products to localStorage", e);
-  }
-};
+}
 
 let cachedProducts: ProductEntity[] = loadProductsFromStorage();
 
