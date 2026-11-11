@@ -1283,81 +1283,68 @@ export const LiveStreamView: React.FC = () => {
     }
   };
 
-  // 실제 실시간 시청자 수 (세션 하트비트 및 크로스탭/디바이스 실제 접속자 트래킹)
+  // 실제 실시간 시청자 수 (서버 API /api/viewers 연동으로 PC, 모바일 등 모든 실제 접속 디바이스 동기화)
   const [viewerCount, setViewerCount] = useState<number>(1);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const PRESENCE_KEY = "paypal_live_actual_viewers_v1";
-    const SESSION_ID = "viewer_" + Math.random().toString(36).substring(2, 9) + "_" + Date.now();
+    // 각 기기 및 브라우저 세션의 고유 식별자 (새로고침 시 중복 방지)
+    let sessionId = "";
+    try {
+      sessionId = sessionStorage.getItem("paypal_live_session_id") || "";
+      if (!sessionId) {
+        sessionId = "v_" + Math.random().toString(36).substring(2, 9) + "_" + Date.now().toString(36);
+        sessionStorage.setItem("paypal_live_session_id", sessionId);
+      }
+    } catch {
+      sessionId = "v_" + Math.random().toString(36).substring(2, 9) + "_" + Date.now().toString(36);
+    }
 
-    const updatePresence = () => {
+    const pingServer = async () => {
       try {
-        const now = Date.now();
-        let sessions: Record<string, number> = {};
-        const raw = localStorage.getItem(PRESENCE_KEY);
-        if (raw) {
-          try {
-            sessions = JSON.parse(raw);
-          } catch {
-            sessions = {};
+        const res = await fetch(`/api/viewers?id=${encodeURIComponent(sessionId)}&action=ping&_t=${Date.now()}`, {
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (typeof data.count === "number" && data.count >= 1) {
+            setViewerCount(data.count);
+            return;
           }
         }
-        // 본 세션 하트비트 갱신
-        sessions[SESSION_ID] = now;
-
-        // 6초 이상 하트비트가 없는 끊어진 세션 정리
-        for (const id in sessions) {
-          if (now - sessions[id] > 6000) {
-            delete sessions[id];
-          }
-        }
-
-        localStorage.setItem(PRESENCE_KEY, JSON.stringify(sessions));
-        const activeCount = Math.max(1, Object.keys(sessions).length);
-        setViewerCount(activeCount);
-      } catch {
-        setViewerCount(1);
+      } catch (err) {
+        // 서버 연결 지연 시 이전 상태 유지
       }
     };
 
-    // 최초 갱신
-    updatePresence();
+    // 즉시 최초 핑 전송 (현재 접속자 수 즉시 반영)
+    pingServer();
 
-    // 2.5초마다 하트비트 및 실제 시청자 수 갱신
-    const timer = setInterval(updatePresence, 2500);
+    // 2.5초마다 하트비트를 전송하여 PC, 모바일, 태블릿 등 접속 중인 실제 디바이스 수 실시간 동기화
+    const interval = setInterval(pingServer, 2500);
 
-    // 타 탭/창 접속 또는 종료 시 storage 이벤트로 즉각 반응
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === PRESENCE_KEY && e.newValue) {
-        try {
-          const sessions = JSON.parse(e.newValue);
-          const activeCount = Math.max(1, Object.keys(sessions).length);
-          setViewerCount(activeCount);
-        } catch {}
-      }
-    };
-    window.addEventListener("storage", handleStorageChange);
-
-    // 탭 종료 시 세션 즉시 제거
-    const handleUnload = () => {
+    // 창/탭 종료 시 세션 즉시 차감
+    const handleLeave = () => {
       try {
-        const raw = localStorage.getItem(PRESENCE_KEY);
-        if (raw) {
-          const sessions = JSON.parse(raw);
-          delete sessions[SESSION_ID];
-          localStorage.setItem(PRESENCE_KEY, JSON.stringify(sessions));
+        const leaveUrl = `/api/viewers?id=${encodeURIComponent(sessionId)}&action=leave`;
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(leaveUrl);
+        } else {
+          fetch(leaveUrl, { keepalive: true, method: "POST" });
         }
       } catch {}
     };
-    window.addEventListener("beforeunload", handleUnload);
+
+    window.addEventListener("beforeunload", handleLeave);
+    window.addEventListener("pagehide", handleLeave);
 
     return () => {
-      clearInterval(timer);
-      window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("beforeunload", handleUnload);
-      handleUnload();
+      clearInterval(interval);
+      window.removeEventListener("beforeunload", handleLeave);
+      window.removeEventListener("pagehide", handleLeave);
+      handleLeave();
     };
   }, []);
 

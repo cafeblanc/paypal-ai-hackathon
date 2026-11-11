@@ -8,9 +8,35 @@ import { execSync } from 'node:child_process'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+const devActiveViewers = new Map<string, number>()
+
 function demoVideoPlugin(): Plugin {
   const handler: Connect.SimpleHandleFunction = (req, res, next) => {
     const url = new URL(req.url || '', 'http://localhost')
+    
+    // 0. GET /api/viewers (실제 실시간 다중 디바이스 시청자 동기화)
+    if (url.pathname === '/api/viewers') {
+      const now = Date.now()
+      const id = url.searchParams.get('id')
+      const action = url.searchParams.get('action')
+      if (id) {
+        if (action === 'leave') {
+          devActiveViewers.delete(id)
+        } else {
+          devActiveViewers.set(id, now)
+        }
+      }
+      for (const [vId, ts] of devActiveViewers.entries()) {
+        if (now - ts > 7000) {
+          devActiveViewers.delete(vId)
+        }
+      }
+      const count = Math.max(1, devActiveViewers.size)
+      res.setHeader('Content-Type', 'application/json')
+      res.setHeader('Cache-Control', 'no-store')
+      res.end(JSON.stringify({ count, success: true, timestamp: now }))
+      return
+    }
     
     // 1. GET /api/list-demo-videos
     if (url.pathname === '/api/list-demo-videos' && req.method === 'GET') {
