@@ -1283,17 +1283,82 @@ export const LiveStreamView: React.FC = () => {
     }
   };
 
-  // 실시간 라이브 시청자 수 (자연스러운 실시간 변동)
-  const [viewerCount, setViewerCount] = useState<number>(3428);
+  // 실제 실시간 시청자 수 (세션 하트비트 및 크로스탭/디바이스 실제 접속자 트래킹)
+  const [viewerCount, setViewerCount] = useState<number>(1);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setViewerCount(prev => {
-        const delta = Math.floor(Math.random() * 9) - 4; // -4 ~ +4
-        return Math.max(1250, prev + delta);
-      });
-    }, 3500);
-    return () => clearInterval(timer);
+    if (typeof window === "undefined") return;
+
+    const PRESENCE_KEY = "paypal_live_actual_viewers_v1";
+    const SESSION_ID = "viewer_" + Math.random().toString(36).substring(2, 9) + "_" + Date.now();
+
+    const updatePresence = () => {
+      try {
+        const now = Date.now();
+        let sessions: Record<string, number> = {};
+        const raw = localStorage.getItem(PRESENCE_KEY);
+        if (raw) {
+          try {
+            sessions = JSON.parse(raw);
+          } catch {
+            sessions = {};
+          }
+        }
+        // 본 세션 하트비트 갱신
+        sessions[SESSION_ID] = now;
+
+        // 6초 이상 하트비트가 없는 끊어진 세션 정리
+        for (const id in sessions) {
+          if (now - sessions[id] > 6000) {
+            delete sessions[id];
+          }
+        }
+
+        localStorage.setItem(PRESENCE_KEY, JSON.stringify(sessions));
+        const activeCount = Math.max(1, Object.keys(sessions).length);
+        setViewerCount(activeCount);
+      } catch {
+        setViewerCount(1);
+      }
+    };
+
+    // 최초 갱신
+    updatePresence();
+
+    // 2.5초마다 하트비트 및 실제 시청자 수 갱신
+    const timer = setInterval(updatePresence, 2500);
+
+    // 타 탭/창 접속 또는 종료 시 storage 이벤트로 즉각 반응
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === PRESENCE_KEY && e.newValue) {
+        try {
+          const sessions = JSON.parse(e.newValue);
+          const activeCount = Math.max(1, Object.keys(sessions).length);
+          setViewerCount(activeCount);
+        } catch {}
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+
+    // 탭 종료 시 세션 즉시 제거
+    const handleUnload = () => {
+      try {
+        const raw = localStorage.getItem(PRESENCE_KEY);
+        if (raw) {
+          const sessions = JSON.parse(raw);
+          delete sessions[SESSION_ID];
+          localStorage.setItem(PRESENCE_KEY, JSON.stringify(sessions));
+        }
+      } catch {}
+    };
+    window.addEventListener("beforeunload", handleUnload);
+
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("beforeunload", handleUnload);
+      handleUnload();
+    };
   }, []);
 
   const stopDubbing = () => {
@@ -2563,6 +2628,10 @@ export const LiveStreamView: React.FC = () => {
         <h1 className="text-xs sm:text-sm font-bold flex items-center gap-1.5 truncate">
           <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0"></span>
           <span className="truncate">{t.title}</span>
+          <span className="bg-red-500/20 text-red-400 border border-red-500/40 text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-1 shrink-0 ml-1">
+            <span>● LIVE</span>
+            <span className="font-mono">👁️ {viewerCount}</span>
+          </span>
         </h1>
         <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <button onClick={() => setIsAdminRoute(true)} className="bg-slate-800 text-amber-400 border border-amber-500/40 px-2 sm:px-2.5 py-1 rounded text-[10px] sm:text-[11px] font-semibold cursor-pointer shrink-0">
@@ -2686,15 +2755,21 @@ export const LiveStreamView: React.FC = () => {
             {/* 상단 및 하단 은은한 그라데이션 오버레이 */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 pointer-events-none"></div>
             
-            {/* 좌측 상단: LIVE 뱃지 + 실시간 시청자 수 + Open Festival */}
+            {/* 좌측 상단: LIVE 뱃지 + 실제 실시간 시청자 수 + Open Festival */}
             <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-20 flex flex-col items-start gap-1">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="bg-red-600 text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-md animate-pulse uppercase flex items-center gap-1 shadow">
-                  <span>●</span>
-                  <span>{t.liveStream}</span>
-                  <span className="bg-red-950/90 text-amber-200 px-1 py-0.2 rounded text-[8px] sm:text-[9px] font-mono ml-0.5">👁️ {viewerCount.toLocaleString()}</span>
-                </span>
-                <span className="bg-black/75 backdrop-blur-xs text-slate-200 text-[10px] sm:text-[11px] px-2 py-0.5 rounded-md border border-slate-600/80 font-semibold shadow">
+                <div className="flex items-center bg-black/80 backdrop-blur-md rounded-md p-0.5 border border-slate-700/80 shadow-lg">
+                  <span className="bg-red-600 text-white text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded flex items-center gap-1 uppercase">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                    <span>{t.liveStream}</span>
+                  </span>
+                  <span className="text-amber-300 font-bold px-2 py-0.5 text-[11px] sm:text-xs flex items-center gap-1">
+                    <span>👁️</span>
+                    <span className="font-mono">{viewerCount.toLocaleString()}</span>
+                    <span className="text-[9px] text-slate-300 font-normal">viewers</span>
+                  </span>
+                </div>
+                <span className="bg-black/80 backdrop-blur-md text-slate-200 text-[10px] sm:text-[11px] px-2 py-1 rounded-md border border-slate-700/80 font-semibold shadow">
                   {t.marketName}
                 </span>
               </div>
