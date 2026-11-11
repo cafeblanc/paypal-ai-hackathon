@@ -1,8 +1,9 @@
 # 🛍️ PayPal AI Live Commerce - Agentic Shopping Platform
 
-> **Hackathon Submission**: PayPal AI Hackathon  
+> **Hackathon Submission**: PayPal AI Commerce Hackathon 2026  
 > **Target Category**: Best Use of Agentic Commerce / Best Use of PayPal + AI  
-> **Live Demo URL**: [https://paypal-ai-hackathon.vercel.app](https://paypal-ai-hackathon.vercel.app)  
+> **Production Live URL**: [https://vmall.cafeblanc.kr](https://vmall.cafeblanc.kr)  
+> **Official YouTube Demo Video**: [https://youtu.be/uqxL3A_ZIO0](https://youtu.be/uqxL3A_ZIO0)  
 > **GitHub Repository**: [https://github.com/cafeblanc/paypal-ai-hackathon](https://github.com/cafeblanc/paypal-ai-hackathon)
 
 ---
@@ -12,6 +13,16 @@
 **PayPal AI Live Commerce** is a real-time, interactive live commerce platform powered by an **autonomous Agentic Commerce engine** and the **PayPal Developer Platform (Sandbox)**.
 
 While watching live seller broadcasts, shoppers interact with an intelligent shopping agent in **6 global languages** (English, Korean, Japanese, Chinese, Spanish, French). The agent understands user queries, dynamically suggests matching products directly inside the chat stream, and seamlessly launches a **compact, one-click PayPal checkout experience** without redirecting away from the live broadcast.
+
+---
+
+## 📺 Official YouTube Demo Video
+
+Watch the full 89-second hackathon demonstration showing real-time streaming, PayPal 1-click checkout, dynamic stream hot-swapping, and multilingual AI interactions:
+
+👉 **[Watch Demo on YouTube: https://youtu.be/uqxL3A_ZIO0](https://youtu.be/uqxL3A_ZIO0)**
+
+[![PayPal AI Live Commerce Demo](https://img.youtube.com/vi/uqxL3A_ZIO0/maxresdefault.jpg)](https://youtu.be/uqxL3A_ZIO0)
 
 ---
 
