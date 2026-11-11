@@ -74,7 +74,7 @@ async function recordDemo() {
     // Fill Admin password
     const pwdInput = await page.$('input[type="password"]');
     if (pwdInput) {
-      await pwdInput.fill('admin1234');
+      await pwdInput.fill(process.env.ADMIN_PASSWD || '');
       await page.waitForTimeout(1000);
       await page.keyboard.press('Enter');
       await page.waitForTimeout(4000);

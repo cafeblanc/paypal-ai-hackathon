@@ -3,7 +3,7 @@
 > **Hackathon Submission**: PayPal AI Commerce Hackathon 2026  
 > **Target Category**: Best Use of Agentic Commerce / Best Use of PayPal + AI  
 > **Production Live URL**: [https://vmall.cafeblanc.kr](https://vmall.cafeblanc.kr)  
-> **Official YouTube Demo Video**: [https://youtu.be/uqxL3A_ZIO0](https://youtu.be/uqxL3A_ZIO0)  
+> **Official YouTube Demo Video**: [https://youtu.be/TYfW_2lSGD4](https://youtu.be/TYfW_2lSGD4)  
 > **GitHub Repository**: [https://github.com/cafeblanc/paypal-ai-hackathon](https://github.com/cafeblanc/paypal-ai-hackathon)
 
 ---
@@ -18,11 +18,11 @@ While watching live seller broadcasts, shoppers interact with an intelligent sho
 
 ## 📺 Official YouTube Demo Video
 
-Watch the full 89-second hackathon demonstration showing real-time streaming, PayPal 1-click checkout, dynamic stream hot-swapping, and multilingual AI interactions:
+Watch the full 100-second interactive hackathon demonstration showing real-time streaming, AI Shopping Agent chat, PayPal Sandbox virtual checkout inputs, dynamic live stream video switching, and the full Seller Admin Portal walkthrough:
 
-👉 **[Watch Demo on YouTube: https://youtu.be/uqxL3A_ZIO0](https://youtu.be/uqxL3A_ZIO0)**
+👉 **[Watch Demo on YouTube: https://youtu.be/TYfW_2lSGD4](https://youtu.be/TYfW_2lSGD4)**
 
-[![PayPal AI Live Commerce Demo](https://img.youtube.com/vi/uqxL3A_ZIO0/maxresdefault.jpg)](https://youtu.be/uqxL3A_ZIO0)
+[![PayPal AI Live Commerce Demo](./public/agentic_live_thumbnail.jpg)](https://youtu.be/TYfW_2lSGD4)
 
 ---
 
