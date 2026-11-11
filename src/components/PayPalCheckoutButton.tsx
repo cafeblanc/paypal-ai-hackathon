@@ -28,7 +28,7 @@ const CHECKOUT_TRANSLATIONS: Record<Language, {
     address: "350 5th Avenue, Suite 4100",
     phone: "+1-212-555-0198 · shopper@example.com",
     recipientName: "John Doe",
-    payBtn: (amt) => `Instant Checkout with PayPal ($${amt}.00)`,
+    payBtn: (amt) => `Instant Checkout with PayPal ($${Number(amt).toFixed(2)})`,
     fastDemoBtn: "⚡ Fast Sandbox Approve (Demo Mode)",
     instantBtn: "Instant Checkout",
     statusBadge: "English (en_US) Active"
@@ -40,7 +40,7 @@ const CHECKOUT_TRANSLATIONS: Record<Language, {
     address: "북한강로 807, 문호리 729-4",
     phone: "010-1234-5678 · opener@cafeblanc.kr",
     recipientName: "홍길동",
-    payBtn: (amt) => `PayPal로 즉시 결제 ($${amt}.00)`,
+    payBtn: (amt) => `PayPal로 즉시 결제 ($${Number(amt).toFixed(2)})`,
     fastDemoBtn: "⚡ 샌드박스 즉시 승인 (영상 시연용)",
     instantBtn: "Instant Checkout",
     statusBadge: "한국어 (ko_KR) 모드"
@@ -52,7 +52,7 @@ const CHECKOUT_TRANSLATIONS: Record<Language, {
     address: "六本木 6-10-1 六本木ヒルズ",
     phone: "03-1234-5678 · tokyo_buyer@example.jp",
     recipientName: "山田 太郎",
-    payBtn: (amt) => `PayPalで今すぐ支払う ($${amt}.00)`,
+    payBtn: (amt) => `PayPalで今すぐ支払う ($${Number(amt).toFixed(2)})`,
     fastDemoBtn: "⚡ 即時承認 (デモ撮影用)",
     instantBtn: "Instant Checkout",
     statusBadge: "日本語 (ja_JP) モード"
@@ -64,7 +64,7 @@ const CHECKOUT_TRANSLATIONS: Record<Language, {
     address: "建国门外大街 1号 国贸大厦",
     phone: "010-8888-9999 · beijing_buyer@example.cn",
     recipientName: "张伟",
-    payBtn: (amt) => `立即使用 PayPal 支付 ($${amt}.00)`,
+    payBtn: (amt) => `立即使用 PayPal 支付 ($${Number(amt).toFixed(2)})`,
     fastDemoBtn: "⚡ 一键沙盒支付 (视频演示用)",
     instantBtn: "Instant Checkout",
     statusBadge: "简体中文 (zh_CN) 模式"
@@ -76,7 +76,7 @@ const CHECKOUT_TRANSLATIONS: Record<Language, {
     address: "Calle Gran Vía 28, 4º",
     phone: "+34 91 123 4567 · cliente@example.es",
     recipientName: "Carlos García",
-    payBtn: (amt) => `Pagar al instante con PayPal ($${amt}.00)`,
+    payBtn: (amt) => `Pagar al instante con PayPal ($${Number(amt).toFixed(2)})`,
     fastDemoBtn: "⚡ Aprobación Rápida Sandbox (Modo Demo)",
     instantBtn: "Instant Checkout",
     statusBadge: "Español (es_ES) Modo"
@@ -88,7 +88,7 @@ const CHECKOUT_TRANSLATIONS: Record<Language, {
     address: "101 Avenue des Champs-Élysées",
     phone: "+33 1 42 68 55 00 · acheteur@example.fr",
     recipientName: "Jean Dupont",
-    payBtn: (amt) => `Paiement immédiat avec PayPal ($${amt}.00)`,
+    payBtn: (amt) => `Paiement immédiat avec PayPal ($${Number(amt).toFixed(2)})`,
     fastDemoBtn: "⚡ Approbation Rapide Sandbox (Mode Démo)",
     instantBtn: "Instant Checkout",
     statusBadge: "Français (fr_FR) Mode"
@@ -147,7 +147,7 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
                     description: `PayPal AI Live Commerce (${currentLocale})`,
                     amount: {
                       currency_code: currency,
-                      value: amount.toFixed(2)
+                      value: Number(amount).toFixed(2)
                     }
                   }
                 ]
@@ -217,7 +217,7 @@ export const PayPalCheckoutButton: React.FC<PayPalCheckoutButtonProps> = ({
           </span>
         </div>
         <p className="text-[12px] text-amber-300 font-bold">
-          ${amount}.00 <span className="text-[10px] text-slate-400 font-normal">{currency}</span>
+          ${Number(amount).toFixed(2)} <span className="text-[10px] text-slate-400 font-normal">{currency}</span>
         </p>
       </div>
 

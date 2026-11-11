@@ -42,6 +42,14 @@ export const formatPrice = (priceInKrw: number, _l: Language = "en"): string => 
   return `$${Number(priceInKrw).toFixed(2)}`;
 };
 
+export const getNumericPriceInUsd = (price: number): number => {
+  if (isNaN(price) || price <= 0) return 1;
+  if (price > 1000) {
+    return Math.max(1, Math.round(price / 1350));
+  }
+  return Number(price);
+};
+
 const TRANSLATIONS: Record<Language, any> = {
   ko: {
     marketName: "Open Festival",
@@ -2892,7 +2900,7 @@ export const LiveStreamView: React.FC = () => {
                 </div>
                 <ErrorBoundary>
                   <PayPalCheckoutButton 
-                    amount={Math.round(currentProd.price / 1350)} 
+                    amount={getNumericPriceInUsd(currentProd.price)} 
                     currency="USD" 
                     lang={lang}
                     onSuccess={(orderId) => handlePaymentSuccess(orderId, currentProd)} 
