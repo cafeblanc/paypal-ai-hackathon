@@ -957,6 +957,7 @@ export const LiveStreamView: React.FC = () => {
   const [isAdminRoute, setIsAdminRoute] = useState<boolean>(
     window.location.hash.includes("admin") || window.location.pathname.includes("admin")
   );
+  const [isHelpOpen, setIsHelpOpen] = useState<boolean>(false);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(false);
   const [adminPassword, setAdminPassword] = useState<string>("");
   const [loginError, setLoginError] = useState<boolean>(false);
@@ -2873,19 +2874,26 @@ export const LiveStreamView: React.FC = () => {
             {/* 상단 및 하단 은은한 그라데이션 오버레이 */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 pointer-events-none"></div>
             
-            {/* 좌측 상단: LIVE 뱃지 + 실제 실시간 시청자 수 + Open Festival */}
+            {/* 좌측 상단: LIVE 뱃지 + [Help] 매뉴얼 버튼 + Open Festival */}
             <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-20 flex flex-col items-start gap-1">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <div className="flex items-center bg-black/80 backdrop-blur-md rounded-md p-0.5 border border-slate-700/80 shadow-lg">
+                <div className="flex items-center bg-black/80 backdrop-blur-md rounded-md p-0.5 border border-slate-700/80 shadow-lg gap-0.5">
                   <span className="bg-red-600 text-white text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded flex items-center gap-1 uppercase">
                     <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
                     <span>{t.liveStream}</span>
                   </span>
-                  <span className="text-amber-300 font-bold px-2 py-0.5 text-[11px] sm:text-xs flex items-center gap-1">
-                    <span>👁️</span>
-                    <span className="font-mono">{viewerCount.toLocaleString()}</span>
-                    <span className="text-[9px] text-slate-300 font-normal">viewers</span>
-                  </span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsHelpOpen(true);
+                    }}
+                    className="bg-blue-600/90 hover:bg-blue-500 text-white font-bold px-2 py-0.5 rounded text-[10px] sm:text-[11px] flex items-center gap-1 cursor-pointer transition shadow border border-blue-400/50 active:scale-95"
+                    title="Video Mall User Guide & Help"
+                  >
+                    <span>❓</span>
+                    <span>Help</span>
+                  </button>
                 </div>
                 <span className="bg-black/80 backdrop-blur-md text-slate-200 text-[10px] sm:text-[11px] px-2 py-1 rounded-md border border-slate-700/80 font-semibold shadow">
                   {t.marketName}
@@ -3193,6 +3201,91 @@ export const LiveStreamView: React.FC = () => {
         </div>
 
       </div>
+
+      {/* Help / Video Mall 핵심 사용 매뉴얼 (한눈에 보는 요약 가이드 & 즉시 복귀) */}
+      {isHelpOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 animate-fadeIn text-slate-100"
+          onClick={() => setIsHelpOpen(false)}
+        >
+          <div
+            className="bg-slate-900 border-2 border-slate-700 rounded-2xl max-w-2xl w-full p-4 sm:p-5 shadow-2xl flex flex-col gap-3.5 max-h-[90dvh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center border-b border-slate-800 pb-2.5">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">📖</span>
+                <h2 className="text-sm sm:text-base font-bold text-white">Video Mall 핵심 사용 가이드 (Quick Guide)</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsHelpOpen(false)}
+                className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer shadow"
+              >
+                ← 돌아가기
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+              <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
+                <span className="text-lg shrink-0">🛍️</span>
+                <div>
+                  <p className="font-bold text-amber-400 mb-0.5">1. 상품 선택</p>
+                  <p className="text-slate-300 leading-snug">하단 <strong>상품 버튼</strong>을 누르면 해당 상품의 라이브 영상과 가격으로 즉시 전환됩니다.</p>
+                </div>
+              </div>
+
+              <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
+                <span className="text-lg shrink-0">💳</span>
+                <div>
+                  <p className="font-bold text-blue-400 mb-0.5">2. 구매 방법</p>
+                  <p className="text-slate-300 leading-snug"><strong>Pay with PayPal</strong> 클릭 시 영상 중단 없이 바로 결제되며 배송 추적이 시작됩니다.</p>
+                </div>
+              </div>
+
+              <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
+                <span className="text-lg shrink-0">💬</span>
+                <div>
+                  <p className="font-bold text-emerald-400 mb-0.5">3. 실시간 AI 채팅</p>
+                  <p className="text-slate-300 leading-snug">질문 입력 시 AI가 즉시 답변합니다. (모바일은 영상 위로 올라온 뒤 <strong>3초 후 자동 소멸</strong>)</p>
+                </div>
+              </div>
+
+              <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
+                <span className="text-lg shrink-0">📦</span>
+                <div>
+                  <p className="font-bold text-amber-300 mb-0.5">4. 실시간 재고 표시</p>
+                  <p className="text-slate-300 leading-snug">우측 상단에 <strong>남은 수량(Stock)</strong>이 표시되며 결제 즉시 차감(소진 시 Sold Out)됩니다.</p>
+                </div>
+              </div>
+
+              <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
+                <span className="text-lg shrink-0">🔊</span>
+                <div>
+                  <p className="font-bold text-purple-400 mb-0.5">5. 음성 On/Off</p>
+                  <p className="text-slate-300 leading-snug">우측 상단 <strong>Sound On / Muted</strong> 버튼(또는 영상 터치)으로 AI 원어민 더빙 음성을 켜고 끕니다.</p>
+                </div>
+              </div>
+
+              <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
+                <span className="text-lg shrink-0">🔒</span>
+                <div>
+                  <p className="font-bold text-rose-400 mb-0.5">6. 관리자 기능</p>
+                  <p className="text-slate-300 leading-snug">상단 <strong>Admin</strong>에서 상품·동영상 등록, AI 더빙 생성, 재고 및 FAQ 답변을 관리합니다.</p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsHelpOpen(false)}
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-xs sm:text-sm shadow-lg transition cursor-pointer"
+            >
+              확인 완료 — 현재 라이브 화면으로 돌아가기
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
