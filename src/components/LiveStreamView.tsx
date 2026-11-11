@@ -1115,6 +1115,19 @@ export const LiveStreamView: React.FC = () => {
     if (!prod) return;
     const finalVideo = newVideoUrl || replaceVideoAsset || prod.videoUrl;
     const finalDesc = newDesc !== undefined ? newDesc : replaceDubbingScript;
+    const trans = productTranslationService.translateProduct(prod.name.ko || prod.name.en || "Product", finalDesc);
+
+    try {
+      await fetch("/api/dub-video", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          videoUrl: finalVideo,
+          scriptText: `Welcome to our live shopping stream. ${trans.description.en || finalDesc}. Limited stock is available today. Tap the PayPal checkout button below to order now!`
+        })
+      });
+      audioBuffersCacheRef.current.delete(finalVideo);
+    } catch {}
 
     const updatedList = await productService.updateProduct(prod.id, {
       videoUrl: finalVideo,
@@ -1840,13 +1853,27 @@ export const LiveStreamView: React.FC = () => {
     setTimeout(async () => {
       const descText = newProdDesc.trim() || `${registeredName} 등록 상품`;
       const trans = productTranslationService.translateProduct(registeredName, descText);
+      const targetVideoUrl = selectedVideoAsset || DEFAULT_FALLBACK_VIDEO;
+
+      try {
+        await fetch("/api/dub-video", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            videoUrl: targetVideoUrl,
+            scriptText: `Welcome to our live shopping stream. ${trans.description.en || descText}. Limited stock is available today. Tap the PayPal checkout button below to order now!`
+          })
+        });
+        audioBuffersCacheRef.current.delete(targetVideoUrl);
+      } catch {}
+
       const updated = await productService.addProduct({
         name: trans.name,
         price: currentPrice,
         currency: "KRW",
         stock: Number(newProdStock) || 10,
         icon: newProdIcon || "🎁",
-        videoUrl: selectedVideoAsset || DEFAULT_FALLBACK_VIDEO,
+        videoUrl: targetVideoUrl,
         fallbackVideoUrl: DEFAULT_FALLBACK_VIDEO,
         description: trans.description
       }, isStartVideo);

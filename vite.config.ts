@@ -46,7 +46,7 @@ function demoVideoPlugin(): Plugin {
           fs.mkdirSync(dir, { recursive: true })
         }
         const files = fs.readdirSync(dir)
-          .filter(f => !f.startsWith('.'))
+          .filter(f => !f.startsWith('.') && !f.startsWith('raw_') && /\.(mp4|webm|mov)$/i.test(f))
           .map(file => {
             const stat = fs.statSync(path.join(dir, file))
             return {
@@ -87,9 +87,14 @@ function demoVideoPlugin(): Plugin {
         req.pipe(fileStream)
 
         fileStream.on('finish', () => {
+          const m4aPath = targetPath.replace(/\.[^.]+$/, '.m4a')
           try {
-            // 사용자 요청: 동영상 업로드 시 웹 스트리밍 최적화 압축(CRF 28, 720p, faststart)을 자동 실행하여 저장
-            execSync(`ffmpeg -y -i "${rawUploadPath}" -vf "scale=w=1280:h=720:force_original_aspect_ratio=decrease" -c:v libx264 -crf 28 -preset fast -c:a aac -b:a 128k -movflags +faststart "${targetPath}"`, { stdio: 'pipe' })
+            // 1. 오디오는 .m4a로 별도 추출 (WebAudio 재생용)
+            try {
+              execSync(`ffmpeg -y -i "${rawUploadPath}" -vn -c:a aac -b:a 128k "${m4aPath}"`, { stdio: 'pipe' })
+            } catch {}
+            // 2. 비디오(.mp4) 컨테이너는 -an(무음 트랙)으로 인코딩하여 크롬 '영어(자동 감지됨)' 자막 팝업 원천 차단
+            execSync(`ffmpeg -y -i "${rawUploadPath}" -vf "scale=w=1280:h=720:force_original_aspect_ratio=decrease" -c:v libx264 -crf 28 -preset fast -an -movflags +faststart "${targetPath}"`, { stdio: 'pipe' })
             if (fs.existsSync(rawUploadPath)) fs.unlinkSync(rawUploadPath)
           } catch (compressErr) {
             console.warn('FFmpeg auto-compression fallback to raw file:', compressErr)
@@ -105,6 +110,7 @@ function demoVideoPlugin(): Plugin {
             success: true,
             fileName,
             url: `/demo_video/${fileName}`,
+            m4aUrl: `/demo_video/${path.basename(m4aPath)}`,
             size: stat.size,
             absolutePath: targetPath
           }))
@@ -120,6 +126,45 @@ function demoVideoPlugin(): Plugin {
         res.setHeader('Content-Type', 'application/json')
         res.end(JSON.stringify({ error: err.message }))
       }
+      return
+    }
+
+    // 3. POST /api/dub-video (신규 상품 동영상 등록 시 번역된 안내음성을 전용 .m4a로 생성하고 .mp4는 -an 무음 처리)
+    if (url.pathname === '/api/dub-video' && req.method === 'POST') {
+      let body = ''
+      req.on('data', chunk => { body += chunk })
+      req.on('end', () => {
+        try {
+          const payload = JSON.parse(body || '{}')
+          const videoUrl = String(payload.videoUrl || '')
+          const scriptText = String(payload.scriptText || '').replace(/["`$]/g, ' ').trim()
+          const baseName = path.basename(decodeURIComponent(videoUrl.split('?')[0]))
+          const dir = path.resolve(__dirname, 'public/demo_video')
+          const mp4Path = path.resolve(dir, baseName)
+          const m4aPath = mp4Path.replace(/\.[^.]+$/, '.m4a')
+          const tmpWavPath = path.resolve(dir, `tmp_tts_${Date.now()}.wav`)
+          const tmpMp4Path = path.resolve(dir, `tmp_vid_${Date.now()}.mp4`)
+
+          if (scriptText && fs.existsSync(mp4Path)) {
+            const psCmd = `Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; foreach($v in $s.GetInstalledVoices()){ if($v.VoiceInfo.Culture.Name -like 'en-*'){ $s.SelectVoice($v.VoiceInfo.Name); break } }; $s.Rate = -1; $s.SetOutputToWaveFile('${tmpWavPath.replace(/'/g, "''")}'); $s.Speak('${scriptText.replace(/'/g, "''")}'); $s.Dispose()`
+            execSync(`powershell -NoProfile -Command "${psCmd}"`, { stdio: 'pipe' })
+            if (fs.existsSync(tmpWavPath)) {
+              execSync(`ffmpeg -y -i "${tmpWavPath}" -af "adelay=800|800,apad=pad_dur=2" -c:a aac -b:a 128k "${m4aPath}"`, { stdio: 'pipe' })
+              fs.unlinkSync(tmpWavPath)
+            }
+            execSync(`ffmpeg -y -i "${mp4Path}" -c:v copy -an "${tmpMp4Path}"`, { stdio: 'pipe' })
+            if (fs.existsSync(tmpMp4Path)) {
+              fs.renameSync(tmpMp4Path, mp4Path)
+            }
+          }
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ success: true, m4aUrl: `/demo_video/${path.basename(m4aPath)}` }))
+        } catch (err: any) {
+          res.statusCode = 200
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ success: false, error: err.message }))
+        }
+      })
       return
     }
 
