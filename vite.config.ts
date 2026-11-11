@@ -114,4 +114,8 @@ function demoVideoPlugin(): Plugin {
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), demoVideoPlugin()],
+  define: {
+    'import.meta.env.ADMIN_PASSWD': JSON.stringify(process.env.ADMIN_PASSWD || process.env.VITE_ADMIN_PASSWD || ''),
+    'process.env.ADMIN_PASSWD': JSON.stringify(process.env.ADMIN_PASSWD || process.env.VITE_ADMIN_PASSWD || '')
+  }
 })

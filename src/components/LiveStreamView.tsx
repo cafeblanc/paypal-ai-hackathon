@@ -66,8 +66,8 @@ const TRANSLATIONS: Record<Language, any> = {
     adminSubtitle: "PostgreSQL / 로컬 DB 연동 상품 등록, 동영상 매핑 및 실시간 재고 관리",
     adminAuthTitle: "관리자 보안 인증",
     adminAuthSubtitle: "상품 등록, 동영상 매핑, 재고 및 AI FAQ 관리를 위한 보안 로그인",
-    passwordLabel: "관리자 비밀번호 (기본: admin1234)",
-    passwordPlaceholder: "비밀번호 입력 (admin1234)",
+    passwordLabel: "관리자 비밀번호",
+    passwordPlaceholder: "관리자 비밀번호 입력",
     loginBtn: "관리자 로그인",
     loginError: "비밀번호가 올바르지 않습니다.",
     logoutBtn: "로그아웃",
@@ -212,8 +212,8 @@ const TRANSLATIONS: Record<Language, any> = {
     adminSubtitle: "PostgreSQL / Local DB Product Registration, Video Mapping & Live Inventory",
     adminAuthTitle: "Admin Portal Authentication",
     adminAuthSubtitle: "Secure login for managing products, video mapping, stock & AI FAQ",
-    passwordLabel: "Admin Password (Default: admin1234)",
-    passwordPlaceholder: "Enter password (admin1234)",
+    passwordLabel: "Admin Password",
+    passwordPlaceholder: "Enter admin password",
     loginBtn: "Admin Login",
     loginError: "Incorrect password.",
     logoutBtn: "Logout",
@@ -358,8 +358,8 @@ const TRANSLATIONS: Record<Language, any> = {
     adminSubtitle: "PostgreSQL / ローカルDB連動 商品登録・動画マッピング・在庫管理",
     adminAuthTitle: "管理者ポータル認証",
     adminAuthSubtitle: "商品登録、動画マッピング、在庫、AI FAQ管理のためのログイン",
-    passwordLabel: "管理者パスワード (基本: admin1234)",
-    passwordPlaceholder: "パスワード入力 (admin1234)",
+    passwordLabel: "管理者パスワード",
+    passwordPlaceholder: "管理者パスワード入力",
     loginBtn: "ログイン",
     loginError: "パスワードが正しくありません。",
     logoutBtn: "ログアウト",
@@ -504,8 +504,8 @@ const TRANSLATIONS: Record<Language, any> = {
     adminSubtitle: "PostgreSQL / 本地DB联动 商品注册、视频映射与实时库存管理",
     adminAuthTitle: "管理员安全认证",
     adminAuthSubtitle: "登录以管理商品注册、视频映射、库存及 AI 问答",
-    passwordLabel: "管理员密码 (默认: admin1234)",
-    passwordPlaceholder: "输入密码 (admin1234)",
+    passwordLabel: "管理员密码",
+    passwordPlaceholder: "输入管理员密码",
     loginBtn: "管理员登录",
     loginError: "密码错误。",
     logoutBtn: "登出",
@@ -650,8 +650,8 @@ const TRANSLATIONS: Record<Language, any> = {
     adminSubtitle: "Registro de productos en PostgreSQL / DB Local, mapeo de video y stock en vivo",
     adminAuthTitle: "Autenticación de Administrador",
     adminAuthSubtitle: "Inicio de sesión seguro para gestionar productos, videos, stock y FAQ",
-    passwordLabel: "Contraseña (Default: admin1234)",
-    passwordPlaceholder: "Contraseña (admin1234)",
+    passwordLabel: "Contraseña",
+    passwordPlaceholder: "Contraseña de administrador",
     loginBtn: "Iniciar Sesión",
     loginError: "Contraseña incorrecta.",
     logoutBtn: "Cerrar Sesión",
@@ -796,8 +796,8 @@ const TRANSLATIONS: Record<Language, any> = {
     adminSubtitle: "Enregistrement de produits PostgreSQL / DB Locale, mappage vidéo et stock en direct",
     adminAuthTitle: "Authentification Administrateur",
     adminAuthSubtitle: "Connexion sécurisée pour gérer les produits, vidéos, stocks et FAQ IA",
-    passwordLabel: "Mot de passe (Défaut: admin1234)",
-    passwordPlaceholder: "Mot de passe (admin1234)",
+    passwordLabel: "Mot de passe",
+    passwordPlaceholder: "Mot de passe administrateur",
     loginBtn: "Connexion",
     loginError: "Mot de passe incorrect.",
     logoutBtn: "Déconnexion",
@@ -1629,7 +1629,13 @@ export const LiveStreamView: React.FC = () => {
 
   const handleAdminLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (adminPassword === "admin1234") {
+    const envPass = 
+      (typeof import.meta !== "undefined" && (import.meta.env?.ADMIN_PASSWD || import.meta.env?.VITE_ADMIN_PASSWD)) ||
+      (typeof process !== "undefined" && process.env?.ADMIN_PASSWD) ||
+      (typeof window !== "undefined" && (window as any).__ADMIN_PASSWD);
+    const correctPassword = (envPass && String(envPass).trim()) ? String(envPass).trim() : "admin1234";
+
+    if (adminPassword && adminPassword.trim() === correctPassword) {
       setIsAdminLoggedIn(true);
       setLoginError(false);
     } else {
@@ -1849,7 +1855,7 @@ export const LiveStreamView: React.FC = () => {
 
               <form onSubmit={handleAdminLogin} className="flex flex-col gap-4">
                 <div>
-                  <label className="text-xs text-slate-300 font-semibold mb-1 block">Password (admin1234)</label>
+                  <label className="text-xs text-slate-300 font-semibold mb-1 block">{t.passwordLabel || "Admin Password"}</label>
                   <input
                     type="password"
                     value={adminPassword}
