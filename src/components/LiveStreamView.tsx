@@ -1356,41 +1356,94 @@ export const LiveStreamView: React.FC = () => {
     };
   }, []);
 
+  // Web Audio API 기반 사운드 재생 엔진:
+  // <video> 태그는 항상 muted=true로 유지하여 크롬/엣지 브라우저의 OS/브라우저 내장 '영어(자동 감지됨)' 실시간 자막(Live Caption) 검은 박스가 뜨는 현상을 원천 차단합니다.
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const audioBuffersCacheRef = useRef<Map<string, AudioBuffer>>(new Map());
+
+  const stopWebAudio = () => {
+    if (audioSourceRef.current) {
+      try {
+        audioSourceRef.current.onended = null;
+        audioSourceRef.current.stop();
+        audioSourceRef.current.disconnect();
+      } catch {}
+      audioSourceRef.current = null;
+    }
+  };
+
   const stopDubbing = () => {
     isDubbingActiveRef.current = false;
+    stopWebAudio();
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       window.speechSynthesis.cancel();
     }
   };
 
   useEffect(() => {
-    // 동영상 자체의 인코딩된 오디오 트랙을 직접 재생 (이중 음성 방지 및 깨끗한 원음 보장)
+    // <video> 엘리먼트 자체는 항상 muted=true로 고정 (브라우저 자동 자막 박스 차단)
     if (videoRef.current) {
-      videoRef.current.muted = isAudioMuted;
-      if (!isAudioMuted) {
-        videoRef.current.volume = 1.0;
-      }
+      videoRef.current.muted = true;
     }
-    return () => {
-      stopDubbing();
-    };
-  }, [isAudioMuted, isPlaying, currentProd?.id]);
 
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: "1",
-      sender: "ai",
-      text: {
-        ko: "페이팔 AI 에이전틱 커머스에 오신 것을 환영합니다! 라이브 영상을 시청하며 실시간 재고와 함께 간편하게 쇼핑하세요.",
-        en: "Welcome to PayPal AI Agentic Commerce! Watch live and shop instantly with real-time stock.",
-        ja: "PayPal AI エージェンティックコマースへようこそ！ライブ映像とリアルタイム在庫でお買い物。",
-        zh: "欢迎来到 PayPal AI 智能代理电商！观看直播并实时查看库存选购商品。",
-        es: "¡Bienvenido al Comercio Agentico IA de PayPal! Mira en vivo con stock en tiempo real.",
-        fr: "Bienvenue sur le Commerce Agentique IA PayPal ! Regardez en direct avec stock en temps réel."
-      },
-      timestamp: "Just now"
+    stopWebAudio();
+
+    if (isAudioMuted || !isPlaying || isAdminRoute) {
+      return;
     }
-  ]);
+
+    const activeVideoUrl = currentProd?.videoUrl || DEFAULT_FALLBACK_VIDEO;
+    if (!activeVideoUrl) return;
+
+    let cancelled = false;
+
+    const startWebAudio = async () => {
+      try {
+        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+        if (!AudioCtx) return;
+        if (!audioCtxRef.current) {
+          audioCtxRef.current = new AudioCtx();
+        }
+        const ctx = audioCtxRef.current;
+        if (ctx.state === "suspended") {
+          await ctx.resume();
+        }
+
+        let buffer = audioBuffersCacheRef.current.get(activeVideoUrl);
+        if (!buffer) {
+          const resp = await fetch(activeVideoUrl);
+          const arrBuf = await resp.arrayBuffer();
+          buffer = await ctx.decodeAudioData(arrBuf);
+          audioBuffersCacheRef.current.set(activeVideoUrl, buffer);
+        }
+
+        if (cancelled || isAudioMuted || !buffer) return;
+
+        stopWebAudio();
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+        source.connect(ctx.destination);
+
+        const vidTime = videoRef.current ? videoRef.current.currentTime : 0;
+        const offset = buffer.duration > 0 ? (vidTime % buffer.duration) : 0;
+        source.start(0, offset);
+        audioSourceRef.current = source;
+      } catch (err) {
+        console.warn("WebAudio playback fallback:", err);
+      }
+    };
+
+    startWebAudio();
+
+    return () => {
+      cancelled = true;
+      stopWebAudio();
+    };
+  }, [isAudioMuted, isPlaying, currentProd?.id, currentProd?.videoUrl, isAdminRoute]);
+
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState("");
   const [checkoutStatus, setCheckoutStatus] = useState<string | null>(null);
   const [latestOrder, setLatestOrder] = useState<OrderRecord | null>(null);
@@ -1438,7 +1491,7 @@ export const LiveStreamView: React.FC = () => {
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.defaultMuted = true;
-      videoRef.current.muted = isAudioMuted;
+      videoRef.current.muted = true;
       const playPromise = videoRef.current.play();
       if (playPromise !== undefined) {
         playPromise
@@ -1466,12 +1519,12 @@ export const LiveStreamView: React.FC = () => {
           });
       }
     }
-  }, [activeProduct?.id, isAudioMuted, currentProd?.videoUrl, demoVideoFiles]);
+  }, [activeProduct?.id, currentProd?.videoUrl, demoVideoFiles]);
 
   const handleTogglePlayOrUnmute = () => {
     if (!videoRef.current) return;
     if (!isPlaying || isAutoplayBlocked) {
-      videoRef.current.muted = isAudioMuted;
+      videoRef.current.muted = true;
       videoRef.current.play().then(() => {
         setIsPlaying(true);
         setIsAutoplayBlocked(false);
@@ -1482,7 +1535,7 @@ export const LiveStreamView: React.FC = () => {
       const nextMuted = !isAudioMuted;
       setIsAudioMuted(nextMuted);
       if (videoRef.current) {
-        videoRef.current.muted = nextMuted;
+        videoRef.current.muted = true;
       }
     }
   };
@@ -2661,7 +2714,7 @@ export const LiveStreamView: React.FC = () => {
                   src={currentProd?.videoUrl || DEFAULT_FALLBACK_VIDEO}
                   autoPlay
                   loop
-                  muted={isAudioMuted}
+                  muted={true}
                   playsInline
                   // @ts-ignore
                   webkit-playsinline="true"
@@ -2674,7 +2727,7 @@ export const LiveStreamView: React.FC = () => {
                   onPause={() => setIsPlaying(false)}
                   onLoadedData={(e) => {
                     const vid = e.currentTarget;
-                    vid.muted = isAudioMuted;
+                    vid.muted = true;
                     vid.play().then(() => {
                       setIsPlaying(true);
                       setIsAutoplayBlocked(false);
@@ -2786,10 +2839,7 @@ export const LiveStreamView: React.FC = () => {
                     const nextMuted = !isAudioMuted;
                     setIsAudioMuted(nextMuted);
                     if (videoRef.current) {
-                      videoRef.current.muted = nextMuted;
-                      if (!nextMuted) {
-                        videoRef.current.volume = 1.0;
-                      }
+                      videoRef.current.muted = true;
                     }
                   }} 
                   className={`text-[10px] sm:text-[11px] px-2.5 py-1 rounded border transition font-semibold cursor-pointer shadow-md ${isAudioMuted ? "bg-amber-500 hover:bg-amber-400 text-slate-950 border-amber-400 font-bold" : "bg-black/80 hover:bg-black/90 text-white border-slate-600"}`}
@@ -2805,26 +2855,31 @@ export const LiveStreamView: React.FC = () => {
               )}
             </div>
 
-            {/* 모바일 전용 플로팅 하단 오버레이 (채팅창 + 상품목록 + 현재 동영상 상품 제목, 가격, 결제버튼 + 채팅입력) */}
+            {/* 모바일 전용 플로팅 하단 오버레이 (초기 검은 인사말 박스 완전 제거 + 상품목록 + 현재 동영상 상품 제목, 가격, 결제버튼 + 채팅입력) */}
             <div 
               className="md:hidden absolute bottom-0 inset-x-0 z-20 flex flex-col justify-end bg-gradient-to-t from-black via-black/85 to-transparent px-2.5 pb-2 pt-6 pointer-events-none gap-1.5"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* 1. 플로팅 실시간 채팅 스트림 (반투명 말풍선 최근 2~3개) */}
-              <div 
-                ref={chatMessagesRef}
-                className="max-h-[85px] overflow-y-auto no-scrollbar flex flex-col gap-1 pointer-events-auto"
-                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-              >
-                {messages.slice(-3).map(msg => (
-                  <div key={msg.id} className={msg.sender === "user" ? "flex flex-col items-end w-full" : "flex flex-col items-start w-full"}>
-                    <div className={msg.sender === "user" ? "max-w-[85%] px-2.5 py-1 rounded-lg text-[11px] bg-blue-600/90 text-white shadow backdrop-blur-xs" : "max-w-[85%] px-2.5 py-1 rounded-lg text-[11px] bg-black/60 text-slate-200 border border-white/10 shadow backdrop-blur-xs"}>
-                      {typeof msg.text === "string" ? msg.text : (msg.text[lang] || msg.text.ko || msg.text.en)}
-                    </div>
-                  </div>
-                ))}
-                <div ref={messagesEndRef} className="h-0 w-0" />
-              </div>
+              {/* 1. 플로팅 실시간 채팅 스트림 (실제 사용자가 입력한 대화가 있을 때만 표시, 빈 메시지 및 초기 안내문 완전 삭제) */}
+              {messages.filter(m => ((typeof m.text === "string" ? m.text : (m.text[lang] || m.text.ko || m.text.en)) || "").trim().length > 0).length > 0 && (
+                <div 
+                  ref={chatMessagesRef}
+                  className="max-h-[75px] overflow-y-auto no-scrollbar flex flex-col gap-1 pointer-events-auto"
+                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                >
+                  {messages
+                    .filter(m => ((typeof m.text === "string" ? m.text : (m.text[lang] || m.text.ko || m.text.en)) || "").trim().length > 0)
+                    .slice(-2)
+                    .map(msg => (
+                      <div key={msg.id} className={msg.sender === "user" ? "flex flex-col items-end w-full" : "flex flex-col items-start w-full"}>
+                        <div className={msg.sender === "user" ? "max-w-[85%] px-2.5 py-1 rounded-lg text-[11px] bg-blue-600/90 text-white shadow backdrop-blur-xs" : "max-w-[85%] px-2.5 py-1 rounded-lg text-[11px] bg-black/60 text-slate-200 border border-white/10 shadow backdrop-blur-xs"}>
+                          {typeof msg.text === "string" ? msg.text : (msg.text[lang] || msg.text.ko || msg.text.en)}
+                        </div>
+                      </div>
+                    ))}
+                  <div ref={messagesEndRef} className="h-0 w-0" />
+                </div>
+              )}
 
               {/* 2. 상품 빠른 전환 버튼 칩 */}
               <div className="flex gap-1.5 overflow-x-auto no-scrollbar py-0.5 pointer-events-auto">
