@@ -2855,33 +2855,12 @@ export const LiveStreamView: React.FC = () => {
               )}
             </div>
 
-            {/* 모바일 전용 플로팅 하단 오버레이 (초기 검은 인사말 박스 완전 제거 + 상품목록 + 현재 동영상 상품 제목, 가격, 결제버튼 + 채팅입력) */}
+            {/* 모바일 전용 플로팅 하단 오버레이 (검은 채팅 박스 완전 제거 + 상품목록 + 현재 동영상 상품 제목, 가격, 결제버튼 + 채팅입력) */}
             <div 
               className="md:hidden absolute bottom-0 inset-x-0 z-20 flex flex-col justify-end bg-gradient-to-t from-black via-black/85 to-transparent px-2.5 pb-2 pt-6 pointer-events-none gap-1.5"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* 1. 플로팅 실시간 채팅 스트림 (실제 사용자가 입력한 대화가 있을 때만 표시, 빈 메시지 및 초기 안내문 완전 삭제) */}
-              {messages.filter(m => ((typeof m.text === "string" ? m.text : (m.text[lang] || m.text.ko || m.text.en)) || "").trim().length > 0).length > 0 && (
-                <div 
-                  ref={chatMessagesRef}
-                  className="max-h-[75px] overflow-y-auto no-scrollbar flex flex-col gap-1 pointer-events-auto"
-                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-                >
-                  {messages
-                    .filter(m => ((typeof m.text === "string" ? m.text : (m.text[lang] || m.text.ko || m.text.en)) || "").trim().length > 0)
-                    .slice(-2)
-                    .map(msg => (
-                      <div key={msg.id} className={msg.sender === "user" ? "flex flex-col items-end w-full" : "flex flex-col items-start w-full"}>
-                        <div className={msg.sender === "user" ? "max-w-[85%] px-2.5 py-1 rounded-lg text-[11px] bg-blue-600/90 text-white shadow backdrop-blur-xs" : "max-w-[85%] px-2.5 py-1 rounded-lg text-[11px] bg-black/60 text-slate-200 border border-white/10 shadow backdrop-blur-xs"}>
-                          {typeof msg.text === "string" ? msg.text : (msg.text[lang] || msg.text.ko || msg.text.en)}
-                        </div>
-                      </div>
-                    ))}
-                  <div ref={messagesEndRef} className="h-0 w-0" />
-                </div>
-              )}
-
-              {/* 2. 상품 빠른 전환 버튼 칩 */}
+              {/* 1. 상품 빠른 전환 버튼 칩 */}
               <div className="flex gap-1.5 overflow-x-auto no-scrollbar py-0.5 pointer-events-auto">
                 {products.map((prod) => (
                   <button
