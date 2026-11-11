@@ -1461,6 +1461,10 @@ export const LiveStreamView: React.FC = () => {
   }, [isAudioMuted, isPlaying, currentProd?.id, currentProd?.videoUrl, isAdminRoute]);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [mobileVisibleMessages, setMobileVisibleMessages] = useState<ChatMessage[]>([]);
+  const [mobileChatPhase, setMobileChatPhase] = useState<"hidden" | "visible" | "exiting">("hidden");
+  const mobileChatScrollRef = useRef<HTMLDivElement | null>(null);
+  const mobileChatEndRef = useRef<HTMLDivElement | null>(null);
   const [inputText, setInputText] = useState("");
   const [checkoutStatus, setCheckoutStatus] = useState<string | null>(null);
   const [latestOrder, setLatestOrder] = useState<OrderRecord | null>(null);
@@ -1486,6 +1490,35 @@ export const LiveStreamView: React.FC = () => {
     if (chatMessagesRef.current) {
       chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
     }
+  }, [messages]);
+
+  // 모바일 전용: 채팅 입력 시 바로 위 영상 화면에 밀려 올라가며 표시되고, 마지막 채팅 3초 후 화면 위쪽으로 모두 밀려서 사라짐
+  useEffect(() => {
+    if (messages.length === 0) return;
+
+    setMobileVisibleMessages(messages.slice(-6));
+    setMobileChatPhase("visible");
+
+    requestAnimationFrame(() => {
+      mobileChatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      if (mobileChatScrollRef.current) {
+        mobileChatScrollRef.current.scrollTop = mobileChatScrollRef.current.scrollHeight;
+      }
+    });
+
+    const exitTimer = setTimeout(() => {
+      setMobileChatPhase("exiting");
+    }, 3000);
+
+    const clearTimer = setTimeout(() => {
+      setMobileChatPhase("hidden");
+      setMobileVisibleMessages([]);
+    }, 3550);
+
+    return () => {
+      clearTimeout(exitTimer);
+      clearTimeout(clearTimer);
+    };
   }, [messages]);
 
   useEffect(() => {
@@ -2886,11 +2919,64 @@ export const LiveStreamView: React.FC = () => {
               )}
             </div>
 
-            {/* 모바일 전용 플로팅 하단 오버레이 (검은 채팅 박스 완전 제거 + 상품목록 + 현재 동영상 상품 제목, 가격, 결제버튼 + 채팅입력) */}
+            {/* 모바일 전용 플로팅 하단 오버레이 (영상 화면 위 밀려 올라가는 채팅 + 3초 후 상단 슬라이드 소멸 + 상품목록 + 현재 상품 바 + 채팅입력) */}
             <div 
               className="md:hidden absolute bottom-0 inset-x-0 z-20 flex flex-col justify-end bg-gradient-to-t from-black via-black/85 to-transparent px-2.5 pb-2 pt-6 pointer-events-none gap-1.5"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* 0. 모바일 영상 화면 위 플로팅 실시간 채팅 (밀려 올라가며 표시 후 마지막 채팅 3초 뒤 위쪽으로 밀려 사라짐) */}
+              {mobileChatPhase !== "hidden" && mobileVisibleMessages.length > 0 && (
+                <div className="w-full max-h-[36dvh] overflow-hidden flex flex-col justify-end mb-1 pointer-events-none">
+                  <div
+                    ref={mobileChatScrollRef}
+                    className={`flex flex-col gap-1.5 overflow-y-auto no-scrollbar transition-all duration-500 ease-in-out ${
+                      mobileChatPhase === "exiting"
+                        ? "-translate-y-full opacity-0"
+                        : "translate-y-0 opacity-100"
+                    }`}
+                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                  >
+                    {mobileVisibleMessages.map((msg) => {
+                      const msgText = (typeof msg.text === "string" ? msg.text : (msg.text[lang] || msg.text.ko || msg.text.en))?.trim();
+                      return (
+                        <div
+                          key={msg.id}
+                          className={`flex flex-col w-full transition-all duration-300 ${
+                            msg.sender === "user" ? "items-end" : "items-start"
+                          }`}
+                        >
+                          {!msg.suggestedProduct && msgText ? (
+                            <div
+                              className={
+                                msg.sender === "user"
+                                  ? "max-w-[82%] px-3 py-1.5 rounded-2xl rounded-br-xs text-xs bg-blue-600/85 backdrop-blur-md text-white font-medium shadow-lg border border-blue-400/30 break-words"
+                                  : "max-w-[85%] px-3 py-1.5 rounded-2xl rounded-bl-xs text-xs bg-black/65 backdrop-blur-md text-slate-100 border border-white/15 shadow-lg break-words"
+                              }
+                            >
+                              {msgText}
+                            </div>
+                          ) : null}
+                          {msg.suggestedProduct && (
+                            <div className="max-w-[88%] bg-black/75 backdrop-blur-md border border-amber-400/40 px-3 py-2 rounded-xl flex items-center gap-2 shadow-lg pointer-events-auto">
+                              <span className="text-lg shrink-0">{msg.suggestedProduct.icon}</span>
+                              <div className="min-w-0 flex-1 text-[11px]">
+                                <p className="font-bold text-white truncate">
+                                  {msg.suggestedProduct.name[lang] || msg.suggestedProduct.name.ko}
+                                </p>
+                                <p className="text-amber-300 font-semibold">
+                                  {formatPrice(msg.suggestedProduct.price, lang)} · {t.stockLeft}{msg.suggestedProduct.stock}{t.unit}
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                    <div ref={mobileChatEndRef} className="h-0 w-0" />
+                  </div>
+                </div>
+              )}
+
               {/* 1. 상품 빠른 전환 버튼 칩 */}
               <div className="flex gap-1.5 overflow-x-auto no-scrollbar py-0.5 pointer-events-auto">
                 {products.map((prod) => (
