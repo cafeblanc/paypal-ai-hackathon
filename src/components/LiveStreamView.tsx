@@ -1412,7 +1412,11 @@ export const LiveStreamView: React.FC = () => {
 
         let buffer = audioBuffersCacheRef.current.get(activeVideoUrl);
         if (!buffer) {
-          const resp = await fetch(activeVideoUrl);
+          const m4aUrl = activeVideoUrl.replace(/\.mp4(\?.*)?$/i, ".m4a");
+          let resp = await fetch(m4aUrl);
+          if (!resp.ok) {
+            resp = await fetch(activeVideoUrl);
+          }
           const arrBuf = await resp.arrayBuffer();
           buffer = await ctx.decodeAudioData(arrBuf);
           audioBuffersCacheRef.current.set(activeVideoUrl, buffer);
