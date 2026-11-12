@@ -1464,6 +1464,7 @@ export const LiveStreamView: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [mobileVisibleMessages, setMobileVisibleMessages] = useState<ChatMessage[]>([]);
   const [mobileChatPhase, setMobileChatPhase] = useState<"hidden" | "visible" | "exiting">("hidden");
+  const mobileDismissedIndexRef = useRef<number>(0);
   const mobileChatScrollRef = useRef<HTMLDivElement | null>(null);
   const mobileChatEndRef = useRef<HTMLDivElement | null>(null);
   const [inputText, setInputText] = useState("");
@@ -1493,11 +1494,14 @@ export const LiveStreamView: React.FC = () => {
     }
   }, [messages]);
 
-  // 모바일 전용: 채팅 입력 시 바로 위 영상 화면에 밀려 올라가며 표시되고, 마지막 채팅 3초 후 화면 위쪽으로 모두 밀려서 사라짐
+  // 모바일 전용: 3초 이내에 새로 들어온 항목들만 위로 밀려 올라가며 표시되고, 3초 후 사라진 이전 항목들은 다시 나타나지 않음
   useEffect(() => {
     if (messages.length === 0) return;
 
-    setMobileVisibleMessages(messages.slice(-6));
+    const activeBatch = messages.slice(mobileDismissedIndexRef.current);
+    if (activeBatch.length === 0) return;
+
+    setMobileVisibleMessages(activeBatch.slice(-6));
     setMobileChatPhase("visible");
 
     requestAnimationFrame(() => {
@@ -1507,11 +1511,14 @@ export const LiveStreamView: React.FC = () => {
       }
     });
 
+    const currentLength = messages.length;
+
     const exitTimer = setTimeout(() => {
       setMobileChatPhase("exiting");
     }, 3000);
 
     const clearTimer = setTimeout(() => {
+      mobileDismissedIndexRef.current = currentLength;
       setMobileChatPhase("hidden");
       setMobileVisibleMessages([]);
     }, 3550);
